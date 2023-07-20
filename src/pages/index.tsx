@@ -34,6 +34,7 @@ export default function Home() {
     onSuccess: () => {
       toast.success('Horário reservado com sucesso!');
       utils.reservation.getAll.invalidate();
+      utils.reservation.getByDate.invalidate();
     },
     onError: (err) => {
       toast.error(err.message);
@@ -50,14 +51,26 @@ export default function Home() {
       <main className={`flex justify-center items-center flex-col min-h-screen w-screen overflow-y-scroll`}>
         <h2
           onAnimationEnd={() => setAnimate(false)}
-          className={`text-4xl font-bold ${animate && 'animate-fadeIn'}`}>{date.dateTime ? format(date.dateTime, "dd 'de' MMMM, kk:mm", { locale: ptBR }) : date.justDate ? format(date.justDate, "dd 'de' MMMM, --:--", { locale: ptBR }) : '-- --, --:--'}</h2>
+          className={`text-4xl font-bold ${animate && 'animate-fadeIn'}`}>{date.dateTime ?
+            format(date.dateTime, "dd 'de' MMMM, kk:mm", { locale: ptBR })
+            : date.justDate ? format(date.justDate, "dd 'de' MMMM, --:--", { locale: ptBR })
+              : '-- --, --:--'}</h2>
 
         <DateTimePicker date={date} setAnimate={setAnimate} setDate={setDate} />
 
-        <Button className="mt-8" variant="contained" sx={{ color: "rgb(21, 101, 192)", "&:hover": { color: "white" } }} disabled={(date.dateTime ? false : true) || isCreating} onClick={() => {
-          localStorage.setItem('dateTime', date.dateTime!.toISOString());
-          router.push('/booking');
-        }} >{isCreating ? 'Criando...' : 'Reservar'}</Button>
+        <Button
+          className="mt-8"
+          variant="contained"
+          sx={{ color: "rgb(21, 101, 192)", "&:hover": { color: "white" } }}
+          disabled={(date.dateTime ? false : true) || isCreating}
+          onClick={() => {
+            localStorage.setItem('dateTime', date.dateTime!.toISOString());
+            router.push('/booking');
+            // createReservation({ date: date.dateTime! })
+          }} >
+          {isCreating ? 'Criando...' : 'Reservar'}
+        </Button>
+
         <Toaster position="bottom-center" />
       </main>
     </>

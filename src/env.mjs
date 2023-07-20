@@ -23,6 +23,12 @@ export const env = createEnv({
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     DISCORD_CLIENT_ID: z.string(),
     DISCORD_CLIENT_SECRET: z.string(),
+    ASAAS_API_KEY: z.string(),
+    MP_ACCESS_TOKEN: z.string(),
+    MP_PUBLIC_KEY: z.string(),
+    JWT_SECRET_KEY: z.string(),
+    ADMIN_EMAIL: z.string(),
+    ADMIN_PASSWORD: z.string(),
   },
 
   /**
@@ -45,6 +51,12 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+    ASAAS_API_KEY: process.env.ASAAS_API_KEY,
+    MP_ACCESS_TOKEN: process.env.MP_ACCESS_TOKEN,
+    MP_PUBLIC_KEY: process.env.MP_PUBLIC_KEY,
+    JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

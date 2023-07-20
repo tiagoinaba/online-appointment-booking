@@ -1,21 +1,27 @@
 import { now } from "@/utils/constants";
-import { Button, Input, InputLabel, TextField } from "@mui/material";
+import { Button, Input, InputLabel } from "@mui/material";
 import { parseISO } from "date-fns";
-import Head from "next/head";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import Script from "next/script";
 import { useEffect, useState } from "react"
-import { useForm, SubmitHandler } from "react-hook-form";
-
-type Inputs = {
-    example: string,
-    exampleRequired: string,
-};
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { Toaster, toast } from "react-hot-toast";
+import { api } from '@/utils/api';
+import axios from 'axios';
+import { Inputs } from "@/utils/types";
 
 export default function Booking({ }) {
-    const [dateTime, setDateTime] = useState<string | null>(null);
+    const [dateTime, setDateTime] = useState<Date | null>(null);
+    const [paymentStart, setPaymentStart] = useState<boolean>(false);
+    const { mutate: createPayment, data } = api.mercadopago.createPreference.useMutation();
+
     const router = useRouter();
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
+
+    const { register, handleSubmit, watch, formState: { errors }, control } = useForm<Inputs>();
+
+    const Wallet = dynamic(() => import('@mercadopago/sdk-react/bricks/wallet'), {
+        ssr: false,
+    })
 
     useEffect(() => {
         const selectedTime = localStorage.getItem('dateTime');
@@ -26,26 +32,45 @@ export default function Booking({ }) {
 
             if (date < now) router.push('/');
             else {
-                setDateTime(selectedTime);
+                createPayment({ date });
+                setDateTime(date);
             }
         }
     }, [])
 
-    const onSubmit: SubmitHandler<Inputs> = data => console.log(data);
+    const onSubmit: SubmitHandler<Inputs> = async (data) => {
+        await import('@mercadopago/sdk-react').then(res => {
+            res.initMercadoPago("TEST-6e075dd3-fe77-4349-abae-37dd548c290f");
+            setPaymentStart(true);
+            localStorage.setItem('reservationInfo', JSON.stringify(data));
+        })
+    };
+
 
     return (
-        <main className="h-screen flex justify-center items-center">
-            <form className="flex flex-col justify-center items-center" onSubmit={handleSubmit(onSubmit)} >
-                <InputLabel>Nome</InputLabel>
-                <Input {...register("example", { required: true })} />
-                {errors.example && <span className="text-red-500">Este campo é obrigatório</span>}
+        <>
+            <main className="h-screen flex justify-center items-center flex-col gap-8">
+                <form className="flex flex-col justify-center items-center" onSubmit={handleSubmit(onSubmit)} >
+                    <InputLabel>Nome da reserva</InputLabel>
+                    <Input {...register("name", { required: true })} />
+                    {errors.name && <span className="text-red-500">Este campo é obrigatório</span>}
 
-                <InputLabel className="mt-6">Sobrenome</InputLabel>
-                <Input {...register("exampleRequired", { required: true })} />
-                {errors.exampleRequired && <span className="text-red-500">Este campo é obrigatório</span>}
+                    <InputLabel className="mt-6">Email</InputLabel>
+                    <Input {...register("email", { required: true })} />
+                    {errors.email && <span className="text-red-500">Este campo é obrigatório</span>}
 
-                <Button variant="outlined" sx={{ marginTop: "1.5rem" }}>Submit</Button>
-            </form>
-        </main>
+
+                    <Button variant="outlined" sx={{ marginTop: "1.5rem" }} type="submit" >Submit</Button>
+                </form>
+                {
+                    paymentStart && (
+                        <div id="wallet_container">
+                            {dateTime && <Wallet initialization={{ preferenceId: data }} />}
+                        </div>
+                    )
+                }
+                <Toaster position="bottom-center" />
+            </main>
+        </>
     )
 }

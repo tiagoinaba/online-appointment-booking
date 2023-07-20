@@ -70,7 +70,9 @@ model Barber {
 model Reservation {
     id        String   @id @default(cuid())
     name      String
-    date      DateTime
+    email     String
+    justDate  DateTime
+    dateTime  DateTime
     createdAt DateTime @updatedAt
 }
 
@@ -78,8 +80,10 @@ model SpecificReservation {
     id        String   @id @default(cuid())
     barberId  String
     name      String
-    date      DateTime
+    email     String
+    justDate  DateTime
+    dateTime  DateTime
     createdAt DateTime @updatedAt
 
-    @@unique([date, barberId])
+    @@unique([dateTime, barberId])
 }

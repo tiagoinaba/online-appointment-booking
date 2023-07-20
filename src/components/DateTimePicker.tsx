@@ -1,8 +1,11 @@
 import { api } from "@/utils/api";
+import { now } from "@/utils/constants";
 import { DateType } from "@/utils/types";
 import { Button } from "@mui/material";
 import { DateCalendar } from "@mui/x-date-pickers";
-import { add, format, isEqual } from "date-fns";
+import { Reservation } from "@prisma/client";
+import { GetResult } from "@prisma/client/runtime";
+import { add, format, isBefore, isEqual } from "date-fns";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface DateTimePickerProps {
@@ -17,7 +20,11 @@ interface DateTimePickerProps {
 export default function DateTimePicker({ date, setDate, setAnimate }: DateTimePickerProps) {
     const [domLoaded, setDomLoaded] = useState(false);
 
-    const { data: reservations } = api.reservation.getAll.useQuery();
+    const { data, refetch } = api.reservation.getByDate.useQuery({ date: date.justDate });
+
+    useEffect(() => {
+        refetch();
+    }, [date.justDate])
 
     const getTimes = () => {
         const begin = add(date.justDate!, { hours: 9 });
@@ -53,21 +60,19 @@ export default function DateTimePicker({ date, setDate, setAnimate }: DateTimePi
             {
                 date.justDate && (
                     <div className="grid gap-8 grid-cols-4">
-                        {getTimes().map(time => {
-                            return (
-                                <Button
-                                    key={time.toISOString()}
-                                    disabled={reservations?.find(res => isEqual(res.date, time)) ? true : false}
-                                    onClick={() => {
-                                        setAnimate(true);
-                                        setDate(prev => ({
-                                            ...prev,
-                                            dateTime: time,
-                                        }));
-                                    }}
-                                >{format(time, 'kk:mm')}</Button>
-                            )
-                        })}
+                        {getTimes().map(time => (
+                            <Button
+                                key={time.toISOString()}
+                                disabled={(data?.find(res => isEqual(res.dateTime, time)) ? true : false) || isBefore(time, now)}
+                                onClick={() => {
+                                    setAnimate(true);
+                                    setDate(prev => ({
+                                        ...prev,
+                                        dateTime: time,
+                                    }));
+                                }}
+                            >{format(time, 'kk:mm')}</Button>
+                        ))}
                     </div>
                 )
             }
