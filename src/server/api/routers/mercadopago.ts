@@ -20,11 +20,11 @@ export const mercadopagoRouter = createTRPCRouter({
                 ],
                 "auto_return": "approved",
                 "back_urls": {
-                    "success": "https://d43b-179-100-7-205.ngrok-free.app/callback",
-                    "pending": "https://d43b-179-100-7-205.ngrok-free.app/callback",
-                    "failure": "https://d43b-179-100-7-205.ngrok-free.app/callback",
+                    "success": "https://0929-179-100-7-205.ngrok-free.app/callback",
+                    "pending": "https://0929-179-100-7-205.ngrok-free.app/callback",
+                    "failure": "https://0929-179-100-7-205.ngrok-free.app/callback",
                 },
-                "notification_url": "https://d43b-179-100-7-205.ngrok-free.app/api/mercadopago",
+                "notification_url": "https://0929-179-100-7-205.ngrok-free.app/api/mercadopago",
             }, {
                 headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` }
             });
