@@ -4,6 +4,7 @@ import { z } from "zod";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "~/components/ui/button";
+import { api } from "@/utils/api";
 
 export const Reservation = z.object({
     id: z.string(),
@@ -41,10 +42,19 @@ export const columns: ColumnDef<ReservationType>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
-            const payment = row.original
+            const utils = api.useContext();
+            
+            const {mutate: deleteReservation} = api.reservation.deleteReservation.useMutation({
+                onSuccess: () => {
+                    utils.reservation.getAll.invalidate();
+                }
+            });
+            const {id} = row.original
 
             return (
-                <Button variant={"default"}>Delete</Button>
+                <Button variant={"default"} onClick={() => {
+                    deleteReservation({id});
+                }}>Delete</Button>
             )
         },
     }

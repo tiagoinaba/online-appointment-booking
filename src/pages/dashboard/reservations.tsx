@@ -13,6 +13,7 @@ export default function reservations() {
                 <title>Reservas - Admin</title>
             </Head>
             <main className='h-screen flex flex-col justify-center items-center'>
+                <h1 className='font-bold text-2xl'>Reservas</h1>
                 {reservations && (<div className="container mx-auto py-10">
                     <DataTable columns={columns} data={reservations} />
                 </div>)}

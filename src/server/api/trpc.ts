@@ -15,6 +15,8 @@ import { ZodError } from "zod";
 import { getServerAuthSession } from "@/server/auth";
 import { prisma } from "@/server/db";
 import { NextApiRequest, NextApiResponse } from "next";
+import { jwtVerify } from "jose";
+import { verifyAuth } from "@/lib/auth";
 
 /**
  * 1. CONTEXT
@@ -91,6 +93,23 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
+const isAdmin = t.middleware(async ({ctx, next}) => {
+  const {req} = ctx;
+  const token = req?.cookies['user-token'];
+
+  if(!token) {
+    throw new TRPCError({code: "UNAUTHORIZED", message: "Missing user token."})
+  }
+
+  const verifiedToken = await verifyAuth(token);
+
+  if (!verifiedToken) {
+    throw new TRPCError({code: "UNAUTHORIZED", message: "Invalid user token"});
+  }
+
+  return next();
+})
+
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
  *
@@ -113,6 +132,7 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+export const adminProcedure = t.procedure.use(isAdmin);
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
