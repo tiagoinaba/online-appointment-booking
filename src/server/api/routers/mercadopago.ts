@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 
 export const mercadopagoRouter = createTRPCRouter({
   createPreference: publicProcedure
-    .input(z.object({ date: z.date() }))
+    .input(z.object({ date: z.date(), adminId: z.string() }))
     .mutation(async ({ input }) => {
       try {
         const { data } = await axios.post(
@@ -16,7 +16,10 @@ export const mercadopagoRouter = createTRPCRouter({
               {
                 id: nanoid(),
                 title: "reserva",
-                description: input.date.toISOString(),
+                description: {
+                  date: input.date.toISOString(),
+                  adminId: input.adminId,
+                },
                 quantity: 1,
                 unit_price: 70,
               },
@@ -24,14 +27,14 @@ export const mercadopagoRouter = createTRPCRouter({
             auto_return: "approved",
             back_urls: {
               success:
-                "https://8662-2804-431-cffa-eecb-456c-f2f1-b04b-2b49.ngrok-free.app/callback",
+                "https://3044-2804-431-cffa-eecb-9820-4f6a-cef6-327a.ngrok-free.app/callback",
               pending:
-                "https://8662-2804-431-cffa-eecb-456c-f2f1-b04b-2b49.ngrok-free.app/callback",
+                "https://3044-2804-431-cffa-eecb-9820-4f6a-cef6-327a.ngrok-free.app/callback",
               failure:
-                "https://8662-2804-431-cffa-eecb-456c-f2f1-b04b-2b49.ngrok-free.app/callback",
+                "https://3044-2804-431-cffa-eecb-9820-4f6a-cef6-327a.ngrok-free.app/callback",
             },
             notification_url:
-              "https://8662-2804-431-cffa-eecb-456c-f2f1-b04b-2b49.ngrok-free.app/api/mercadopago",
+              "https://3044-2804-431-cffa-eecb-9820-4f6a-cef6-327a.ngrok-free.app/api/mercadopago",
           },
           {
             headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },

@@ -81,4 +81,16 @@ export const reservationRouter = createTRPCRouter({
         },
       });
     }),
+  getByDateAdmin: publicProcedure
+    .input(z.object({ date: z.date(), adminId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      input.date.setHours(0, 0, 0, 0);
+      const data = await ctx.prisma.reservation.findMany({
+        where: {
+          AND: [{ justDate: input.date }, { adminId: input.adminId }],
+        },
+      });
+
+      return data;
+    }),
 });
