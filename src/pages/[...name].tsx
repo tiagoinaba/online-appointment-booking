@@ -1,36 +1,32 @@
-import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
-import Link from "next/link";
+import DateTimePicker from "@/components/DateTimePicker";
+import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
-import { DateCalendar, StaticDatePicker } from "@mui/x-date-pickers";
+import { DateType, Inputs } from "@/utils/types";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { useEffect, useState } from "react";
-import { add, format, isEqual, parseISO } from "date-fns";
-import { RadioGroup, Radio } from "@mui/joy";
 import { Button } from "@mui/material";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { prisma } from "@/server/db";
-import { Toaster, toast } from "react-hot-toast";
-import DateTimePicker from "@/components/DateTimePicker";
-import { DateType } from "@/utils/types";
-import { useRouter } from "next/router";
 import {
   GetStaticPaths,
-  GetStaticProps,
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from "next";
-import { z } from "zod";
-import { Admin, PrismaClient } from "@prisma/client";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function Home({
   admin,
   notFound,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const utils = api.useContext();
+
+  const {} = useForm<Inputs>();
 
   const [date, setDate] = useState<DateType>({
     justDate: null,

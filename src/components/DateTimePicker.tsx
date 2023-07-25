@@ -25,7 +25,7 @@ export default function DateTimePicker({
   const [domLoaded, setDomLoaded] = useState(false);
 
   const { data, refetch } = api.reservation.getByDateAdmin.useQuery({
-    date: date.justDate ? date.justDate : new Date(),
+    date: date.justDate,
     adminId,
   });
 

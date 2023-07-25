@@ -1,14 +1,13 @@
+import { api } from "@/utils/api";
 import { now } from "@/utils/constants";
+import { Inputs } from "@/utils/types";
 import { Button, Input, InputLabel } from "@mui/material";
 import { parseISO } from "date-fns";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Toaster, toast } from "react-hot-toast";
-import { api } from "@/utils/api";
-import axios from "axios";
-import { Inputs } from "@/utils/types";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Toaster } from "react-hot-toast";
 
 export default function Booking({}) {
   const [dateTime, setDateTime] = useState<Date | null>(null);
@@ -21,7 +20,6 @@ export default function Booking({}) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     control,
   } = useForm<Inputs>();
