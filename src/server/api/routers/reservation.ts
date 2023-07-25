@@ -36,6 +36,8 @@ export const reservationRouter = createTRPCRouter({
       z.object({
         date: z.date(),
         name: z.string(),
+        paymentId: z.nullable(z.string()),
+        adminId: z.string(),
         email: z.string().email(),
       })
     )
@@ -50,8 +52,10 @@ export const reservationRouter = createTRPCRouter({
       if (!reservation) {
         await ctx.prisma.reservation.create({
           data: {
+            paymentIdMP: input.paymentId,
             name: input.name,
             email: input.email,
+            adminId: input.adminId,
             justDate,
             dateTime: input.date,
           },

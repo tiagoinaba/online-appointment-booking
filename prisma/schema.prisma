@@ -34,6 +34,7 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -42,6 +43,8 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model User {
@@ -54,6 +57,15 @@ model User {
     sessions      Session[]
 }
 
+model Admin {
+    id             String        @id @default(cuid())
+    name           String        @unique
+    email          String        @unique
+    password       String
+    requirePayment Boolean       @default(true)
+    Reservation    Reservation[]
+}
+
 model VerificationToken {
     identifier String
     token      String   @unique
@@ -63,27 +75,25 @@ model VerificationToken {
 }
 
 model Barber {
-    id   String @id @default(cuid())
-    name String
+    id           String        @id @default(cuid())
+    name         String
+    reservations Reservation[]
 }
 
 model Reservation {
-    id        String   @id @default(cuid())
-    name      String
-    email     String
-    justDate  DateTime
-    dateTime  DateTime
-    createdAt DateTime @updatedAt
-}
-
-model SpecificReservation {
-    id        String   @id @default(cuid())
-    barberId  String
-    name      String
-    email     String
-    justDate  DateTime
-    dateTime  DateTime
-    createdAt DateTime @updatedAt
+    id          String   @id @default(cuid())
+    admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+    adminId     String
+    barber      Barber?  @relation(fields: [barberId], references: [id], onDelete: Cascade)
+    barberId    String?
+    paymentIdMP String?
+    name        String
+    email       String
+    justDate    DateTime
+    dateTime    DateTime
+    createdAt   DateTime @updatedAt
 
     @@unique([dateTime, barberId])
+    @@index([barberId])
+    @@index([adminId])
 }
