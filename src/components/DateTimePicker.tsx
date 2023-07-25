@@ -13,17 +13,20 @@ interface DateTimePickerProps {
   };
   setDate: Dispatch<SetStateAction<DateType>>;
   setAnimate: Dispatch<SetStateAction<boolean>>;
+  adminId: string;
 }
 
 export default function DateTimePicker({
   date,
   setDate,
   setAnimate,
+  adminId,
 }: DateTimePickerProps) {
   const [domLoaded, setDomLoaded] = useState(false);
 
-  const { data, refetch } = api.reservation.getByDate.useQuery({
-    date: date.justDate,
+  const { data, refetch } = api.reservation.getByDateAdmin.useQuery({
+    date: date.justDate ? date.justDate : new Date(),
+    adminId,
   });
 
   useEffect(() => {

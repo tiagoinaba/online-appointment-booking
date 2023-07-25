@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 export default function Callback() {
   const [dateReserved, setDateReserved] = useState<Date | null>(null);
   const [reservationData, setReservationData] = useState<Inputs | null>(null);
+  const [adminId, setAdminId] = useState<string | null>(null);
 
   const {
     mutate: getPayment,
@@ -31,8 +32,10 @@ export default function Callback() {
 
   useEffect(() => {
     const data = localStorage.getItem("reservationInfo");
+    const adminId = localStorage.getItem("adminId");
     if (data) {
       setReservationData(JSON.parse(data));
+      setAdminId(adminId);
     }
   });
 
@@ -40,9 +43,13 @@ export default function Callback() {
     if (typeof paymentId === "string") {
       if (paymentData && reservationData) {
         const { name, email } = reservationData;
-        const dateString = paymentData.additional_info.items[0].description;
+        const description = JSON.parse(
+          paymentData.additional_info.items[0].description
+        );
+        const dateString = description.date;
+        const adminId = description.adminId;
         const date = parseISO(dateString);
-        createReservation({ date, name, email, paymentId: paymentId });
+        createReservation({ date, name, email, paymentId: paymentId, adminId });
         setDateReserved(date);
         return;
       }

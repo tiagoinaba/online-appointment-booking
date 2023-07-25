@@ -10,6 +10,8 @@ export async function middleware(req: NextRequest) {
       console.log(err);
     }));
 
+  console.log(req.nextUrl);
+
   if (req.url.includes("/login") && !verifiedToken) {
     return;
   }
@@ -23,6 +25,10 @@ export async function middleware(req: NextRequest) {
   }
 
   if (req.url.includes("/login") && verifiedToken) {
+    return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+  }
+
+  if (req.nextUrl.pathname === "/admin" && verifiedToken) {
     return NextResponse.redirect(new URL("/admin/dashboard", req.url));
   }
 

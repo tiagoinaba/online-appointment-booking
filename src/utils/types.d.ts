@@ -1,14 +1,14 @@
 declare global {
-    var id: string;
+  var id: string;
 }
 
 export type DateType = {
-    justDate: Date | null,
-    dateTime: Date | null,
-}
+  justDate: Date | null;
+  dateTime: Date | null;
+};
 
 export type Inputs = {
-    name: string,
-    email: string,
-    phone: string,
+  name: string;
+  email: string;
+  phone: string;
 };
