@@ -7,6 +7,7 @@ declare global {
 
 export const AdminPreferences = {
   requirePayment: true,
+  paymentValue: true,
 };
 
 export interface Urls {

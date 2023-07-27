@@ -46,7 +46,7 @@ export const reservationRouter = createTRPCRouter({
       justDate.setHours(0, 0, 0, 0);
 
       const reservation = await ctx.prisma.reservation.findFirst({
-        where: { dateTime: input.date },
+        where: { AND: [{ dateTime: input.date }, { adminId: input.adminId }] },
       });
 
       if (!reservation) {
@@ -94,5 +94,7 @@ export const reservationRouter = createTRPCRouter({
 
         return data;
       }
+
+      return null;
     }),
 });

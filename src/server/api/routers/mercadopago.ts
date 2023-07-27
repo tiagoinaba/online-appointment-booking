@@ -6,7 +6,13 @@ import { nanoid } from "nanoid";
 
 export const mercadopagoRouter = createTRPCRouter({
   createPreference: publicProcedure
-    .input(z.object({ date: z.date(), adminId: z.string() }))
+    .input(
+      z.object({
+        date: z.date(),
+        adminId: z.string(),
+        paymentValue: z.number(),
+      })
+    )
     .mutation(async ({ input }) => {
       try {
         const { data } = await axios.post(
@@ -21,7 +27,7 @@ export const mercadopagoRouter = createTRPCRouter({
                   adminId: input.adminId,
                 },
                 quantity: 1,
-                unit_price: 70,
+                unit_price: input.paymentValue,
               },
             ],
             auto_return: "approved",

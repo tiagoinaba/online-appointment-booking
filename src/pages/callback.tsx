@@ -1,5 +1,5 @@
 import { api } from "@/utils/api";
-import { Inputs } from "@/utils/types";
+import { AdminInfo, Inputs } from "@/utils/types";
 import { Button } from "@mui/material";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 export default function Callback() {
   const [dateReserved, setDateReserved] = useState<Date | null>(null);
   const [reservationData, setReservationData] = useState<Inputs | null>(null);
-  const [adminId, setAdminId] = useState<string | null>(null);
+  const [adminInfo, setAdminInfo] = useState<AdminInfo | null>(null);
 
   const {
     mutate: getPayment,
@@ -32,10 +32,12 @@ export default function Callback() {
 
   useEffect(() => {
     const data = localStorage.getItem("reservationInfo");
-    const adminId = localStorage.getItem("adminId");
+    const adminInfo = localStorage.getItem("adminInfo");
     if (data) {
       setReservationData(JSON.parse(data));
-      setAdminId(adminId);
+    }
+    if (adminInfo) {
+      setAdminInfo(JSON.parse(adminInfo));
     }
   });
 
@@ -61,12 +63,14 @@ export default function Callback() {
 
   return (
     <main className="relative flex h-screen items-center justify-center text-center">
-      <Button
-        href={"/"}
-        sx={{ position: "absolute", top: "1rem", left: "1rem" }}
-      >
-        Voltar para o início
-      </Button>
+      {adminInfo && (
+        <Button
+          href={`/${adminInfo.route!}`}
+          sx={{ position: "absolute", top: "1rem", left: "1rem" }}
+        >
+          Voltar para o início
+        </Button>
+      )}
       {paymentLoading || reservationLoading ? (
         <h1 className="text-3xl">Loading...</h1>
       ) : (

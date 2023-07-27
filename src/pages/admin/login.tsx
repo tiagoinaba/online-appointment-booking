@@ -81,7 +81,7 @@ export default function index() {
           href="/admin/signin"
           className="rounded-lg bg-teal-800 px-4 py-1 font-bold text-zinc-50"
         >
-          Sign-in
+          Criar conta
         </a>
         <Toaster position="bottom-center" />
       </main>

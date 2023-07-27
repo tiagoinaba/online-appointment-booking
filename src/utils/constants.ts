@@ -1,4 +1,6 @@
 export const now = new Date();
+export const today = new Date(new Date().setHours(0, 0, 0, 0));
+
 /*
     👉 Generate 2 MP users (one for seller and one for buyer)
         replace your country code curl command below
@@ -21,35 +23,35 @@ export const now = new Date();
 */
 
 export const seller = {
-    id: 1214402080,
-    nickname: 'TEST1XBKZ5RS',
-    password: 'ye2hcBRuh1',
-    site_status: 'active',
-    email: 'test_user_72008086@testuser.com'
-}
+  id: 1214402080,
+  nickname: "TEST1XBKZ5RS",
+  password: "ye2hcBRuh1",
+  site_status: "active",
+  email: "test_user_72008086@testuser.com",
+};
 
 export const customer = {
-    id: 1214401170,
-    nickname: 'TESTE3QU7FBP',
-    password: 'tj6AJCdqLU',
-    site_status: 'active',
-    email: 'test_user_81030439@testuser.com'
-}
+  id: 1214401170,
+  nickname: "TESTE3QU7FBP",
+  password: "tj6AJCdqLU",
+  site_status: "active",
+  email: "test_user_81030439@testuser.com",
+};
 
 export const cart = [
-    {
-        title: 'Colchón Matrimonial',
-        description: 'Colchón matrimonial Luuna, el mejor calificado de México.',
-        picture_url: 'http://www.myapp.com/myimage.jpg',
-        category_id: 'MX-LUU-COL-ORG-MATRI',
-        quantity: 1,
-        unit_price: 10
-    }
-]
+  {
+    title: "Colchón Matrimonial",
+    description: "Colchón matrimonial Luuna, el mejor calificado de México.",
+    picture_url: "http://www.myapp.com/myimage.jpg",
+    category_id: "MX-LUU-COL-ORG-MATRI",
+    quantity: 1,
+    unit_price: 10,
+  },
+];
 
 export const countryOpts = {
-    locale: 'pt-BR',
-    currency: 'BRL'
-}
+  locale: "pt-BR",
+  currency: "BRL",
+};
 
-export const domain = 'https://mercadopago-integration.vercel.app'
+export const domain = "https://mercadopago-integration.vercel.app";

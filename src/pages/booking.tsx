@@ -1,3 +1,4 @@
+import BookingForm from "@/components/BookingForm";
 import { api } from "@/utils/api";
 import { now } from "@/utils/constants";
 import { Inputs } from "@/utils/types";
@@ -17,28 +18,22 @@ export default function Booking({}) {
 
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    control,
-  } = useForm<Inputs>();
-
   const Wallet = dynamic(() => import("@mercadopago/sdk-react/bricks/wallet"), {
     ssr: false,
   });
 
   useEffect(() => {
     const selectedTime = localStorage.getItem("dateTime");
-    const adminId = localStorage.getItem("adminId");
+    const adminInfo = localStorage.getItem("adminInfo");
 
     if (!selectedTime) router.back();
     else {
       const date = parseISO(selectedTime);
 
       if (date < now) router.back();
-      else if (date && adminId) {
-        createPayment({ date, adminId });
+      else if (date && adminInfo) {
+        const { id: adminId, paymentValue } = JSON.parse(adminInfo);
+        createPayment({ date, adminId, paymentValue });
         setDateTime(date);
       }
     }
@@ -55,26 +50,7 @@ export default function Booking({}) {
   return (
     <>
       <main className="flex h-screen flex-col items-center justify-center gap-8">
-        <form
-          className="flex flex-col items-center justify-center"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <InputLabel>Nome da reserva</InputLabel>
-          <Input {...register("name", { required: true })} />
-          {errors.name && (
-            <span className="text-red-500">Este campo é obrigatório</span>
-          )}
-
-          <InputLabel className="mt-6">Email</InputLabel>
-          <Input {...register("email", { required: true })} />
-          {errors.email && (
-            <span className="text-red-500">Este campo é obrigatório</span>
-          )}
-
-          <Button variant="outlined" sx={{ marginTop: "1.5rem" }} type="submit">
-            Submit
-          </Button>
-        </form>
+        <BookingForm onSubmit={onSubmit} />
         {paymentStart && (
           <div id="wallet_container">
             {dateTime && <Wallet initialization={{ preferenceId: data }} />}

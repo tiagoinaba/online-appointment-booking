@@ -10,8 +10,6 @@ export async function middleware(req: NextRequest) {
       console.log(err);
     }));
 
-  console.log(req.nextUrl);
-
   if (req.url.includes("/login") && !verifiedToken) {
     return;
   }

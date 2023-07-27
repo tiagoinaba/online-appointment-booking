@@ -1,3 +1,4 @@
+import BookingForm from "@/components/BookingForm";
 import DateTimePicker from "@/components/DateTimePicker";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
@@ -9,6 +10,7 @@ import "@fontsource/roboto/700.css";
 import { Button } from "@mui/material";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { SubmitHandler } from "react-hook-form";
 import {
   GetStaticPaths,
   GetStaticPropsContext,
@@ -17,16 +19,14 @@ import {
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
+import { now, today } from "@/utils/constants";
 
 export default function Home({
   admin,
   notFound,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const utils = api.useContext();
-
-  const {} = useForm<Inputs>();
 
   const [date, setDate] = useState<DateType>({
     justDate: null,
@@ -40,12 +40,23 @@ export default function Home({
       onSuccess: () => {
         toast.success("Horário reservado com sucesso!");
         utils.reservation.getAll.invalidate();
-        utils.reservation.getByDate.invalidate();
+        utils.reservation.getByDateAdmin.invalidate();
+        localStorage.setItem("adminInfo", JSON.stringify(admin));
+        router.push("/success");
       },
       onError: (err) => {
         toast.error(err.message);
       },
     });
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    createReservation({
+      adminId: admin!.id,
+      date: date!.dateTime!,
+      paymentId: null,
+      ...data,
+    });
+  };
 
   return (
     <>
@@ -55,13 +66,17 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main
-        className={`flex min-h-screen w-screen flex-col items-center justify-center overflow-y-scroll`}
+        className={`flex min-h-screen flex-col items-center overflow-x-hidden p-10`}
       >
         {!admin ? (
           <h1 className="text-2xl font-bold">404 - page not found</h1>
         ) : (
           <div
-            className={`flex min-h-screen w-screen flex-col items-center justify-center overflow-y-scroll`}
+            className={`relative flex flex-col items-center justify-center ${
+              !admin.requirePayment
+                ? "-translate-x-1/2 rounded-l-3xl"
+                : "rounded-3xl"
+            } bg-slate-200 p-8`}
           >
             <h2
               onAnimationEnd={() => setAnimate(false)}
@@ -80,21 +95,36 @@ export default function Home({
               setDate={setDate}
               adminId={admin?.id}
             />
-
-            <Button
-              className="mt-8"
-              variant="contained"
-              sx={{ color: "rgb(21, 101, 192)", "&:hover": { color: "white" } }}
-              disabled={(date.dateTime ? false : true) || isCreating}
-              onClick={() => {
-                localStorage.setItem("dateTime", date.dateTime!.toISOString());
-                if (admin) localStorage.setItem("adminId", admin.id);
-                router.push("/booking");
-                // createReservation({ date: date.dateTime! })
-              }}
-            >
-              {isCreating ? "Criando..." : "Reservar"}
-            </Button>
+            {admin.requirePayment ? (
+              <Button
+                className="mt-8"
+                variant="contained"
+                sx={{
+                  color: "rgb(21, 101, 192)",
+                  "&:hover": { color: "white" },
+                }}
+                disabled={(date.dateTime ? false : true) || isCreating}
+                onClick={() => {
+                  localStorage.setItem(
+                    "dateTime",
+                    date.dateTime!.toISOString()
+                  );
+                  if (admin)
+                    localStorage.setItem("adminInfo", JSON.stringify(admin));
+                  router.push("/booking");
+                  // createReservation({ date: date.dateTime! })
+                }}
+              >
+                {isCreating ? "Criando..." : "Reservar"}
+              </Button>
+            ) : (
+              <div className="absolute right-0 flex h-full translate-x-full flex-col items-center justify-center rounded-r-3xl bg-slate-300 p-6 px-20">
+                <BookingForm
+                  onSubmit={onSubmit}
+                  disabled={date.dateTime ? false : true}
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -109,9 +139,19 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     const { params } = context;
     if (params && params.name) {
       const admin = await prisma.admin.findFirst({
-        where: { name: params.name[0] },
+        where: { route: params.name[0] },
+        select: {
+          id: true,
+          name: true,
+          route: true,
+          requirePayment: true,
+          paymentValue: true,
+          description: true,
+        },
       });
-      if (admin) return { props: { admin } };
+      if (admin) {
+        return { props: { admin } };
+      }
       throw new Error("Not found");
     }
   } catch (err) {

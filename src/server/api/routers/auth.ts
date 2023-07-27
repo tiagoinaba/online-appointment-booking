@@ -59,7 +59,12 @@ export const authRouter = createTRPCRouter({
   createAdmin: publicProcedure
     .input(
       z.object({
-        name: z.string(),
+        name: z
+          .string()
+          .regex(
+            /[a-zA-Z0-9 ]+/g,
+            "Somente letras, números e espaços permitidos."
+          ),
         email: z.string().email(),
         password: z.string(),
       })
@@ -82,9 +87,11 @@ export const authRouter = createTRPCRouter({
 
       bcrypt.hash(input.password, 10, async (err, hash) => {
         if (hash) {
+          const route = input.name.trim().toLowerCase().split(" ").join("-");
           await ctx.prisma.admin.create({
             data: {
-              name: input.name,
+              name: input.name.trim(),
+              route,
               email: input.email,
               password: hash,
             },
@@ -99,17 +106,20 @@ export const authRouter = createTRPCRouter({
   updatePreferences: adminProcedure
     .input(
       z.object({
+        name: z.string(),
         requirePayment: z.boolean(),
+        paymentValue: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { requirePayment } = input;
+      const { requirePayment, paymentValue } = input;
       await ctx.prisma.admin.update({
         where: {
-          name: "Tiago",
+          name: input.name,
         },
         data: {
           requirePayment,
+          paymentValue,
         },
       });
     }),

@@ -10,5 +10,11 @@ export type DateType = {
 export type Inputs = {
   name: string;
   email: string;
-  phone: string;
+};
+
+export type AdminInfo = {
+  id: string;
+  requirePayment: boolean;
+  name: string;
+  route: string;
 };
