@@ -53,7 +53,7 @@ export default function signin() {
           className="flex max-w-xs flex-col items-center gap-4"
         >
           <div className="flex flex-col gap-1">
-            <label htmlFor="name">Name</label>
+            <label htmlFor="name">Nome</label>
             <input
               type="name"
               className="rounded-md px-3 py-1"
@@ -86,6 +86,14 @@ export default function signin() {
             Sign in
           </button>
         </form>
+        <button
+          className="rounded-lg bg-teal-800 px-4 py-1 font-bold text-zinc-50"
+          onClick={() => {
+            router.push("/admin/login");
+          }}
+        >
+          Ir para login
+        </button>
         <Toaster position="bottom-center" />
       </main>
     </>

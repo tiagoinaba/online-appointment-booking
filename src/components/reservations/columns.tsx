@@ -15,7 +15,7 @@ import { api } from "@/utils/api";
 
 export const Reservation = z.object({
   id: z.string(),
-  paymentIdMP: z.string(),
+  paymentIdMP: z.nullable(z.string()),
   name: z.string(),
   email: z.string(),
   justDate: z.date(),
@@ -67,7 +67,7 @@ export const columns: ColumnDef<ReservationType>[] = [
           variant={"default"}
           onClick={() => {
             deleteReservation({ id });
-            createReimbursement({ id: paymentIdMP });
+            if (paymentIdMP) createReimbursement({ id: paymentIdMP });
           }}
         >
           Delete

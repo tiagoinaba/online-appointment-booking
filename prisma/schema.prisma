@@ -60,9 +60,12 @@ model User {
 model Admin {
     id             String        @id @default(cuid())
     name           String        @unique
+    route          String
     email          String        @unique
     password       String
     requirePayment Boolean       @default(true)
+    paymentValue   Float         @default(10.00)
+    description    String        @default("Reserve seu horário já!")
     Reservation    Reservation[]
 }
 
