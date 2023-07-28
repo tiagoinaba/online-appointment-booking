@@ -67,6 +67,18 @@ model Admin {
     paymentValue   Float         @default(10.00)
     description    String        @default("Reserve seu horário já!")
     Reservation    Reservation[]
+    AdminConfig    AdminConfig?
+}
+
+model AdminConfig {
+    id             String  @id @default(cuid())
+    admin          Admin   @relation(fields: [adminId], references: [id])
+    adminId        String  @unique
+    requirePayment Boolean @default(true)
+    paymentValue   Float   @default(10.00)
+    description    String  @default("Reserve seu horário já!")
+
+    @@index([adminId])
 }
 
 model VerificationToken {

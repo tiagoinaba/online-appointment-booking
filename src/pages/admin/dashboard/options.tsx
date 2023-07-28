@@ -38,8 +38,10 @@ export default function options({
     formState: { errors },
   } = useForm<FormType>({
     defaultValues: {
-      requirePayment: adminPreferences?.requirePayment,
-      paymentValue: adminPreferences?.paymentValue,
+      requirePayment: adminPreferences?.AdminConfig?.requirePayment
+        ? adminPreferences.AdminConfig.requirePayment
+        : true,
+      paymentValue: adminPreferences?.AdminConfig?.paymentValue,
     },
   });
 
@@ -49,7 +51,7 @@ export default function options({
 
   const onSubmit: SubmitHandler<FormType> = (data) => {
     data.paymentValue = parseFloat(data.paymentValue.toFixed(2));
-    updatePreferences({ ...data, name: adminPreferences?.name! });
+    updatePreferences({ ...data, adminId: adminPreferences?.id! });
   };
 
   return (
@@ -124,8 +126,15 @@ export const getServerSideProps = async ({
         where: {
           name: adminName,
         },
-        select: { ...AdminPreferences, name: true },
+        select: {
+          ...AdminPreferences,
+          id: true,
+          name: true,
+          AdminConfig: true,
+        },
       });
+
+      console.log(adminConfig);
 
       return {
         props: {

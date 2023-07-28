@@ -33,14 +33,14 @@ export const mercadopagoRouter = createTRPCRouter({
             auto_return: "approved",
             back_urls: {
               success:
-                "https://3044-2804-431-cffa-eecb-9820-4f6a-cef6-327a.ngrok-free.app/callback",
+                "https://090d-2804-431-cffb-9300-19e8-bfb8-5405-23e7.ngrok-free.app/callback",
               pending:
-                "https://3044-2804-431-cffa-eecb-9820-4f6a-cef6-327a.ngrok-free.app/callback",
+                "https://090d-2804-431-cffb-9300-19e8-bfb8-5405-23e7.ngrok-free.app/callback",
               failure:
-                "https://3044-2804-431-cffa-eecb-9820-4f6a-cef6-327a.ngrok-free.app/callback",
+                "https://090d-2804-431-cffb-9300-19e8-bfb8-5405-23e7.ngrok-free.app/callback",
             },
             notification_url:
-              "https://3044-2804-431-cffa-eecb-9820-4f6a-cef6-327a.ngrok-free.app/api/mercadopago",
+              "https://090d-2804-431-cffb-9300-19e8-bfb8-5405-23e7.ngrok-free.app/api/mercadopago",
           },
           {
             headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },
