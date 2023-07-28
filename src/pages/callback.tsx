@@ -39,7 +39,7 @@ export default function Callback() {
     if (adminInfo) {
       setAdminInfo(JSON.parse(adminInfo));
     }
-  });
+  }, []);
 
   useEffect(() => {
     if (typeof paymentId === "string") {

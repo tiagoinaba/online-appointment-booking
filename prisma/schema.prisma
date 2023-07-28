@@ -68,15 +68,15 @@ model Admin {
 }
 
 model AdminConfig {
-    id             String  @id @default(cuid())
-    admin          Admin   @relation(fields: [adminId], references: [id])
-    adminId        String  @unique
-    requirePayment Boolean @default(true)
-    paymentValue   Float   @default(10.00)
-    description    String  @default("Reserve seu horário já!")
-    openingHours   Json    @default("{ \"hours\": \"10\" }")
-    closingHours   Json    @default("{ \"hours\": \"17\" }")
-    interval       Json    @default("{ \"minutes\": \"30\" }")
+    id             String   @id @default(cuid())
+    admin          Admin    @relation(fields: [adminId], references: [id])
+    adminId        String   @unique
+    requirePayment Boolean  @default(true)
+    paymentValue   Float    @default(10.00)
+    description    String   @default("Reserve seu horário já!")
+    openingHours   DateTime
+    closingHours   DateTime
+    interval       DateTime
 
     @@index([adminId])
 }

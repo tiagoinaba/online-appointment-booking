@@ -101,6 +101,9 @@ export const authRouter = createTRPCRouter({
           await ctx.prisma.adminConfig.create({
             data: {
               adminId: admin.id,
+              openingHours: new Date(new Date().setHours(10, 0, 0, 0)),
+              closingHours: new Date(new Date().setHours(17, 0, 0, 0)),
+              interval: new Date(new Date().setHours(0, 30, 0, 0)),
             },
           });
         }

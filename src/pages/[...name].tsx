@@ -10,7 +10,6 @@ import "@fontsource/roboto/700.css";
 import { Button } from "@mui/material";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { SubmitHandler } from "react-hook-form";
 import {
   GetStaticPaths,
   GetStaticPropsContext,
@@ -19,9 +18,8 @@ import {
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { SubmitHandler } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
-import { now, today } from "@/utils/constants";
-import { Prisma } from "@prisma/client";
 
 export default function Home({
   admin,
@@ -96,17 +94,21 @@ export default function Home({
               setDate={setDate}
               adminId={admin?.id}
               opening={{
-                openingHours: admin.AdminConfig?.openingHours?.valueOf() as {
-                  hours: number;
-                  minutes?: number;
+                openingHours: {
+                  hours: new Date(admin.AdminConfig?.openingHours!).getHours()!,
+                  minutes: new Date(
+                    admin.AdminConfig?.openingHours!
+                  ).getMinutes(),
                 },
-                closingHours: admin.AdminConfig?.closingHours?.valueOf() as {
-                  hours: number;
-                  minutes?: number;
+                closingHours: {
+                  hours: new Date(admin.AdminConfig?.closingHours!).getHours()!,
+                  minutes: new Date(
+                    admin.AdminConfig?.closingHours!
+                  ).getMinutes(),
                 },
-                interval: admin.AdminConfig?.interval?.valueOf() as {
-                  hours?: number;
-                  minutes?: number;
+                interval: {
+                  hours: new Date(admin.AdminConfig?.interval!).getHours(),
+                  minutes: new Date(admin.AdminConfig?.interval!).getMinutes(),
                 },
               }}
             />
@@ -153,7 +155,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   try {
     const { params } = context;
     if (params && params.name) {
-      const admin = await prisma.admin.findFirst({
+      let admin = await prisma.admin.findFirst({
         where: { route: params.name[0] },
         select: {
           id: true,
@@ -163,6 +165,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
         },
       });
       if (admin) {
+        admin = JSON.parse(JSON.stringify(admin));
         return { props: { admin } };
       }
       throw new Error("Not found");
