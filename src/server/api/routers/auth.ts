@@ -7,6 +7,7 @@ import { nanoid } from "nanoid";
 import { getJwtSecretKey } from "@/lib/auth";
 import cookie from "cookie";
 import bcrypt from "bcrypt";
+import { ZodForm } from "@/pages/admin/dashboard/options";
 
 export const authRouter = createTRPCRouter({
   login: publicProcedure
@@ -113,20 +114,16 @@ export const authRouter = createTRPCRouter({
     .input(
       z.object({
         adminId: z.string(),
-        requirePayment: z.boolean(),
-        paymentValue: z.number(),
+        config: ZodForm,
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { requirePayment, paymentValue } = input;
-
       await ctx.prisma.adminConfig.update({
         where: {
           adminId: input.adminId,
         },
         data: {
-          requirePayment,
-          paymentValue,
+          ...input.config,
         },
       });
     }),

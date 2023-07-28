@@ -58,16 +58,13 @@ model User {
 }
 
 model Admin {
-    id             String        @id @default(cuid())
-    name           String        @unique
-    route          String
-    email          String        @unique
-    password       String
-    requirePayment Boolean       @default(true)
-    paymentValue   Float         @default(10.00)
-    description    String        @default("Reserve seu horário já!")
-    Reservation    Reservation[]
-    AdminConfig    AdminConfig?
+    id          String        @id @default(cuid())
+    name        String        @unique
+    route       String
+    email       String        @unique
+    password    String
+    Reservation Reservation[]
+    AdminConfig AdminConfig?
 }
 
 model AdminConfig {
@@ -77,6 +74,9 @@ model AdminConfig {
     requirePayment Boolean @default(true)
     paymentValue   Float   @default(10.00)
     description    String  @default("Reserve seu horário já!")
+    openingHours   Json    @default("{ \"hours\": \"10\" }")
+    closingHours   Json    @default("{ \"hours\": \"17\" }")
+    interval       Json    @default("{ \"minutes\": \"30\" }")
 
     @@index([adminId])
 }

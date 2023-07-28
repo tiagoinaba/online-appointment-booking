@@ -32,8 +32,12 @@ export default function Booking({}) {
 
       if (date < now) router.back();
       else if (date && adminInfo) {
-        const { id: adminId, paymentValue } = JSON.parse(adminInfo);
-        createPayment({ date, adminId, paymentValue });
+        const { id: adminId, AdminConfig } = JSON.parse(adminInfo);
+        createPayment({
+          date,
+          adminId,
+          paymentValue: AdminConfig.paymentValue,
+        });
         setDateTime(date);
       }
     }

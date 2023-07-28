@@ -1,22 +1,24 @@
 import { prisma } from "@/server/db";
-import { AdminPreferences } from "@/types";
 import { api } from "@/utils/api";
 import { Switch } from "@mui/joy";
-import { Button, Input } from "@mui/material";
+import { Button, Input, TextField } from "@mui/material";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
+import { z } from "zod";
 import { Label } from "~/components/ui/label";
 
-type FormType = {
-  requirePayment: boolean;
-  paymentValue: number;
-};
+export const ZodForm = z.object({
+  requirePayment: z.boolean(),
+  paymentValue: z.number(),
+  description: z.string(),
+});
+
+type FormType = z.infer<typeof ZodForm>;
 
 export default function options({
-  adminPreferences,
+  admin,
   notFound,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { mutate: updatePreferences } = api.auth.updatePreferences.useMutation({
@@ -38,10 +40,11 @@ export default function options({
     formState: { errors },
   } = useForm<FormType>({
     defaultValues: {
-      requirePayment: adminPreferences?.AdminConfig?.requirePayment
-        ? adminPreferences.AdminConfig.requirePayment
+      requirePayment: admin?.AdminConfig?.requirePayment
+        ? admin.AdminConfig.requirePayment
         : true,
-      paymentValue: adminPreferences?.AdminConfig?.paymentValue,
+      paymentValue: admin?.AdminConfig?.paymentValue,
+      description: admin?.AdminConfig?.description,
     },
   });
 
@@ -51,7 +54,8 @@ export default function options({
 
   const onSubmit: SubmitHandler<FormType> = (data) => {
     data.paymentValue = parseFloat(data.paymentValue.toFixed(2));
-    updatePreferences({ ...data, adminId: adminPreferences?.id! });
+    const config = { ...data };
+    updatePreferences({ config, adminId: admin?.id! });
   };
 
   return (
@@ -76,6 +80,9 @@ export default function options({
               className="flex flex-col gap-4"
             >
               <div className="flex items-center gap-4">
+                <Label htmlFor="requirePayment">
+                  Requerer pagamento na reserva?
+                </Label>
                 <Controller
                   name="requirePayment"
                   control={control}
@@ -87,11 +94,10 @@ export default function options({
                     />
                   )}
                 />
-                <Label htmlFor="requirePayment">
-                  Requerer pagamento na reserva?
-                </Label>
               </div>
               <div className="flex items-center gap-4">
+                <Label htmlFor="paymentValue">Preço</Label>
+
                 <span>R$</span>
                 <Input
                   type="number"
@@ -101,7 +107,10 @@ export default function options({
                     valueAsNumber: true,
                   })}
                 />
-                <Label htmlFor="paymentValue">Preço</Label>
+              </div>
+              <div className="flex flex-col justify-center gap-4">
+                <Label htmlFor="paymentValue">Descrição</Label>
+                <TextField multiline {...register("description")} />
               </div>
               <button type="submit">Salvar</button>
             </form>
@@ -122,23 +131,20 @@ export const getServerSideProps = async ({
     const adminName = req.cookies["admin-name"];
 
     if (adminName) {
-      const adminConfig = await prisma.admin.findUnique({
+      const admin = await prisma.admin.findUnique({
         where: {
           name: adminName,
         },
         select: {
-          ...AdminPreferences,
           id: true,
           name: true,
           AdminConfig: true,
         },
       });
 
-      console.log(adminConfig);
-
       return {
         props: {
-          adminPreferences: adminConfig,
+          admin: admin,
         },
       };
     }

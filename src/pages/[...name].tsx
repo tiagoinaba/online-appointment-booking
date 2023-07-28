@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { now, today } from "@/utils/constants";
+import { Prisma } from "@prisma/client";
 
 export default function Home({
   admin,
@@ -73,7 +74,7 @@ export default function Home({
         ) : (
           <div
             className={`relative flex flex-col items-center justify-center ${
-              !admin.requirePayment
+              !admin.AdminConfig?.requirePayment
                 ? "-translate-x-1/2 rounded-l-3xl"
                 : "rounded-3xl"
             } bg-slate-200 p-8`}
@@ -94,8 +95,22 @@ export default function Home({
               setAnimate={setAnimate}
               setDate={setDate}
               adminId={admin?.id}
+              opening={{
+                openingHours: admin.AdminConfig?.openingHours?.valueOf() as {
+                  hours: number;
+                  minutes?: number;
+                },
+                closingHours: admin.AdminConfig?.closingHours?.valueOf() as {
+                  hours: number;
+                  minutes?: number;
+                },
+                interval: admin.AdminConfig?.interval?.valueOf() as {
+                  hours?: number;
+                  minutes?: number;
+                },
+              }}
             />
-            {admin.requirePayment ? (
+            {admin.AdminConfig?.requirePayment ? (
               <Button
                 className="mt-8"
                 variant="contained"
@@ -144,9 +159,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
           id: true,
           name: true,
           route: true,
-          requirePayment: true,
-          paymentValue: true,
-          description: true,
+          AdminConfig: true,
         },
       });
       if (admin) {

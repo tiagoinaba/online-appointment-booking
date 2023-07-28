@@ -14,6 +14,11 @@ interface DateTimePickerProps {
   setDate: Dispatch<SetStateAction<DateType>>;
   setAnimate: Dispatch<SetStateAction<boolean>>;
   adminId: string;
+  opening: {
+    openingHours: { hours: number; minutes?: number };
+    closingHours: { hours: number; minutes?: number };
+    interval: { hours?: number; minutes?: number };
+  };
 }
 
 export default function DateTimePicker({
@@ -21,6 +26,7 @@ export default function DateTimePicker({
   setDate,
   setAnimate,
   adminId,
+  opening,
 }: DateTimePickerProps) {
   const [domLoaded, setDomLoaded] = useState(false);
 
@@ -34,9 +40,9 @@ export default function DateTimePicker({
   }, [date.justDate]);
 
   const getTimes = () => {
-    const begin = add(date.justDate!, { hours: 9 });
-    const end = add(date.justDate!, { hours: 17 });
-    const increments = { minutes: 30 };
+    const begin = add(date.justDate!, opening.openingHours);
+    const end = add(date.justDate!, opening.closingHours);
+    const increments = opening.interval;
 
     const times = [];
 
