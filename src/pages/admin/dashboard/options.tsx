@@ -1,10 +1,13 @@
+import NotFound from "@/components/NotFound";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { Switch } from "@mui/joy";
 import { Button, Input, TextField } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers";
+import { router } from "@trpc/server";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
@@ -25,6 +28,8 @@ export default function options({
   admin,
   notFound,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const router = useRouter();
+
   const { mutate: updatePreferences } = api.auth.updatePreferences.useMutation({
     onSuccess: () => {
       toast.success("Configurações atualizadas com sucesso!");
@@ -34,12 +39,16 @@ export default function options({
       toast.error(err.message);
     },
   });
+  const { mutate: logout } = api.auth.logout.useMutation({
+    onSuccess: () => {
+      router.push("/admin");
+    },
+  });
 
   const {
     register,
     handleSubmit,
     control,
-    getValues,
     watch,
     formState: { errors },
   } = useForm<FormType>({
@@ -58,6 +67,7 @@ export default function options({
   const onSubmit: SubmitHandler<FormType> = (data) => {
     data.paymentValue = parseFloat(data.paymentValue.toFixed(2));
     const config = { ...data };
+    console.log(typeof data.closingHours);
     updatePreferences({
       config: {
         ...config,
@@ -82,7 +92,7 @@ export default function options({
           Voltar
         </Button>
         {notFound ? (
-          <span>Página não encontrada. Volte novamente mais tarde.</span>
+          <NotFound />
         ) : (
           <div className="flex flex-col gap-6">
             <span className="text-2xl font-bold">Configurações</span>
@@ -192,13 +202,15 @@ export const getServerSideProps = async ({
         },
       });
 
-      admin = JSON.parse(JSON.stringify(admin));
+      if (admin) {
+        admin = JSON.parse(JSON.stringify(admin));
 
-      return {
-        props: {
-          admin: admin,
-        },
-      };
+        return {
+          props: {
+            admin: admin,
+          },
+        };
+      }
     }
 
     throw new Error("Not found");

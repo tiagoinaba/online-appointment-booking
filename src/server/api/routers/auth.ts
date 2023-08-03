@@ -8,6 +8,7 @@ import { getJwtSecretKey } from "@/lib/auth";
 import cookie from "cookie";
 import bcrypt from "bcrypt";
 import { ZodForm } from "@/pages/admin/dashboard/options";
+import { deleteCookie } from "cookies-next";
 
 export const authRouter = createTRPCRouter({
   login: publicProcedure
@@ -130,4 +131,10 @@ export const authRouter = createTRPCRouter({
         },
       });
     }),
+  logout: adminProcedure.mutation(({ ctx: { req, res } }) => {
+    if (req && res) {
+      deleteCookie("user-token", { req, res });
+      deleteCookie("admin-name", { req, res });
+    }
+  }),
 });

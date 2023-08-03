@@ -40,6 +40,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cookie": "^0.5.0",
+    "cookies-next": "^2.1.2",
     "date-fns": "^2.30.0",
     "http": "^0.0.1-security",
     "jose": "^4.14.4",

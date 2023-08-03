@@ -4,6 +4,8 @@ import { TRPCError } from "@trpc/server";
 import { NextResponse } from "next/server";
 import { now } from "@/utils/constants";
 import { sub } from "date-fns";
+import { GetServerSidePropsContext } from "next";
+import { prisma } from "@/server/db";
 
 export const reservationRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -95,6 +97,12 @@ export const reservationRouter = createTRPCRouter({
         return data;
       }
 
-      return null;
+      const data = await ctx.prisma.reservation.findMany({
+        where: {
+          adminId: input.adminId,
+        },
+      });
+
+      return data;
     }),
 });
