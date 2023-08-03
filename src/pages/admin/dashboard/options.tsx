@@ -20,6 +20,7 @@ export const ZodForm = z.object({
   openingHours: z.date(),
   closingHours: z.date(),
   interval: z.date(),
+  multipleServices: z.boolean(),
 });
 
 type FormType = z.infer<typeof ZodForm>;
@@ -61,6 +62,7 @@ export default function options({
       openingHours: admin?.AdminConfig?.openingHours,
       closingHours: admin?.AdminConfig?.closingHours,
       interval: admin?.AdminConfig?.interval,
+      multipleServices: admin?.AdminConfig?.multipleServices,
     },
   });
 
@@ -100,7 +102,7 @@ export default function options({
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col gap-4"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between">
                 <Label htmlFor="requirePayment">
                   Requerer pagamento na reserva?
                 </Label>
@@ -110,6 +112,22 @@ export default function options({
                   render={({ field }) => (
                     <Switch
                       id="my-switch"
+                      onChange={field.onChange}
+                      checked={field.value}
+                    />
+                  )}
+                />
+              </div>
+              <div className="flex items-center justify-between gap-8">
+                <Label htmlFor="multipleServices">
+                  Gostaria de oferecer múltiplos serviços?
+                </Label>
+                <Controller
+                  name="multipleServices"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      id="multipleServices"
                       onChange={field.onChange}
                       checked={field.value}
                     />
@@ -134,7 +152,7 @@ export default function options({
                 <TextField multiline {...register("description")} />
               </div>
               <div className="flex flex-col justify-center gap-4">
-                <Label htmlFor="paymentValue">Horários</Label>
+                <Label htmlFor="horarios">Horários</Label>
                 <Controller
                   name="openingHours"
                   control={control}

@@ -137,4 +137,17 @@ export const authRouter = createTRPCRouter({
       deleteCookie("admin-name", { req, res });
     }
   }),
+  setMultipleServices: adminProcedure
+    .input(z.object({ adminId: z.string(), multipleServices: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const { adminId, multipleServices } = input;
+      await ctx.prisma.adminConfig.update({
+        where: {
+          adminId,
+        },
+        data: {
+          multipleServices,
+        },
+      });
+    }),
 });

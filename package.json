@@ -35,6 +35,7 @@
     "@trpc/react-query": "^10.26.0",
     "@trpc/server": "^10.26.0",
     "@types/mercadopago": "^1.5.8",
+    "@uploadthing/react": "^5.2.0",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "class-variance-authority": "^0.7.0",
@@ -51,6 +52,7 @@
     "next-auth": "^4.22.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.45.2",
     "react-hot-toast": "^2.4.1",
     "react-qr-code": "^2.0.11",
@@ -58,6 +60,7 @@
     "superjson": "1.12.2",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.6",
+    "uploadthing": "^5.2.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {

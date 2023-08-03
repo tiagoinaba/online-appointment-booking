@@ -65,18 +65,20 @@ model Admin {
     password    String
     Reservation Reservation[]
     AdminConfig AdminConfig?
+    Service     Service[]
 }
 
 model AdminConfig {
-    id             String   @id @default(cuid())
-    admin          Admin    @relation(fields: [adminId], references: [id])
-    adminId        String   @unique
-    requirePayment Boolean  @default(true)
-    paymentValue   Float    @default(10.00)
-    description    String   @default("Reserve seu horário já!")
-    openingHours   DateTime
-    closingHours   DateTime
-    interval       DateTime
+    id               String   @id @default(cuid())
+    admin            Admin    @relation(fields: [adminId], references: [id])
+    adminId          String   @unique
+    requirePayment   Boolean  @default(true)
+    paymentValue     Float    @default(10.00)
+    description      String   @default("Reserve seu horário já!")
+    openingHours     DateTime
+    closingHours     DateTime
+    interval         DateTime
+    multipleServices Boolean  @default(false)
 
     @@index([adminId])
 }
@@ -89,18 +91,23 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model Barber {
+model Service {
     id           String        @id @default(cuid())
+    adminId      String
+    admin        Admin         @relation(fields: [adminId], references: [id], onDelete: Cascade)
     name         String
     reservations Reservation[]
+
+    @@unique([adminId, name])
+    @@index([adminId])
 }
 
 model Reservation {
     id          String   @id @default(cuid())
     admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
     adminId     String
-    barber      Barber?  @relation(fields: [barberId], references: [id], onDelete: Cascade)
-    barberId    String?
+    service     Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+    serviceId   String?
     paymentIdMP String?
     name        String
     email       String
@@ -108,7 +115,7 @@ model Reservation {
     dateTime    DateTime
     createdAt   DateTime @updatedAt
 
-    @@unique([dateTime, barberId])
-    @@index([barberId])
+    @@unique([dateTime, serviceId])
+    @@index([serviceId])
     @@index([adminId])
 }
