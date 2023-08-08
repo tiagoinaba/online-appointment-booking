@@ -1,13 +1,15 @@
 import AdminBackButton from "@/components/AdminBackButton";
+import FileDropzone from "@/components/FileDropzone";
 import ServicesCarousel from "@/components/ServicesCarousel";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
-import { Button, Input, Link, Switch } from "@mui/material";
-import { GetResult } from "@prisma/client/runtime/library";
+import { useUploadThing } from "@/utils/uploadthing";
+import { Button, Input, Link } from "@mui/material";
+import "@uploadthing/react/styles.css";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import React, { useState } from "react";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
@@ -43,12 +45,43 @@ export default function Services({
 
   const [modal, setModal] = useState<boolean>(false);
 
-  const { register, control, handleSubmit } = useForm<ServiceFormType>();
+  const [file, setFile] = useState<File[]>([]);
+  const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
+    onClientUploadComplete: () => {
+      setFile([]);
+      toast.success("Uploaded successfully!");
+    },
+    onUploadError: () => {
+      toast.error("Something went wrong!");
+    },
+  });
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { isDirty, isValid },
+  } = useForm<ServiceFormType>();
 
   const utils = api.useContext();
 
-  const onSubmit: SubmitHandler<ServiceFormType> = (data) => {
-    createService({ data, adminId: admin!.id });
+  const onSubmit: SubmitHandler<ServiceFormType> = async (data) => {
+    if (file) {
+      const fileInfo = await startUpload(file);
+      if (fileInfo && fileInfo[0]) {
+        createService({
+          data,
+          adminId: admin!.id,
+          imageUrl: fileInfo[0].fileUrl ? fileInfo[0]?.fileUrl : null,
+        });
+      }
+    } else {
+      createService({
+        data,
+        adminId: admin!.id,
+        imageUrl: null,
+      });
+    }
   };
 
   return (
@@ -83,7 +116,15 @@ export default function Services({
                   <Label htmlFor="name">Nome</Label>
                   <Input {...register("name")} />
                 </div>
-                <Button className="self-center" type="submit">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="name">Imagem</Label>
+                  <FileDropzone setFile={setFile} />
+                </div>
+                <Button
+                  disabled={(!isDirty || !isValid) && file.length > 0}
+                  className="self-center"
+                  type="submit"
+                >
                   Criar
                 </Button>
               </form>

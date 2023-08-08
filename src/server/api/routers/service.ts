@@ -5,13 +5,20 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const serviceRouter = createTRPCRouter({
   createService: adminProcedure
-    .input(z.object({ data: ServiceForm, adminId: z.string() }))
+    .input(
+      z.object({
+        data: ServiceForm,
+        adminId: z.string(),
+        imageUrl: z.nullable(z.string()),
+      })
+    )
     .mutation(
       async ({
         ctx,
         input: {
           adminId,
           data: { name },
+          imageUrl,
         },
       }) => {
         try {
@@ -19,6 +26,7 @@ export const serviceRouter = createTRPCRouter({
             data: {
               name,
               adminId,
+              imageUrl,
             },
           });
         } catch (err) {
