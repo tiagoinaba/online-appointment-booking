@@ -1,3 +1,4 @@
+import AdminBackButton from "@/components/AdminBackButton";
 import NotFound from "@/components/NotFound";
 import DataTable from "@/components/reservations/DataTable";
 import { columns } from "@/components/reservations/columns";
@@ -29,12 +30,7 @@ export default function reservations({
         <title>Reservas - Admin</title>
       </Head>
       <main className="flex h-screen flex-col items-center justify-center">
-        <Button
-          href={`/admin/dashboard`}
-          sx={{ position: "absolute", top: "1rem", left: "1rem" }}
-        >
-          Voltar
-        </Button>
+        <AdminBackButton />
         {adminId ? (
           <div>
             <h1 className="text-2xl font-bold">Reservas</h1>

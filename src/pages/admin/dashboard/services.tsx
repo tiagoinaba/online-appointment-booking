@@ -1,3 +1,5 @@
+import AdminBackButton from "@/components/AdminBackButton";
+import ServicesCarousel from "@/components/ServicesCarousel";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { Button, Input, Link, Switch } from "@mui/material";
@@ -26,16 +28,13 @@ export default function Services({
   const { mutate: createService } = api.service.createService.useMutation({
     onSuccess: () => {
       toast.success("Serviço criado com sucesso!");
+      utils.service.invalidate();
       setModal(false);
     },
 
     onError: (err) => {
       toast.error(err.message);
     },
-  });
-
-  const { data: services } = api.service.getServicesByAdmin.useQuery({
-    adminId: admin?.id!,
   });
 
   // const ServicesComponent = (services: GetResult<any, any, any>[]) => {
@@ -45,6 +44,8 @@ export default function Services({
   const [modal, setModal] = useState<boolean>(false);
 
   const { register, control, handleSubmit } = useForm<ServiceFormType>();
+
+  const utils = api.useContext();
 
   const onSubmit: SubmitHandler<ServiceFormType> = (data) => {
     createService({ data, adminId: admin!.id });
@@ -57,15 +58,9 @@ export default function Services({
       </Head>
       <main className="relative flex h-screen flex-col items-center justify-center">
         {multipleServices ? (
-          <div className="flex flex-col gap-4 rounded-xl bg-slate-200 p-12 shadow-md">
+          <div className="flex max-w-sm flex-col gap-8 rounded-xl bg-slate-200 p-12 shadow-md">
             <span className="text-lg font-semibold">Serviços</span>
-            <div className="flex gap-2">
-              {services?.map((service) => (
-                <div className="max-w-full bg-slate-500 p-4 text-slate-100">
-                  <div>{service.name}</div>
-                </div>
-              ))}
-            </div>
+            <ServicesCarousel adminId={admin.id} />
             <Button onClick={() => setModal((prev) => !prev)}>
               Adicionar novo serviço
             </Button>
@@ -99,6 +94,7 @@ export default function Services({
             ></div>
           </div>
         )}
+        <AdminBackButton />
         <Toaster position="bottom-center" />
       </main>
     </>

@@ -1,3 +1,4 @@
+import AdminBackButton from "@/components/AdminBackButton";
 import NotFound from "@/components/NotFound";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
@@ -87,12 +88,7 @@ export default function options({
         <title>Admin - Opções</title>
       </Head>
       <main className="flex h-screen flex-col items-center justify-center">
-        <Button
-          href={`/admin/dashboard`}
-          sx={{ position: "absolute", top: "1rem", left: "1rem" }}
-        >
-          Voltar
-        </Button>
+        <AdminBackButton />
         {notFound ? (
           <NotFound />
         ) : (

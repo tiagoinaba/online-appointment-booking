@@ -76,3 +76,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .no-scrollbar {
+    background-color: red;
+  }
+}
