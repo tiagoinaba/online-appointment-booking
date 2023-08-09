@@ -32,15 +32,16 @@ export default function options({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
 
-  const { mutate: updatePreferences } = api.auth.updatePreferences.useMutation({
-    onSuccess: () => {
-      toast.success("Configurações atualizadas com sucesso!");
-    },
+  const { mutate: updatePreferences, isLoading } =
+    api.auth.updatePreferences.useMutation({
+      onSuccess: () => {
+        toast.success("Configurações atualizadas com sucesso!");
+      },
 
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
+      onError: (err) => {
+        toast.error(err.message);
+      },
+    });
   const { mutate: logout } = api.auth.logout.useMutation({
     onSuccess: () => {
       router.push("/admin");
@@ -186,7 +187,13 @@ export default function options({
                   "Intervalo" se refere à duração de cada evento.
                 </span>
               </div>
-              <button type="submit">Salvar</button>
+              <Button
+                type="submit"
+                className="self-center"
+                disabled={isLoading}
+              >
+                {!isLoading ? "Salvar" : "Salvando..."}
+              </Button>
             </form>
           </div>
         )}

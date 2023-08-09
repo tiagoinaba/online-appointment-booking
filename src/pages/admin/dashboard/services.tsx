@@ -27,21 +27,18 @@ export default function Services({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const multipleServices = admin?.AdminConfig?.multipleServices;
 
-  const { mutate: createService } = api.service.createService.useMutation({
-    onSuccess: () => {
-      toast.success("Serviço criado com sucesso!");
-      utils.service.invalidate();
-      setModal(false);
-    },
+  const { mutate: createService, isLoading } =
+    api.service.createService.useMutation({
+      onSuccess: () => {
+        toast.success("Serviço criado com sucesso!");
+        utils.service.invalidate();
+        setModal(false);
+      },
 
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
-
-  // const ServicesComponent = (services: GetResult<any, any, any>[]) => {
-  //   services.map(service => )
-  // }
+      onError: (err) => {
+        toast.error(err.message);
+      },
+    });
 
   const [modal, setModal] = useState<boolean>(false);
 
@@ -49,10 +46,9 @@ export default function Services({
   const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
     onClientUploadComplete: () => {
       setFile([]);
-      toast.success("Uploaded successfully!");
     },
     onUploadError: () => {
-      toast.error("Something went wrong!");
+      toast.error("Algo deu errado com o upload da imagem!");
     },
   });
 
@@ -60,7 +56,7 @@ export default function Services({
     register,
     control,
     handleSubmit,
-    formState: { isDirty, isValid },
+    formState: { isDirty, isValid, isSubmitting },
   } = useForm<ServiceFormType>();
 
   const utils = api.useContext();
@@ -94,7 +90,10 @@ export default function Services({
           <div className="flex max-w-sm flex-col gap-8 rounded-xl bg-slate-200 p-12 shadow-md">
             <span className="text-lg font-semibold">Serviços</span>
             <ServicesCarousel adminId={admin.id} />
-            <Button onClick={() => setModal((prev) => !prev)}>
+            <Button
+              className="self-center"
+              onClick={() => setModal((prev) => !prev)}
+            >
               Adicionar novo serviço
             </Button>
           </div>
@@ -117,15 +116,15 @@ export default function Services({
                   <Input {...register("name")} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="name">Imagem</Label>
-                  <FileDropzone setFile={setFile} />
+                  <Label htmlFor="name">Imagem (opcional)</Label>
+                  <FileDropzone file={file} setFile={setFile} />
                 </div>
                 <Button
-                  disabled={(!isDirty || !isValid) && file.length > 0}
+                  disabled={!isDirty || !isValid || isSubmitting}
                   className="self-center"
                   type="submit"
                 >
-                  Criar
+                  {isSubmitting ? "Carregando..." : "Criar"}
                 </Button>
               </form>
             </div>
