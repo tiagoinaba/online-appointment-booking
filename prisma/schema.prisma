@@ -96,6 +96,7 @@ model Service {
     adminId      String
     admin        Admin         @relation(fields: [adminId], references: [id], onDelete: Cascade)
     imageUrl     String?
+    imageKey     String?
     name         String
     reservations Reservation[]
 

@@ -1,5 +1,6 @@
 import AdminBackButton from "@/components/AdminBackButton";
 import FileDropzone from "@/components/FileDropzone";
+import CreateServiceForm from "@/components/ServiceForm";
 import ServicesCarousel from "@/components/ServicesCarousel";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
@@ -19,7 +20,7 @@ export const ServiceForm = z.object({
   name: z.string().nonempty(),
 });
 
-type ServiceFormType = z.infer<typeof ServiceForm>;
+export type ServiceFormType = z.infer<typeof ServiceForm>;
 
 export default function Services({
   admin,
@@ -27,23 +28,44 @@ export default function Services({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const multipleServices = admin?.AdminConfig?.multipleServices;
 
-  const { mutate: createService, isLoading } =
-    api.service.createService.useMutation({
-      onSuccess: () => {
-        toast.success("Serviço criado com sucesso!");
-        utils.service.invalidate();
-        setModal(false);
-      },
-
-      onError: (err) => {
-        toast.error(err.message);
-      },
-    });
-
   const [modal, setModal] = useState<boolean>(false);
 
   const [file, setFile] = useState<File[]>([]);
-  const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
+
+  const onSubmit: SubmitHandler<ServiceFormType> = async (data) => {
+    if (file.length > 0) {
+      const fileInfo = await startUpload(file);
+      if (fileInfo && fileInfo[0]) {
+        createService({
+          data,
+          adminId: admin?.id!,
+          imageUrl: fileInfo[0].fileUrl,
+          imageKey: fileInfo[0].fileKey,
+        });
+      }
+    } else {
+      createService({
+        data,
+        adminId: admin?.id!,
+        imageUrl: null,
+        imageKey: null,
+      });
+    }
+  };
+
+  const { mutate: createService } = api.service.createService.useMutation({
+    onSuccess: () => {
+      toast.success("Serviço criado com sucesso!");
+      utils.service.invalidate();
+      setModal(false);
+    },
+
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  const { startUpload } = useUploadThing("imageUploader", {
     onClientUploadComplete: () => {
       setFile([]);
     },
@@ -52,33 +74,7 @@ export default function Services({
     },
   });
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { isDirty, isValid, isSubmitting },
-  } = useForm<ServiceFormType>();
-
   const utils = api.useContext();
-
-  const onSubmit: SubmitHandler<ServiceFormType> = async (data) => {
-    if (file) {
-      const fileInfo = await startUpload(file);
-      if (fileInfo && fileInfo[0]) {
-        createService({
-          data,
-          adminId: admin!.id,
-          imageUrl: fileInfo[0].fileUrl ? fileInfo[0]?.fileUrl : null,
-        });
-      }
-    } else {
-      createService({
-        data,
-        adminId: admin!.id,
-        imageUrl: null,
-      });
-    }
-  };
 
   return (
     <>
@@ -87,7 +83,7 @@ export default function Services({
       </Head>
       <main className="relative flex h-screen flex-col items-center justify-center">
         {multipleServices ? (
-          <div className="flex max-w-sm flex-col gap-8 rounded-xl bg-slate-200 p-12 shadow-md">
+          <div className="flex min-w-[360px] max-w-sm flex-col gap-8 rounded-xl bg-slate-200 p-12 shadow-md">
             <span className="text-lg font-semibold">Serviços</span>
             <ServicesCarousel adminId={admin.id} />
             <Button
@@ -105,29 +101,12 @@ export default function Services({
         )}
         {modal && (
           <div className="absolute left-0 top-0 z-20 flex h-screen w-screen items-center justify-center">
-            <div className="z-20 flex flex-col gap-8 rounded-xl bg-slate-300 p-10">
-              <span className="font-bold">Novo serviço</span>
-              <form
-                className="flex flex-col gap-4"
-                onSubmit={handleSubmit(onSubmit)}
-              >
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="name">Nome</Label>
-                  <Input {...register("name")} />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="name">Imagem (opcional)</Label>
-                  <FileDropzone file={file} setFile={setFile} />
-                </div>
-                <Button
-                  disabled={!isDirty || !isValid || isSubmitting}
-                  className="self-center"
-                  type="submit"
-                >
-                  {isSubmitting ? "Carregando..." : "Criar"}
-                </Button>
-              </form>
-            </div>
+            <CreateServiceForm
+              onSubmit={onSubmit}
+              file={file}
+              setFile={setFile}
+              setModal={setModal}
+            />
             <div
               className="absolute left-0 top-0 z-10 flex h-screen w-screen bg-slate-600 opacity-80"
               onClick={() => setModal(false)}

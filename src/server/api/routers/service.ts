@@ -2,6 +2,8 @@ import { z } from "zod";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { ServiceForm } from "@/pages/admin/dashboard/services";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { utapi } from "uploadthing/server";
+import { ServiceEditForm } from "@/components/ServiceCard";
 
 export const serviceRouter = createTRPCRouter({
   createService: adminProcedure
@@ -10,6 +12,7 @@ export const serviceRouter = createTRPCRouter({
         data: ServiceForm,
         adminId: z.string(),
         imageUrl: z.nullable(z.string()),
+        imageKey: z.nullable(z.string()),
       })
     )
     .mutation(
@@ -19,6 +22,7 @@ export const serviceRouter = createTRPCRouter({
           adminId,
           data: { name },
           imageUrl,
+          imageKey,
         },
       }) => {
         try {
@@ -27,6 +31,7 @@ export const serviceRouter = createTRPCRouter({
               name,
               adminId,
               imageUrl,
+              imageKey,
             },
           });
         } catch (err) {
@@ -45,6 +50,66 @@ export const serviceRouter = createTRPCRouter({
       return await ctx.prisma.service.findMany({
         where: {
           adminId,
+        },
+      });
+    }),
+  deleteService: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input: { id } }) => {
+      const service = await ctx.prisma.service.delete({
+        where: {
+          id,
+        },
+      });
+      if (service.imageKey) {
+        utapi.deleteFiles(service.imageKey);
+      }
+    }),
+  updateService: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        data: ServiceEditForm,
+        imageUrl: z.nullable(z.string()),
+        imageKey: z.nullable(z.string()),
+      })
+    )
+    .mutation(async ({ ctx, input: { id, data, imageKey, imageUrl } }) => {
+      const oldService = await ctx.prisma.service.findUnique({
+        where: {
+          id,
+        },
+      });
+      await ctx.prisma.service.update({
+        where: {
+          id,
+        },
+        data: {
+          name: data.name.length > 0 ? data.name : undefined,
+          imageKey: imageKey ? imageKey : null,
+          imageUrl: imageUrl ? imageUrl : null,
+        },
+      });
+      if (oldService?.imageKey && imageKey && imageUrl) {
+        utapi.deleteFiles(oldService.imageKey);
+      }
+    }),
+  removeImage: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input: { id } }) => {
+      const oldService = await ctx.prisma.service.findUnique({
+        where: {
+          id,
+        },
+      });
+      utapi.deleteFiles(oldService?.imageKey!);
+      await ctx.prisma.service.update({
+        where: {
+          id,
+        },
+        data: {
+          imageKey: null,
+          imageUrl: null,
         },
       });
     }),

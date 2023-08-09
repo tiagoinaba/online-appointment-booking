@@ -1,10 +1,8 @@
 import { api } from "@/utils/api";
-import React from "react";
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Image from "next/image";
-import placeholder from "@/assets/placeholder-image.png";
+import "slick-carousel/slick/slick.css";
+import ServiceCard from "./ServiceCard";
 
 export default function ServicesCarousel({ adminId }: { adminId: string }) {
   const { data: services } = api.service.getServicesByAdmin.useQuery({
@@ -13,7 +11,7 @@ export default function ServicesCarousel({ adminId }: { adminId: string }) {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: services ? services.length > 1 : false,
     speed: 500,
     slidesToShow: 2,
     slidesToScroll: 2,
@@ -21,34 +19,15 @@ export default function ServicesCarousel({ adminId }: { adminId: string }) {
 
   return (
     <div>
-      <Slider className="pb-4" {...settings}>
-        {services?.map((service) => (
-          <div key={service.id}>
-            <div className="mx-2 flex flex-col overflow-hidden rounded-2xl bg-transparent text-slate-100 shadow-md">
-              <div className="relative h-32  bg-slate-300">
-                {service.imageUrl ? (
-                  <Image
-                    src={service.imageUrl}
-                    alt="Foto do serviço"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                ) : (
-                  <Image
-                    src={placeholder}
-                    alt="Image placeholder"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                )}
-              </div>
-              <div className="bg-slate-500 p-4 text-slate-100">
-                <p className="truncate text-center">{service.name}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </Slider>
+      {services?.length! > 0 ? (
+        <Slider {...settings}>
+          {services?.map((service) => (
+            <ServiceCard key={service.id} service={service} />
+          ))}
+        </Slider>
+      ) : (
+        <span>Não há serviços ainda.</span>
+      )}
     </div>
   );
 }
