@@ -86,8 +86,16 @@ export const serviceRouter = createTRPCRouter({
         },
         data: {
           name: data.name.length > 0 ? data.name : undefined,
-          imageKey: imageKey ? imageKey : null,
-          imageUrl: imageUrl ? imageUrl : null,
+          imageKey: imageKey
+            ? imageKey
+            : oldService?.imageKey
+            ? oldService.imageKey
+            : null,
+          imageUrl: imageUrl
+            ? imageUrl
+            : oldService?.imageUrl
+            ? oldService.imageUrl
+            : null,
         },
       });
       if (oldService?.imageKey && imageKey && imageUrl) {
