@@ -19,6 +19,7 @@ interface DateTimePickerProps {
     closingHours: { hours: number; minutes?: number };
     interval: { hours?: number; minutes?: number };
   };
+  serviceId?: string;
 }
 
 export default function DateTimePicker({
@@ -27,16 +28,27 @@ export default function DateTimePicker({
   setAnimate,
   adminId,
   opening,
+  serviceId,
 }: DateTimePickerProps) {
   const [domLoaded, setDomLoaded] = useState(false);
 
-  const { data, refetch } = api.reservation.getByDateAdmin.useQuery({
-    date: date.justDate,
-    adminId,
-  });
+  const { data: adminRes, refetch: refetchAdmin } =
+    api.reservation.getByDateAdmin.useQuery({
+      date: date.justDate,
+      adminId,
+    });
+
+  const { data: serviceRes, refetch: refetchService } =
+    api.reservation.getByDateService.useQuery({
+      date: date.justDate,
+      serviceId: serviceId ? serviceId : null,
+    });
 
   useEffect(() => {
-    refetch();
+    if (adminId) refetchAdmin();
+    if (serviceId) refetchService();
+    console.log(serviceRes);
+    console.log(serviceId);
   }, [date.justDate]);
 
   const getTimes = () => {
@@ -71,13 +83,13 @@ export default function DateTimePicker({
           }}
         />
       )}
-      {date.justDate && (
+      {date.justDate && !serviceId ? (
         <div className="grid grid-cols-4 gap-8">
           {getTimes().map((time) => (
             <Button
               key={time.toISOString()}
               disabled={
-                (data?.find((res) => isEqual(res.dateTime, time))
+                (adminRes?.find((res) => isEqual(res.dateTime, time))
                   ? true
                   : false) || isBefore(time, now)
               }
@@ -93,6 +105,31 @@ export default function DateTimePicker({
             </Button>
           ))}
         </div>
+      ) : (
+        date.justDate &&
+        serviceId && (
+          <div className="grid grid-cols-4 gap-8">
+            {getTimes().map((time) => (
+              <Button
+                key={time.toISOString()}
+                disabled={
+                  (serviceRes?.find((res) => isEqual(res.dateTime, time))
+                    ? true
+                    : false) || isBefore(time, now)
+                }
+                onClick={() => {
+                  setAnimate(true);
+                  setDate((prev) => ({
+                    ...prev,
+                    dateTime: time,
+                  }));
+                }}
+              >
+                {format(time, "kk:mm")}
+              </Button>
+            ))}
+          </div>
+        )
       )}
     </>
   );

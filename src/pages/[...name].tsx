@@ -1,5 +1,7 @@
 import BookingForm from "@/components/BookingForm";
 import DateTimePicker from "@/components/DateTimePicker";
+import ServicesCarousel from "@/components/ServicesCarousel";
+import ServicesCarouselClient from "@/components/ServicesCarouselClient";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { DateType, Inputs } from "@/utils/types";
@@ -8,6 +10,7 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { Button } from "@mui/material";
+import { Service } from "@prisma/client";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -26,6 +29,8 @@ export default function Home({
   notFound,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const utils = api.useContext();
+
+  const [service, setService] = useState<Service | null>(null);
 
   const [date, setDate] = useState<DateType>({
     justDate: null,
@@ -53,6 +58,7 @@ export default function Home({
       adminId: admin!.id,
       date: date!.dateTime!,
       paymentId: null,
+      serviceId: service?.id ? service.id : null,
       ...data,
     });
   };
@@ -69,7 +75,7 @@ export default function Home({
       >
         {!admin ? (
           <h1 className="text-2xl font-bold">404 - page not found</h1>
-        ) : (
+        ) : !admin.AdminConfig?.multipleServices ? (
           <div
             className={`relative flex flex-col items-center justify-center ${
               !admin.AdminConfig?.requirePayment
@@ -143,6 +149,88 @@ export default function Home({
               </div>
             )}
           </div>
+        ) : !service ? (
+          <div>
+            <ServicesCarouselClient
+              services={admin.Service}
+              setService={setService}
+            />
+          </div>
+        ) : (
+          <div
+            className={`relative flex flex-col items-center justify-center ${
+              !admin.AdminConfig?.requirePayment
+                ? "-translate-x-1/2 rounded-l-3xl"
+                : "rounded-3xl"
+            } bg-slate-200 p-8`}
+          >
+            <h2
+              onAnimationEnd={() => setAnimate(false)}
+              className={`text-4xl font-bold ${animate && "animate-fadeIn"}`}
+            >
+              {date.dateTime
+                ? format(date.dateTime, "dd 'de' MMMM, kk:mm", { locale: ptBR })
+                : date.justDate
+                ? format(date.justDate, "dd 'de' MMMM, --:--", { locale: ptBR })
+                : "-- --, --:--"}
+            </h2>
+
+            <DateTimePicker
+              date={date}
+              setAnimate={setAnimate}
+              setDate={setDate}
+              adminId={admin?.id}
+              serviceId={service.id}
+              opening={{
+                openingHours: {
+                  hours: new Date(admin.AdminConfig?.openingHours!).getHours()!,
+                  minutes: new Date(
+                    admin.AdminConfig?.openingHours!
+                  ).getMinutes(),
+                },
+                closingHours: {
+                  hours: new Date(admin.AdminConfig?.closingHours!).getHours()!,
+                  minutes: new Date(
+                    admin.AdminConfig?.closingHours!
+                  ).getMinutes(),
+                },
+                interval: {
+                  hours: new Date(admin.AdminConfig?.interval!).getHours(),
+                  minutes: new Date(admin.AdminConfig?.interval!).getMinutes(),
+                },
+              }}
+            />
+            {admin.AdminConfig?.requirePayment ? (
+              <Button
+                className="mt-8"
+                variant="contained"
+                sx={{
+                  color: "rgb(21, 101, 192)",
+                  "&:hover": { color: "white" },
+                }}
+                disabled={(date.dateTime ? false : true) || isCreating}
+                onClick={() => {
+                  localStorage.setItem(
+                    "dateTime",
+                    date.dateTime!.toISOString()
+                  );
+                  if (admin)
+                    localStorage.setItem("adminInfo", JSON.stringify(admin));
+                  router.push("/booking");
+                  // createReservation({ date: date.dateTime! })
+                }}
+              >
+                {isCreating ? "Criando..." : "Reservar"}
+              </Button>
+            ) : (
+              <div className="absolute right-0 flex h-full translate-x-full flex-col items-center justify-center rounded-r-3xl bg-slate-300 p-6 px-20">
+                <BookingForm
+                  onSubmit={onSubmit}
+                  disabled={date.dateTime ? false : true}
+                />
+              </div>
+            )}
+          </div>
         )}
 
         <Toaster position="bottom-center" />
@@ -162,6 +250,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
           name: true,
           route: true,
           AdminConfig: true,
+          Service: true,
         },
       });
       if (admin) {

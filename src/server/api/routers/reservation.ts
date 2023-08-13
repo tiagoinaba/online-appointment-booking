@@ -40,6 +40,7 @@ export const reservationRouter = createTRPCRouter({
         name: z.string(),
         paymentId: z.nullable(z.string()),
         adminId: z.string(),
+        serviceId: z.nullable(z.string()),
         email: z.string().email(),
       })
     )
@@ -47,23 +48,50 @@ export const reservationRouter = createTRPCRouter({
       const justDate = new Date(input.date);
       justDate.setHours(0, 0, 0, 0);
 
-      const reservation = await ctx.prisma.reservation.findFirst({
-        where: { AND: [{ dateTime: input.date }, { adminId: input.adminId }] },
-      });
-
-      if (!reservation) {
-        await ctx.prisma.reservation.create({
-          data: {
-            paymentIdMP: input.paymentId,
-            name: input.name,
-            email: input.email,
-            adminId: input.adminId,
-            justDate,
-            dateTime: input.date,
+      if (input.serviceId) {
+        const reservation = await ctx.prisma.reservation.findFirst({
+          where: {
+            AND: [{ dateTime: input.date }, { serviceId: input.serviceId }],
           },
         });
 
-        return "Horário reservado com sucesso!";
+        if (!reservation) {
+          await ctx.prisma.reservation.create({
+            data: {
+              paymentIdMP: input.paymentId,
+              name: input.name,
+              email: input.email,
+              adminId: input.adminId,
+              serviceId: input.serviceId,
+              justDate,
+              dateTime: input.date,
+            },
+          });
+
+          return "Horário reservado com sucesso!";
+        }
+      } else {
+        const reservation = await ctx.prisma.reservation.findFirst({
+          where: {
+            AND: [{ dateTime: input.date }, { adminId: input.adminId }],
+          },
+        });
+
+        if (!reservation) {
+          await ctx.prisma.reservation.create({
+            data: {
+              paymentIdMP: input.paymentId,
+              name: input.name,
+              email: input.email,
+              adminId: input.adminId,
+              serviceId: null,
+              justDate,
+              dateTime: input.date,
+            },
+          });
+
+          return "Horário reservado com sucesso!";
+        }
       }
 
       return "Algo deu errado. Tente novamente";
@@ -101,6 +129,31 @@ export const reservationRouter = createTRPCRouter({
         where: {
           adminId: input.adminId,
         },
+      });
+
+      return data;
+    }),
+  getByDateService: publicProcedure
+    .input(
+      z.object({
+        date: z.nullable(z.date()),
+        serviceId: z.nullable(z.string()),
+      })
+    )
+    .query(async ({ ctx, input: { date, serviceId } }) => {
+      console.log(serviceId);
+      if (serviceId) {
+        if (date) {
+          date.setHours(0, 0, 0, 0);
+          const data = await ctx.prisma.reservation.findMany({
+            where: { AND: [{ serviceId }, { justDate: date }] },
+          });
+
+          return data;
+        }
+      }
+      const data = await ctx.prisma.reservation.findMany({
+        where: { serviceId },
       });
 
       return data;

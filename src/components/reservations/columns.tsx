@@ -57,7 +57,7 @@ export const columns: ColumnDef<ReservationType>[] = [
       const { mutate: deleteReservation } =
         api.reservation.deleteReservation.useMutation({
           onSuccess: () => {
-            utils.reservation.getAll.invalidate();
+            utils.reservation.getByDateAdmin.invalidate();
           },
         });
       const { id, paymentIdMP } = row.original;
@@ -70,7 +70,7 @@ export const columns: ColumnDef<ReservationType>[] = [
             if (paymentIdMP) createReimbursement({ id: paymentIdMP });
           }}
         >
-          Delete
+          Excluir
         </Button>
       );
     },
