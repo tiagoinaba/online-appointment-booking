@@ -70,10 +70,16 @@ export const reservationRouter = createTRPCRouter({
 
           return "Horário reservado com sucesso!";
         }
+
+        console.log(reservation);
       } else {
         const reservation = await ctx.prisma.reservation.findFirst({
           where: {
-            AND: [{ dateTime: input.date }, { adminId: input.adminId }],
+            AND: [
+              { dateTime: input.date },
+              { adminId: input.adminId },
+              { serviceId: null },
+            ],
           },
         });
 
@@ -118,7 +124,11 @@ export const reservationRouter = createTRPCRouter({
         input.date.setHours(0, 0, 0, 0);
         const data = await ctx.prisma.reservation.findMany({
           where: {
-            AND: [{ justDate: input.date }, { adminId: input.adminId }],
+            AND: [
+              { justDate: input.date },
+              { adminId: input.adminId },
+              { serviceId: null },
+            ],
           },
         });
 

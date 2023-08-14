@@ -37,6 +37,7 @@ export default function Booking({}) {
           date,
           adminId,
           paymentValue: AdminConfig.paymentValue,
+          serviceId: null,
         });
         setDateTime(date);
       }

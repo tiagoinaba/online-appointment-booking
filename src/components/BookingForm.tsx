@@ -6,9 +6,14 @@ import { Button, Input, InputLabel } from "@mui/material";
 export type BookingFormProps = {
   onSubmit: SubmitHandler<Inputs>;
   disabled?: boolean;
+  paymentRequired?: boolean;
 };
 
-export default function BookingForm({ onSubmit, disabled }: BookingFormProps) {
+export default function BookingForm({
+  onSubmit,
+  disabled,
+  paymentRequired,
+}: BookingFormProps) {
   const {
     register,
     handleSubmit,
@@ -52,7 +57,7 @@ export default function BookingForm({ onSubmit, disabled }: BookingFormProps) {
         type="submit"
         disabled={disabled}
       >
-        Reservar
+        {paymentRequired ? "Próximo" : "Reservar"}
       </Button>
     </form>
   );

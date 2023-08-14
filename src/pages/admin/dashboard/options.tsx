@@ -71,7 +71,6 @@ export default function options({
   const onSubmit: SubmitHandler<FormType> = (data) => {
     data.paymentValue = parseFloat(data.paymentValue.toFixed(2));
     const config = { ...data };
-    console.log(typeof data.closingHours);
     updatePreferences({
       config: {
         ...config,

@@ -11,6 +11,7 @@ export const mercadopagoRouter = createTRPCRouter({
         date: z.date(),
         adminId: z.string(),
         paymentValue: z.number(),
+        serviceId: z.nullable(z.string()),
       })
     )
     .mutation(async ({ input }) => {
@@ -25,6 +26,7 @@ export const mercadopagoRouter = createTRPCRouter({
                 description: {
                   date: input.date.toISOString(),
                   adminId: input.adminId,
+                  serviceId: input.serviceId,
                 },
                 quantity: 1,
                 unit_price: input.paymentValue,
@@ -33,14 +35,14 @@ export const mercadopagoRouter = createTRPCRouter({
             auto_return: "approved",
             back_urls: {
               success:
-                "https://090d-2804-431-cffb-9300-19e8-bfb8-5405-23e7.ngrok-free.app/callback",
+                "https://30bd-2804-431-cffa-b62b-cdbd-b540-c840-6103.ngrok-free.app/callback",
               pending:
-                "https://090d-2804-431-cffb-9300-19e8-bfb8-5405-23e7.ngrok-free.app/callback",
+                "https://30bd-2804-431-cffa-b62b-cdbd-b540-c840-6103.ngrok-free.app/callback",
               failure:
-                "https://090d-2804-431-cffb-9300-19e8-bfb8-5405-23e7.ngrok-free.app/callback",
+                "https://30bd-2804-431-cffa-b62b-cdbd-b540-c840-6103.ngrok-free.app/callback",
             },
             notification_url:
-              "https://090d-2804-431-cffb-9300-19e8-bfb8-5405-23e7.ngrok-free.app/api/mercadopago",
+              "https://30bd-2804-431-cffa-b62b-cdbd-b540-c840-6103.ngrok-free.app/api/mercadopago",
           },
           {
             headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },

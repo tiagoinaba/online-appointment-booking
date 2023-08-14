@@ -50,8 +50,17 @@ export default function Callback() {
         );
         const dateString = description.date;
         const adminId = description.adminId;
+        const serviceId = description.serviceId;
+        console.log(description);
         const date = parseISO(dateString);
-        createReservation({ date, name, email, paymentId: paymentId, adminId });
+        createReservation({
+          date,
+          name,
+          email,
+          paymentId: paymentId,
+          adminId,
+          serviceId,
+        });
         setDateReserved(date);
         return;
       }

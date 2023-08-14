@@ -47,8 +47,6 @@ export default function DateTimePicker({
   useEffect(() => {
     if (adminId) refetchAdmin();
     if (serviceId) refetchService();
-    console.log(serviceRes);
-    console.log(serviceId);
   }, [date.justDate]);
 
   const getTimes = () => {
@@ -84,7 +82,7 @@ export default function DateTimePicker({
         />
       )}
       {date.justDate && !serviceId ? (
-        <div className="grid grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {getTimes().map((time) => (
             <Button
               key={time.toISOString()}

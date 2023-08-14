@@ -1,5 +1,7 @@
 import BookingForm from "@/components/BookingForm";
 import DateTimePicker from "@/components/DateTimePicker";
+import MPWallet from "@/components/MPWallet";
+import ProgressBar from "@/components/ProgressBar";
 import ServicesCarousel from "@/components/ServicesCarousel";
 import ServicesCarouselClient from "@/components/ServicesCarouselClient";
 import { prisma } from "@/server/db";
@@ -20,7 +22,7 @@ import {
 } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 
@@ -37,7 +39,16 @@ export default function Home({
     dateTime: null,
   });
   const [animate, setAnimate] = useState<boolean>(true);
+  const [paymentStart, setPaymentStart] = useState<boolean>(false);
   const router = useRouter();
+  const [step, setStep] = useState<number>(1);
+  const [formData, setFormData] = useState<Inputs>({ name: "", email: "" });
+
+  useEffect(() => {
+    if (service) {
+      setStep(2);
+    }
+  }, [service]);
 
   const { mutate: createReservation, isLoading: isCreating } =
     api.reservation.createReservation.useMutation({
@@ -54,13 +65,23 @@ export default function Home({
     });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    createReservation({
-      adminId: admin!.id,
-      date: date!.dateTime!,
-      paymentId: null,
-      serviceId: service?.id ? service.id : null,
-      ...data,
-    });
+    if (!admin?.AdminConfig?.requirePayment) {
+      createReservation({
+        adminId: admin!.id,
+        date: date!.dateTime!,
+        paymentId: null,
+        serviceId: service?.id ? service.id : null,
+        ...data,
+      });
+    } else {
+      setFormData(data);
+      setStep((prev) => prev + 1);
+      await import("@mercadopago/sdk-react").then((res) => {
+        res.initMercadoPago("TEST-6e075dd3-fe77-4349-abae-37dd548c290f");
+        setPaymentStart(true);
+        localStorage.setItem("reservationInfo", JSON.stringify(data));
+      });
+    }
   };
 
   return (
@@ -71,54 +92,69 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main
-        className={`flex min-h-screen flex-col items-center overflow-x-hidden p-10`}
+        className={`flex min-h-screen flex-col items-center gap-10 overflow-x-hidden p-10`}
       >
+        <ProgressBar
+          steps={admin?.AdminConfig?.multipleServices ? 4 : 3}
+          step={step}
+          setStep={setStep}
+        />
         {!admin ? (
           <h1 className="text-2xl font-bold">404 - page not found</h1>
         ) : !admin.AdminConfig?.multipleServices ? (
-          <div
-            className={`relative flex flex-col items-center justify-center ${
-              !admin.AdminConfig?.requirePayment
-                ? "-translate-x-1/2 rounded-l-3xl"
-                : "rounded-3xl"
-            } bg-slate-200 p-8`}
-          >
-            <h2
-              onAnimationEnd={() => setAnimate(false)}
-              className={`text-4xl font-bold ${animate && "animate-fadeIn"}`}
+          step === 1 ? (
+            <div
+              className={`relative flex flex-col items-center justify-center ${
+                !admin.AdminConfig?.requirePayment
+                  ? "-translate-x-1/2 rounded-l-3xl"
+                  : "rounded-3xl"
+              } bg-slate-200 p-8`}
             >
-              {date.dateTime
-                ? format(date.dateTime, "dd 'de' MMMM, kk:mm", { locale: ptBR })
-                : date.justDate
-                ? format(date.justDate, "dd 'de' MMMM, --:--", { locale: ptBR })
-                : "-- --, --:--"}
-            </h2>
+              <h2
+                onAnimationEnd={() => setAnimate(false)}
+                className={`text-4xl font-bold ${animate && "animate-fadeIn"}`}
+              >
+                {date.dateTime
+                  ? format(date.dateTime, "dd 'de' MMMM, kk:mm", {
+                      locale: ptBR,
+                    })
+                  : date.justDate
+                  ? format(date.justDate, "dd 'de' MMMM, --:--", {
+                      locale: ptBR,
+                    })
+                  : "-- --, --:--"}
+              </h2>
 
-            <DateTimePicker
-              date={date}
-              setAnimate={setAnimate}
-              setDate={setDate}
-              adminId={admin?.id}
-              opening={{
-                openingHours: {
-                  hours: new Date(admin.AdminConfig?.openingHours!).getHours()!,
-                  minutes: new Date(
-                    admin.AdminConfig?.openingHours!
-                  ).getMinutes(),
-                },
-                closingHours: {
-                  hours: new Date(admin.AdminConfig?.closingHours!).getHours()!,
-                  minutes: new Date(
-                    admin.AdminConfig?.closingHours!
-                  ).getMinutes(),
-                },
-                interval: {
-                  hours: new Date(admin.AdminConfig?.interval!).getHours(),
-                  minutes: new Date(admin.AdminConfig?.interval!).getMinutes(),
-                },
-              }}
-            />
-            {admin.AdminConfig?.requirePayment ? (
+              <DateTimePicker
+                date={date}
+                setAnimate={setAnimate}
+                setDate={setDate}
+                adminId={admin?.id}
+                opening={{
+                  openingHours: {
+                    hours: new Date(
+                      admin.AdminConfig?.openingHours!
+                    ).getHours()!,
+                    minutes: new Date(
+                      admin.AdminConfig?.openingHours!
+                    ).getMinutes(),
+                  },
+                  closingHours: {
+                    hours: new Date(
+                      admin.AdminConfig?.closingHours!
+                    ).getHours()!,
+                    minutes: new Date(
+                      admin.AdminConfig?.closingHours!
+                    ).getMinutes(),
+                  },
+                  interval: {
+                    hours: new Date(admin.AdminConfig?.interval!).getHours(),
+                    minutes: new Date(
+                      admin.AdminConfig?.interval!
+                    ).getMinutes(),
+                  },
+                }}
+              />
               <Button
                 className="mt-8"
                 variant="contained"
@@ -126,29 +162,31 @@ export default function Home({
                   color: "rgb(21, 101, 192)",
                   "&:hover": { color: "white" },
                 }}
-                disabled={(date.dateTime ? false : true) || isCreating}
+                disabled={step >= 2 || !date.dateTime}
                 onClick={() => {
-                  localStorage.setItem(
-                    "dateTime",
-                    date.dateTime!.toISOString()
-                  );
-                  if (admin)
-                    localStorage.setItem("adminInfo", JSON.stringify(admin));
-                  router.push("/booking");
-                  // createReservation({ date: date.dateTime! })
+                  setStep(2);
                 }}
               >
-                {isCreating ? "Criando..." : "Reservar"}
+                Próximo
               </Button>
-            ) : (
-              <div className="absolute right-0 flex h-full translate-x-full flex-col items-center justify-center rounded-r-3xl bg-slate-300 p-6 px-20">
-                <BookingForm
-                  onSubmit={onSubmit}
-                  disabled={date.dateTime ? false : true}
+            </div>
+          ) : step === 2 ? (
+            <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
+              <BookingForm onSubmit={onSubmit} disabled={paymentStart} />
+            </div>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
+              {paymentStart && (
+                <MPWallet
+                  admin={admin}
+                  adminConfig={admin!.AdminConfig!}
+                  date={date.dateTime!}
+                  paymentStart={paymentStart}
+                  serviceId={service?.id}
                 />
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )
         ) : !service ? (
           <div>
             <ServicesCarouselClient
@@ -156,13 +194,10 @@ export default function Home({
               setService={setService}
             />
           </div>
-        ) : (
+        ) : step === 2 ? (
           <div
-            className={`relative flex flex-col items-center justify-center ${
-              !admin.AdminConfig?.requirePayment
-                ? "-translate-x-1/2 rounded-l-3xl"
-                : "rounded-3xl"
-            } bg-slate-200 p-8`}
+            className={`relative flex flex-col items-center justify-center rounded-3xl
+            bg-slate-200 p-8`}
           >
             <h2
               onAnimationEnd={() => setAnimate(false)}
@@ -200,39 +235,35 @@ export default function Home({
                 },
               }}
             />
-            {admin.AdminConfig?.requirePayment ? (
-              <Button
-                className="mt-8"
-                variant="contained"
-                sx={{
-                  color: "rgb(21, 101, 192)",
-                  "&:hover": { color: "white" },
-                }}
-                disabled={(date.dateTime ? false : true) || isCreating}
-                onClick={() => {
-                  localStorage.setItem(
-                    "dateTime",
-                    date.dateTime!.toISOString()
-                  );
-                  if (admin)
-                    localStorage.setItem("adminInfo", JSON.stringify(admin));
-                  router.push("/booking");
-                  // createReservation({ date: date.dateTime! })
-                }}
-              >
-                {isCreating ? "Criando..." : "Reservar"}
-              </Button>
-            ) : (
-              <div className="absolute right-0 flex h-full translate-x-full flex-col items-center justify-center rounded-r-3xl bg-slate-300 p-6 px-20">
-                <BookingForm
-                  onSubmit={onSubmit}
-                  disabled={date.dateTime ? false : true}
-                />
-              </div>
+            <Button
+              onClick={() => setStep((prev) => prev + 1)}
+              sx={{ marginTop: "2rem" }}
+              variant="contained"
+              disabled={!date.dateTime}
+            >
+              Próximo
+            </Button>
+          </div>
+        ) : step === 3 ? (
+          <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
+            <BookingForm
+              onSubmit={onSubmit}
+              disabled={date.dateTime ? false : true}
+            />
+          </div>
+        ) : (
+          <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
+            {paymentStart && (
+              <MPWallet
+                admin={admin}
+                adminConfig={admin!.AdminConfig!}
+                date={date.dateTime!}
+                paymentStart={paymentStart}
+                serviceId={service?.id}
+              />
             )}
           </div>
         )}
-
         <Toaster position="bottom-center" />
       </main>
     </>
