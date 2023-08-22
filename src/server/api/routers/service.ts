@@ -44,6 +44,18 @@ export const serviceRouter = createTRPCRouter({
         }
       }
     ),
+  getById: publicProcedure
+    .input(z.object({ id: z.nullable(z.string()) }))
+    .mutation(async ({ ctx, input: { id } }) => {
+      if (id)
+        return await ctx.prisma.service.findFirst({
+          where: {
+            id: id,
+          },
+        });
+
+      return null;
+    }),
   getServicesByAdmin: publicProcedure
     .input(z.object({ adminId: z.string() }))
     .query(async ({ ctx, input: { adminId } }) => {

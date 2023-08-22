@@ -3,6 +3,7 @@ import { reservationRouter } from "./routers/reservation";
 import { mercadopagoRouter } from "./routers/mercadopago";
 import { authRouter } from "./routers/auth";
 import { serviceRouter } from "./routers/service";
+import { closedDaysRouter } from "./routers/closedDays";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   mercadopago: mercadopagoRouter,
   auth: authRouter,
   service: serviceRouter,
+  closedDay: closedDaysRouter,
 });
 
 // export type definition of API

@@ -44,6 +44,10 @@ export default function DateTimePicker({
       serviceId: serviceId ? serviceId : null,
     });
 
+  const { data: closedDays } = api.closedDay.getClosedDays.useQuery({
+    adminId,
+  });
+
   useEffect(() => {
     if (adminId) refetchAdmin();
     if (serviceId) refetchService();
@@ -79,6 +83,9 @@ export default function DateTimePicker({
               dateTime: null,
             });
           }}
+          shouldDisableDate={(date) =>
+            closedDays?.find((x) => isEqual(x.dateClosed, date)) ? true : false
+          }
         />
       )}
       {date.justDate && !serviceId ? (

@@ -38,6 +38,7 @@ export default function index({
       </Button>
       <Link href="/admin/dashboard/reservations">Reservas</Link>
       <Link href="/admin/dashboard/services">Serviços</Link>
+      <Link href="/admin/dashboard/closedDays">Datas</Link>
       <Link href="/admin/dashboard/options">Opções</Link>
     </main>
   );

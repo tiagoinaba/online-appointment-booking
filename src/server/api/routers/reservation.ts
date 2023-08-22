@@ -6,6 +6,7 @@ import { now } from "@/utils/constants";
 import { sub } from "date-fns";
 import { GetServerSidePropsContext } from "next";
 import { prisma } from "@/server/db";
+import { Prisma } from "@prisma/client";
 
 export const reservationRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -32,7 +33,6 @@ export const reservationRouter = createTRPCRouter({
         });
       } else return ctx.prisma.reservation.findMany();
     }),
-
   createReservation: publicProcedure
     .input(
       z.object({
@@ -120,6 +120,27 @@ export const reservationRouter = createTRPCRouter({
   getByDateAdmin: publicProcedure
     .input(z.object({ date: z.nullable(z.date()), adminId: z.string() }))
     .query(async ({ ctx, input }) => {
+      const reservationSelect = {
+        admin: true,
+        adminId: true,
+        createdAt: true,
+        dateTime: true,
+        email: true,
+        id: true,
+        justDate: true,
+        name: true,
+        service: {
+          select: {
+            name: true,
+          },
+        },
+        paymentIdMP: true,
+        serviceId: true,
+      } satisfies Prisma.ReservationSelect;
+
+      type ReservationPayload = Prisma.ReservationGetPayload<{
+        select: typeof reservationSelect;
+      }>;
       if (input.date) {
         input.date.setHours(0, 0, 0, 0);
         const data = await ctx.prisma.reservation.findMany({
@@ -130,6 +151,10 @@ export const reservationRouter = createTRPCRouter({
               { serviceId: null },
             ],
           },
+          select: reservationSelect,
+          orderBy: {
+            dateTime: "asc",
+          },
         });
 
         return data;
@@ -139,6 +164,7 @@ export const reservationRouter = createTRPCRouter({
         where: {
           adminId: input.adminId,
         },
+        select: reservationSelect,
       });
 
       return data;

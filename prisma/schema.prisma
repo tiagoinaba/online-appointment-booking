@@ -5,6 +5,10 @@ generator client {
     provider = "prisma-client-js"
 }
 
+generator zod {
+    provider = "zod-prisma-types"
+}
+
 datasource db {
     provider     = "mysql"
     url          = env("DATABASE_URL")
@@ -66,6 +70,7 @@ model Admin {
     Reservation Reservation[]
     AdminConfig AdminConfig?
     Service     Service[]
+    ClosedDays  ClosedDays[]
 }
 
 model AdminConfig {
@@ -79,6 +84,15 @@ model AdminConfig {
     closingHours     DateTime
     interval         DateTime
     multipleServices Boolean  @default(false)
+
+    @@index([adminId])
+}
+
+model ClosedDays {
+    id         String   @id @default(cuid())
+    admin      Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+    adminId    String
+    dateClosed DateTime
 
     @@index([adminId])
 }

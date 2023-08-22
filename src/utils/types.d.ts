@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 declare global {
   var id: string;
 }
@@ -18,3 +20,11 @@ export type AdminInfo = {
   name: string;
   route: string;
 };
+
+const reservationWithService = Prisma.validator<Prisma.ReservationArgs>()({
+  include: { service: true },
+});
+
+type ReservationWithService = Prisma.ReservationGetPayload<
+  typeof reservationWithService
+>;

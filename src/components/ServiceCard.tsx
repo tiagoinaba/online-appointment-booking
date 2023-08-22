@@ -93,7 +93,7 @@ export default function ServiceCard({ service }: { service: Service }) {
   return (
     <div>
       <div className="group relative mx-2 flex flex-col overflow-hidden rounded-2xl bg-transparent text-slate-100 shadow-md">
-        <div className="absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center gap-2 bg-zinc-300 bg-opacity-40 opacity-0 backdrop-blur-xl transition-opacity duration-200 group-hover:opacity-100">
+        <div className="absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center gap-2 bg-zinc-300 bg-opacity-40 opacity-0 backdrop-blur-xl transition-opacity duration-200 group-hover:bg-zinc-400 group-hover:opacity-100">
           <IconButton onClick={() => setOpen(true)}>
             <Delete color="error" />
           </IconButton>

@@ -34,15 +34,12 @@ export const mercadopagoRouter = createTRPCRouter({
             ],
             auto_return: "approved",
             back_urls: {
-              success:
-                "https://30bd-2804-431-cffa-b62b-cdbd-b540-c840-6103.ngrok-free.app/callback",
-              pending:
-                "https://30bd-2804-431-cffa-b62b-cdbd-b540-c840-6103.ngrok-free.app/callback",
-              failure:
-                "https://30bd-2804-431-cffa-b62b-cdbd-b540-c840-6103.ngrok-free.app/callback",
+              success: "https://76b1-179-100-7-205.ngrok-free.app/callback",
+              pending: "https://76b1-179-100-7-205.ngrok-free.app/callback",
+              failure: "https://76b1-179-100-7-205.ngrok-free.app/callback",
             },
             notification_url:
-              "https://30bd-2804-431-cffa-b62b-cdbd-b540-c840-6103.ngrok-free.app/api/mercadopago",
+              "https://76b1-179-100-7-205.ngrok-free.app/api/mercadopago",
           },
           {
             headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },
@@ -71,7 +68,7 @@ export const mercadopagoRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
       const { data } = await axios.post(
-        `https://api.mercadopago.com/v1/payments/${id}/refunds`,
+        `https://api.mercadopago.com/v1/payments/${input.id}/refunds`,
         {},
         {
           headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },
