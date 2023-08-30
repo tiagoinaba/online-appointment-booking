@@ -1,11 +1,20 @@
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
+import { now } from "@/utils/constants";
+import { sub } from "date-fns";
 
 export const closedDaysRouter = createTRPCRouter({
   getClosedDays: publicProcedure
     .input(z.object({ adminId: z.nullable(z.string()) }))
     .query(async ({ ctx, input: { adminId } }) => {
       if (adminId) {
+        const deleted = await ctx.prisma.closedDays.deleteMany({
+          where: {
+            dateClosed: {
+              lt: sub(now, { months: 1 }),
+            },
+          },
+        });
         const data = await ctx.prisma.closedDays.findMany({
           where: { adminId: adminId },
         });

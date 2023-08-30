@@ -3,6 +3,7 @@ import { now } from "@/utils/constants";
 import { DateType } from "@/utils/types";
 import { Button } from "@mui/material";
 import { DateCalendar } from "@mui/x-date-pickers";
+import { Day } from "@prisma/client";
 import { add, format, isBefore, isEqual } from "date-fns";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
@@ -20,6 +21,7 @@ interface DateTimePickerProps {
     interval: { hours?: number; minutes?: number };
   };
   serviceId?: string;
+  days: Day[];
 }
 
 export default function DateTimePicker({
@@ -29,6 +31,7 @@ export default function DateTimePicker({
   adminId,
   opening,
   serviceId,
+  days,
 }: DateTimePickerProps) {
   const [domLoaded, setDomLoaded] = useState(false);
 
@@ -54,6 +57,32 @@ export default function DateTimePicker({
   }, [date.justDate]);
 
   const getTimes = () => {
+    const foundDay = days.find(
+      (day) => date.justDate?.getDay() === day.weekDay
+    );
+
+    if (foundDay) {
+      const begin = add(date.justDate!, {
+        hours: new Date(foundDay.openingHour).getHours(),
+        minutes: new Date(foundDay.openingHour).getMinutes(),
+      });
+      const end = add(date.justDate!, {
+        hours: new Date(foundDay.closingHour).getHours(),
+        minutes: new Date(foundDay.closingHour).getMinutes(),
+      });
+      const increments = {
+        hours: new Date(foundDay.interval).getHours(),
+        minutes: new Date(foundDay.interval).getMinutes(),
+      };
+
+      const times = [];
+
+      for (let i = begin; i < end; i = add(i, increments)) {
+        times.push(i);
+      }
+
+      return times;
+    }
     const begin = add(date.justDate!, opening.openingHours);
     const end = add(date.justDate!, opening.closingHours);
     const increments = opening.interval;
@@ -83,9 +112,14 @@ export default function DateTimePicker({
               dateTime: null,
             });
           }}
-          shouldDisableDate={(date) =>
-            closedDays?.find((x) => isEqual(x.dateClosed, date)) ? true : false
-          }
+          shouldDisableDate={(date) => {
+            const foundDay = days.find((day) => date.getDay() === day.weekDay);
+
+            return closedDays?.find((x) => isEqual(x.dateClosed, date)) ||
+              (foundDay ? !foundDay.open : false)
+              ? true
+              : false;
+          }}
         />
       )}
       {date.justDate && !serviceId ? (

@@ -171,6 +171,9 @@ export default function DataTable({
     },
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
+    initialState: {
+      sorting: [{ id: "date", desc: false }],
+    },
   });
   return (
     <div className="flex flex-col gap-4">
@@ -240,6 +243,7 @@ export default function DataTable({
             ))}
           </tbody>
         </table>
+        {data.length === 0 && <div className="w-full py-4">Sem resultados</div>}
       </div>
     </div>
   );

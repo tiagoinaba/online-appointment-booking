@@ -71,6 +71,7 @@ model Admin {
     AdminConfig AdminConfig?
     Service     Service[]
     ClosedDays  ClosedDays[]
+    Day         Day[]
 }
 
 model AdminConfig {
@@ -133,5 +134,18 @@ model Reservation {
 
     @@unique([dateTime, serviceId])
     @@index([serviceId])
+    @@index([adminId])
+}
+
+model Day {
+    weekDay     Int
+    admin       Admin    @relation(fields: [adminId], references: [id])
+    adminId     String
+    open        Boolean  @default(false)
+    openingHour DateTime
+    closingHour DateTime
+    interval    DateTime
+
+    @@unique([weekDay, adminId])
     @@index([adminId])
 }

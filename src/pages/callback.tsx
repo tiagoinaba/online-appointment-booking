@@ -51,7 +51,6 @@ export default function Callback() {
         const dateString = description.date;
         const adminId = description.adminId;
         const serviceId = description.serviceId;
-        console.log(description);
         const date = parseISO(dateString);
         createReservation({
           date,

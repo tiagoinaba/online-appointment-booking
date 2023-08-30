@@ -43,11 +43,6 @@ export default function options({
         toast.error(err.message);
       },
     });
-  const { mutate: logout } = api.auth.logout.useMutation({
-    onSuccess: () => {
-      router.push("/admin");
-    },
-  });
 
   const {
     register,
@@ -57,9 +52,7 @@ export default function options({
     formState: { errors },
   } = useForm<FormType>({
     defaultValues: {
-      requirePayment: admin?.AdminConfig?.requirePayment
-        ? admin.AdminConfig.requirePayment
-        : true,
+      requirePayment: admin?.AdminConfig?.requirePayment ?? true,
       paymentValue: admin?.AdminConfig?.paymentValue,
       description: admin?.AdminConfig?.description,
       openingHours: admin?.AdminConfig?.openingHours,

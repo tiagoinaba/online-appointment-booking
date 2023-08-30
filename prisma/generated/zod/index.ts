@@ -32,6 +32,8 @@ export const ServiceScalarFieldEnumSchema = z.enum(['id','adminId','imageUrl','i
 
 export const ReservationScalarFieldEnumSchema = z.enum(['id','adminId','serviceId','paymentIdMP','name','email','justDate','dateTime','createdAt']);
 
+export const DayScalarFieldEnumSchema = z.enum(['weekDay','adminId','open','openingHour','closingHour','interval']);
+
 export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const NullsOrderSchema = z.enum(['first','last']);
@@ -188,6 +190,21 @@ export const ReservationSchema = z.object({
 export type Reservation = z.infer<typeof ReservationSchema>
 
 /////////////////////////////////////////
+// DAY SCHEMA
+/////////////////////////////////////////
+
+export const DaySchema = z.object({
+  weekDay: z.number().int(),
+  adminId: z.string(),
+  open: z.boolean(),
+  openingHour: z.coerce.date(),
+  closingHour: z.coerce.date(),
+  interval: z.coerce.date(),
+})
+
+export type Day = z.infer<typeof DaySchema>
+
+/////////////////////////////////////////
 // SELECT & INCLUDE
 /////////////////////////////////////////
 
@@ -290,6 +307,7 @@ export const AdminIncludeSchema: z.ZodType<Prisma.AdminInclude> = z.object({
   AdminConfig: z.union([z.boolean(),z.lazy(() => AdminConfigArgsSchema)]).optional(),
   Service: z.union([z.boolean(),z.lazy(() => ServiceFindManyArgsSchema)]).optional(),
   ClosedDays: z.union([z.boolean(),z.lazy(() => ClosedDaysFindManyArgsSchema)]).optional(),
+  Day: z.union([z.boolean(),z.lazy(() => DayFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AdminCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -306,6 +324,7 @@ export const AdminCountOutputTypeSelectSchema: z.ZodType<Prisma.AdminCountOutput
   Reservation: z.boolean().optional(),
   Service: z.boolean().optional(),
   ClosedDays: z.boolean().optional(),
+  Day: z.boolean().optional(),
 }).strict();
 
 export const AdminSelectSchema: z.ZodType<Prisma.AdminSelect> = z.object({
@@ -318,6 +337,7 @@ export const AdminSelectSchema: z.ZodType<Prisma.AdminSelect> = z.object({
   AdminConfig: z.union([z.boolean(),z.lazy(() => AdminConfigArgsSchema)]).optional(),
   Service: z.union([z.boolean(),z.lazy(() => ServiceFindManyArgsSchema)]).optional(),
   ClosedDays: z.union([z.boolean(),z.lazy(() => ClosedDaysFindManyArgsSchema)]).optional(),
+  Day: z.union([z.boolean(),z.lazy(() => DayFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AdminCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -432,6 +452,28 @@ export const ReservationSelectSchema: z.ZodType<Prisma.ReservationSelect> = z.ob
   createdAt: z.boolean().optional(),
   admin: z.union([z.boolean(),z.lazy(() => AdminArgsSchema)]).optional(),
   service: z.union([z.boolean(),z.lazy(() => ServiceArgsSchema)]).optional(),
+}).strict()
+
+// DAY
+//------------------------------------------------------
+
+export const DayIncludeSchema: z.ZodType<Prisma.DayInclude> = z.object({
+  admin: z.union([z.boolean(),z.lazy(() => AdminArgsSchema)]).optional(),
+}).strict()
+
+export const DayArgsSchema: z.ZodType<Prisma.DayArgs> = z.object({
+  select: z.lazy(() => DaySelectSchema).optional(),
+  include: z.lazy(() => DayIncludeSchema).optional(),
+}).strict();
+
+export const DaySelectSchema: z.ZodType<Prisma.DaySelect> = z.object({
+  weekDay: z.boolean().optional(),
+  adminId: z.boolean().optional(),
+  open: z.boolean().optional(),
+  openingHour: z.boolean().optional(),
+  closingHour: z.boolean().optional(),
+  interval: z.boolean().optional(),
+  admin: z.union([z.boolean(),z.lazy(() => AdminArgsSchema)]).optional(),
 }).strict()
 
 
@@ -733,7 +775,8 @@ export const AdminWhereInputSchema: z.ZodType<Prisma.AdminWhereInput> = z.object
   Reservation: z.lazy(() => ReservationListRelationFilterSchema).optional(),
   AdminConfig: z.union([ z.lazy(() => AdminConfigNullableRelationFilterSchema),z.lazy(() => AdminConfigWhereInputSchema) ]).optional().nullable(),
   Service: z.lazy(() => ServiceListRelationFilterSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysListRelationFilterSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysListRelationFilterSchema).optional(),
+  Day: z.lazy(() => DayListRelationFilterSchema).optional()
 }).strict();
 
 export const AdminOrderByWithRelationInputSchema: z.ZodType<Prisma.AdminOrderByWithRelationInput> = z.object({
@@ -745,7 +788,8 @@ export const AdminOrderByWithRelationInputSchema: z.ZodType<Prisma.AdminOrderByW
   Reservation: z.lazy(() => ReservationOrderByRelationAggregateInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigOrderByWithRelationInputSchema).optional(),
   Service: z.lazy(() => ServiceOrderByRelationAggregateInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysOrderByRelationAggregateInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysOrderByRelationAggregateInputSchema).optional(),
+  Day: z.lazy(() => DayOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const AdminWhereUniqueInputSchema: z.ZodType<Prisma.AdminWhereUniqueInput> = z.union([
@@ -788,7 +832,8 @@ export const AdminWhereUniqueInputSchema: z.ZodType<Prisma.AdminWhereUniqueInput
   Reservation: z.lazy(() => ReservationListRelationFilterSchema).optional(),
   AdminConfig: z.union([ z.lazy(() => AdminConfigNullableRelationFilterSchema),z.lazy(() => AdminConfigWhereInputSchema) ]).optional().nullable(),
   Service: z.lazy(() => ServiceListRelationFilterSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysListRelationFilterSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysListRelationFilterSchema).optional(),
+  Day: z.lazy(() => DayListRelationFilterSchema).optional()
 }).strict());
 
 export const AdminOrderByWithAggregationInputSchema: z.ZodType<Prisma.AdminOrderByWithAggregationInput> = z.object({
@@ -1167,6 +1212,72 @@ export const ReservationScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.R
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
+export const DayWhereInputSchema: z.ZodType<Prisma.DayWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => DayWhereInputSchema),z.lazy(() => DayWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DayWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DayWhereInputSchema),z.lazy(() => DayWhereInputSchema).array() ]).optional(),
+  weekDay: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  adminId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  open: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  openingHour: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  closingHour: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  interval: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  admin: z.union([ z.lazy(() => AdminRelationFilterSchema),z.lazy(() => AdminWhereInputSchema) ]).optional(),
+}).strict();
+
+export const DayOrderByWithRelationInputSchema: z.ZodType<Prisma.DayOrderByWithRelationInput> = z.object({
+  weekDay: z.lazy(() => SortOrderSchema).optional(),
+  adminId: z.lazy(() => SortOrderSchema).optional(),
+  open: z.lazy(() => SortOrderSchema).optional(),
+  openingHour: z.lazy(() => SortOrderSchema).optional(),
+  closingHour: z.lazy(() => SortOrderSchema).optional(),
+  interval: z.lazy(() => SortOrderSchema).optional(),
+  admin: z.lazy(() => AdminOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const DayWhereUniqueInputSchema: z.ZodType<Prisma.DayWhereUniqueInput> = z.object({
+  weekDay_adminId: z.lazy(() => DayWeekDayAdminIdCompoundUniqueInputSchema)
+})
+.and(z.object({
+  weekDay_adminId: z.lazy(() => DayWeekDayAdminIdCompoundUniqueInputSchema).optional(),
+  AND: z.union([ z.lazy(() => DayWhereInputSchema),z.lazy(() => DayWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DayWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DayWhereInputSchema),z.lazy(() => DayWhereInputSchema).array() ]).optional(),
+  weekDay: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  adminId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  open: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  openingHour: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  closingHour: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  interval: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  admin: z.union([ z.lazy(() => AdminRelationFilterSchema),z.lazy(() => AdminWhereInputSchema) ]).optional(),
+}).strict());
+
+export const DayOrderByWithAggregationInputSchema: z.ZodType<Prisma.DayOrderByWithAggregationInput> = z.object({
+  weekDay: z.lazy(() => SortOrderSchema).optional(),
+  adminId: z.lazy(() => SortOrderSchema).optional(),
+  open: z.lazy(() => SortOrderSchema).optional(),
+  openingHour: z.lazy(() => SortOrderSchema).optional(),
+  closingHour: z.lazy(() => SortOrderSchema).optional(),
+  interval: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => DayCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => DayAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => DayMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => DayMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => DaySumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const DayScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.DayScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => DayScalarWhereWithAggregatesInputSchema),z.lazy(() => DayScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DayScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DayScalarWhereWithAggregatesInputSchema),z.lazy(() => DayScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  weekDay: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  adminId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  open: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
+  openingHour: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  closingHour: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  interval: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+}).strict();
+
 export const ExampleCreateInputSchema: z.ZodType<Prisma.ExampleCreateInput> = z.object({
   id: z.string().cuid().optional(),
   createdAt: z.coerce.date().optional(),
@@ -1434,7 +1545,8 @@ export const AdminCreateInputSchema: z.ZodType<Prisma.AdminCreateInput> = z.obje
   Reservation: z.lazy(() => ReservationCreateNestedManyWithoutAdminInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigCreateNestedOneWithoutAdminInputSchema).optional(),
   Service: z.lazy(() => ServiceCreateNestedManyWithoutAdminInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedCreateInputSchema: z.ZodType<Prisma.AdminUncheckedCreateInput> = z.object({
@@ -1446,7 +1558,8 @@ export const AdminUncheckedCreateInputSchema: z.ZodType<Prisma.AdminUncheckedCre
   Reservation: z.lazy(() => ReservationUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUncheckedCreateNestedOneWithoutAdminInputSchema).optional(),
   Service: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminUpdateInputSchema: z.ZodType<Prisma.AdminUpdateInput> = z.object({
@@ -1458,7 +1571,8 @@ export const AdminUpdateInputSchema: z.ZodType<Prisma.AdminUpdateInput> = z.obje
   Reservation: z.lazy(() => ReservationUpdateManyWithoutAdminNestedInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUpdateOneWithoutAdminNestedInputSchema).optional(),
   Service: z.lazy(() => ServiceUpdateManyWithoutAdminNestedInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedUpdateInputSchema: z.ZodType<Prisma.AdminUncheckedUpdateInput> = z.object({
@@ -1470,7 +1584,8 @@ export const AdminUncheckedUpdateInputSchema: z.ZodType<Prisma.AdminUncheckedUpd
   Reservation: z.lazy(() => ReservationUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUncheckedUpdateOneWithoutAdminNestedInputSchema).optional(),
   Service: z.lazy(() => ServiceUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AdminCreateManyInputSchema: z.ZodType<Prisma.AdminCreateManyInput> = z.object({
@@ -1804,6 +1919,68 @@ export const ReservationUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Reserva
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const DayCreateInputSchema: z.ZodType<Prisma.DayCreateInput> = z.object({
+  weekDay: z.number().int(),
+  open: z.boolean().optional(),
+  openingHour: z.coerce.date(),
+  closingHour: z.coerce.date(),
+  interval: z.coerce.date(),
+  admin: z.lazy(() => AdminCreateNestedOneWithoutDayInputSchema)
+}).strict();
+
+export const DayUncheckedCreateInputSchema: z.ZodType<Prisma.DayUncheckedCreateInput> = z.object({
+  weekDay: z.number().int(),
+  adminId: z.string(),
+  open: z.boolean().optional(),
+  openingHour: z.coerce.date(),
+  closingHour: z.coerce.date(),
+  interval: z.coerce.date()
+}).strict();
+
+export const DayUpdateInputSchema: z.ZodType<Prisma.DayUpdateInput> = z.object({
+  weekDay: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  open: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  openingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  closingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  admin: z.lazy(() => AdminUpdateOneRequiredWithoutDayNestedInputSchema).optional()
+}).strict();
+
+export const DayUncheckedUpdateInputSchema: z.ZodType<Prisma.DayUncheckedUpdateInput> = z.object({
+  weekDay: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  adminId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  open: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  openingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  closingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DayCreateManyInputSchema: z.ZodType<Prisma.DayCreateManyInput> = z.object({
+  weekDay: z.number().int(),
+  adminId: z.string(),
+  open: z.boolean().optional(),
+  openingHour: z.coerce.date(),
+  closingHour: z.coerce.date(),
+  interval: z.coerce.date()
+}).strict();
+
+export const DayUpdateManyMutationInputSchema: z.ZodType<Prisma.DayUpdateManyMutationInput> = z.object({
+  weekDay: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  open: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  openingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  closingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DayUncheckedUpdateManyInputSchema: z.ZodType<Prisma.DayUncheckedUpdateManyInput> = z.object({
+  weekDay: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  adminId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  open: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  openingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  closingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
   equals: z.string().optional(),
   in: z.string().array().optional(),
@@ -2117,6 +2294,12 @@ export const ClosedDaysListRelationFilterSchema: z.ZodType<Prisma.ClosedDaysList
   none: z.lazy(() => ClosedDaysWhereInputSchema).optional()
 }).strict();
 
+export const DayListRelationFilterSchema: z.ZodType<Prisma.DayListRelationFilter> = z.object({
+  every: z.lazy(() => DayWhereInputSchema).optional(),
+  some: z.lazy(() => DayWhereInputSchema).optional(),
+  none: z.lazy(() => DayWhereInputSchema).optional()
+}).strict();
+
 export const ReservationOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ReservationOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -2126,6 +2309,10 @@ export const ServiceOrderByRelationAggregateInputSchema: z.ZodType<Prisma.Servic
 }).strict();
 
 export const ClosedDaysOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ClosedDaysOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DayOrderByRelationAggregateInputSchema: z.ZodType<Prisma.DayOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2358,6 +2545,73 @@ export const ReservationMinOrderByAggregateInputSchema: z.ZodType<Prisma.Reserva
   createdAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
+export const IntFilterSchema: z.ZodType<Prisma.IntFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntFilterSchema) ]).optional(),
+}).strict();
+
+export const DayWeekDayAdminIdCompoundUniqueInputSchema: z.ZodType<Prisma.DayWeekDayAdminIdCompoundUniqueInput> = z.object({
+  weekDay: z.number(),
+  adminId: z.string()
+}).strict();
+
+export const DayCountOrderByAggregateInputSchema: z.ZodType<Prisma.DayCountOrderByAggregateInput> = z.object({
+  weekDay: z.lazy(() => SortOrderSchema).optional(),
+  adminId: z.lazy(() => SortOrderSchema).optional(),
+  open: z.lazy(() => SortOrderSchema).optional(),
+  openingHour: z.lazy(() => SortOrderSchema).optional(),
+  closingHour: z.lazy(() => SortOrderSchema).optional(),
+  interval: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DayAvgOrderByAggregateInputSchema: z.ZodType<Prisma.DayAvgOrderByAggregateInput> = z.object({
+  weekDay: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DayMaxOrderByAggregateInputSchema: z.ZodType<Prisma.DayMaxOrderByAggregateInput> = z.object({
+  weekDay: z.lazy(() => SortOrderSchema).optional(),
+  adminId: z.lazy(() => SortOrderSchema).optional(),
+  open: z.lazy(() => SortOrderSchema).optional(),
+  openingHour: z.lazy(() => SortOrderSchema).optional(),
+  closingHour: z.lazy(() => SortOrderSchema).optional(),
+  interval: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DayMinOrderByAggregateInputSchema: z.ZodType<Prisma.DayMinOrderByAggregateInput> = z.object({
+  weekDay: z.lazy(() => SortOrderSchema).optional(),
+  adminId: z.lazy(() => SortOrderSchema).optional(),
+  open: z.lazy(() => SortOrderSchema).optional(),
+  openingHour: z.lazy(() => SortOrderSchema).optional(),
+  closingHour: z.lazy(() => SortOrderSchema).optional(),
+  interval: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DaySumOrderByAggregateInputSchema: z.ZodType<Prisma.DaySumOrderByAggregateInput> = z.object({
+  weekDay: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const IntWithAggregatesFilterSchema: z.ZodType<Prisma.IntWithAggregatesFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _sum: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedIntFilterSchema).optional(),
+  _max: z.lazy(() => NestedIntFilterSchema).optional()
+}).strict();
+
 export const StringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.StringFieldUpdateOperationsInput> = z.object({
   set: z.string().optional()
 }).strict();
@@ -2521,6 +2775,13 @@ export const ClosedDaysCreateNestedManyWithoutAdminInputSchema: z.ZodType<Prisma
   connect: z.union([ z.lazy(() => ClosedDaysWhereUniqueInputSchema),z.lazy(() => ClosedDaysWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const DayCreateNestedManyWithoutAdminInputSchema: z.ZodType<Prisma.DayCreateNestedManyWithoutAdminInput> = z.object({
+  create: z.union([ z.lazy(() => DayCreateWithoutAdminInputSchema),z.lazy(() => DayCreateWithoutAdminInputSchema).array(),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DayCreateOrConnectWithoutAdminInputSchema),z.lazy(() => DayCreateOrConnectWithoutAdminInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DayCreateManyAdminInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const ReservationUncheckedCreateNestedManyWithoutAdminInputSchema: z.ZodType<Prisma.ReservationUncheckedCreateNestedManyWithoutAdminInput> = z.object({
   create: z.union([ z.lazy(() => ReservationCreateWithoutAdminInputSchema),z.lazy(() => ReservationCreateWithoutAdminInputSchema).array(),z.lazy(() => ReservationUncheckedCreateWithoutAdminInputSchema),z.lazy(() => ReservationUncheckedCreateWithoutAdminInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => ReservationCreateOrConnectWithoutAdminInputSchema),z.lazy(() => ReservationCreateOrConnectWithoutAdminInputSchema).array() ]).optional(),
@@ -2546,6 +2807,13 @@ export const ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema: z.ZodTy
   connectOrCreate: z.union([ z.lazy(() => ClosedDaysCreateOrConnectWithoutAdminInputSchema),z.lazy(() => ClosedDaysCreateOrConnectWithoutAdminInputSchema).array() ]).optional(),
   createMany: z.lazy(() => ClosedDaysCreateManyAdminInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => ClosedDaysWhereUniqueInputSchema),z.lazy(() => ClosedDaysWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const DayUncheckedCreateNestedManyWithoutAdminInputSchema: z.ZodType<Prisma.DayUncheckedCreateNestedManyWithoutAdminInput> = z.object({
+  create: z.union([ z.lazy(() => DayCreateWithoutAdminInputSchema),z.lazy(() => DayCreateWithoutAdminInputSchema).array(),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DayCreateOrConnectWithoutAdminInputSchema),z.lazy(() => DayCreateOrConnectWithoutAdminInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DayCreateManyAdminInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const ReservationUpdateManyWithoutAdminNestedInputSchema: z.ZodType<Prisma.ReservationUpdateManyWithoutAdminNestedInput> = z.object({
@@ -2600,6 +2868,20 @@ export const ClosedDaysUpdateManyWithoutAdminNestedInputSchema: z.ZodType<Prisma
   deleteMany: z.union([ z.lazy(() => ClosedDaysScalarWhereInputSchema),z.lazy(() => ClosedDaysScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const DayUpdateManyWithoutAdminNestedInputSchema: z.ZodType<Prisma.DayUpdateManyWithoutAdminNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DayCreateWithoutAdminInputSchema),z.lazy(() => DayCreateWithoutAdminInputSchema).array(),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DayCreateOrConnectWithoutAdminInputSchema),z.lazy(() => DayCreateOrConnectWithoutAdminInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => DayUpsertWithWhereUniqueWithoutAdminInputSchema),z.lazy(() => DayUpsertWithWhereUniqueWithoutAdminInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DayCreateManyAdminInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => DayUpdateWithWhereUniqueWithoutAdminInputSchema),z.lazy(() => DayUpdateWithWhereUniqueWithoutAdminInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => DayUpdateManyWithWhereWithoutAdminInputSchema),z.lazy(() => DayUpdateManyWithWhereWithoutAdminInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => DayScalarWhereInputSchema),z.lazy(() => DayScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const ReservationUncheckedUpdateManyWithoutAdminNestedInputSchema: z.ZodType<Prisma.ReservationUncheckedUpdateManyWithoutAdminNestedInput> = z.object({
   create: z.union([ z.lazy(() => ReservationCreateWithoutAdminInputSchema),z.lazy(() => ReservationCreateWithoutAdminInputSchema).array(),z.lazy(() => ReservationUncheckedCreateWithoutAdminInputSchema),z.lazy(() => ReservationUncheckedCreateWithoutAdminInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => ReservationCreateOrConnectWithoutAdminInputSchema),z.lazy(() => ReservationCreateOrConnectWithoutAdminInputSchema).array() ]).optional(),
@@ -2650,6 +2932,20 @@ export const ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema: z.ZodTy
   update: z.union([ z.lazy(() => ClosedDaysUpdateWithWhereUniqueWithoutAdminInputSchema),z.lazy(() => ClosedDaysUpdateWithWhereUniqueWithoutAdminInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => ClosedDaysUpdateManyWithWhereWithoutAdminInputSchema),z.lazy(() => ClosedDaysUpdateManyWithWhereWithoutAdminInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => ClosedDaysScalarWhereInputSchema),z.lazy(() => ClosedDaysScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const DayUncheckedUpdateManyWithoutAdminNestedInputSchema: z.ZodType<Prisma.DayUncheckedUpdateManyWithoutAdminNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DayCreateWithoutAdminInputSchema),z.lazy(() => DayCreateWithoutAdminInputSchema).array(),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DayCreateOrConnectWithoutAdminInputSchema),z.lazy(() => DayCreateOrConnectWithoutAdminInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => DayUpsertWithWhereUniqueWithoutAdminInputSchema),z.lazy(() => DayUpsertWithWhereUniqueWithoutAdminInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DayCreateManyAdminInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => DayWhereUniqueInputSchema),z.lazy(() => DayWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => DayUpdateWithWhereUniqueWithoutAdminInputSchema),z.lazy(() => DayUpdateWithWhereUniqueWithoutAdminInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => DayUpdateManyWithWhereWithoutAdminInputSchema),z.lazy(() => DayUpdateManyWithWhereWithoutAdminInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => DayScalarWhereInputSchema),z.lazy(() => DayScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const AdminCreateNestedOneWithoutAdminConfigInputSchema: z.ZodType<Prisma.AdminCreateNestedOneWithoutAdminConfigInput> = z.object({
@@ -2776,6 +3072,28 @@ export const ServiceUpdateOneWithoutReservationsNestedInputSchema: z.ZodType<Pri
   delete: z.union([ z.boolean(),z.lazy(() => ServiceWhereInputSchema) ]).optional(),
   connect: z.lazy(() => ServiceWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => ServiceUpdateToOneWithWhereWithoutReservationsInputSchema),z.lazy(() => ServiceUpdateWithoutReservationsInputSchema),z.lazy(() => ServiceUncheckedUpdateWithoutReservationsInputSchema) ]).optional(),
+}).strict();
+
+export const AdminCreateNestedOneWithoutDayInputSchema: z.ZodType<Prisma.AdminCreateNestedOneWithoutDayInput> = z.object({
+  create: z.union([ z.lazy(() => AdminCreateWithoutDayInputSchema),z.lazy(() => AdminUncheckedCreateWithoutDayInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AdminCreateOrConnectWithoutDayInputSchema).optional(),
+  connect: z.lazy(() => AdminWhereUniqueInputSchema).optional()
+}).strict();
+
+export const IntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.IntFieldUpdateOperationsInput> = z.object({
+  set: z.number().optional(),
+  increment: z.number().optional(),
+  decrement: z.number().optional(),
+  multiply: z.number().optional(),
+  divide: z.number().optional()
+}).strict();
+
+export const AdminUpdateOneRequiredWithoutDayNestedInputSchema: z.ZodType<Prisma.AdminUpdateOneRequiredWithoutDayNestedInput> = z.object({
+  create: z.union([ z.lazy(() => AdminCreateWithoutDayInputSchema),z.lazy(() => AdminUncheckedCreateWithoutDayInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AdminCreateOrConnectWithoutDayInputSchema).optional(),
+  upsert: z.lazy(() => AdminUpsertWithoutDayInputSchema).optional(),
+  connect: z.lazy(() => AdminWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => AdminUpdateToOneWithWhereWithoutDayInputSchema),z.lazy(() => AdminUpdateWithoutDayInputSchema),z.lazy(() => AdminUncheckedUpdateWithoutDayInputSchema) ]).optional(),
 }).strict();
 
 export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.object({
@@ -2977,6 +3295,22 @@ export const NestedFloatWithAggregatesFilterSchema: z.ZodType<Prisma.NestedFloat
   _sum: z.lazy(() => NestedFloatFilterSchema).optional(),
   _min: z.lazy(() => NestedFloatFilterSchema).optional(),
   _max: z.lazy(() => NestedFloatFilterSchema).optional()
+}).strict();
+
+export const NestedIntWithAggregatesFilterSchema: z.ZodType<Prisma.NestedIntWithAggregatesFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([ z.number(),z.lazy(() => NestedIntWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _sum: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedIntFilterSchema).optional(),
+  _max: z.lazy(() => NestedIntFilterSchema).optional()
 }).strict();
 
 export const UserCreateWithoutAccountsInputSchema: z.ZodType<Prisma.UserCreateWithoutAccountsInput> = z.object({
@@ -3308,6 +3642,32 @@ export const ClosedDaysCreateManyAdminInputEnvelopeSchema: z.ZodType<Prisma.Clos
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const DayCreateWithoutAdminInputSchema: z.ZodType<Prisma.DayCreateWithoutAdminInput> = z.object({
+  weekDay: z.number().int(),
+  open: z.boolean().optional(),
+  openingHour: z.coerce.date(),
+  closingHour: z.coerce.date(),
+  interval: z.coerce.date()
+}).strict();
+
+export const DayUncheckedCreateWithoutAdminInputSchema: z.ZodType<Prisma.DayUncheckedCreateWithoutAdminInput> = z.object({
+  weekDay: z.number().int(),
+  open: z.boolean().optional(),
+  openingHour: z.coerce.date(),
+  closingHour: z.coerce.date(),
+  interval: z.coerce.date()
+}).strict();
+
+export const DayCreateOrConnectWithoutAdminInputSchema: z.ZodType<Prisma.DayCreateOrConnectWithoutAdminInput> = z.object({
+  where: z.lazy(() => DayWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DayCreateWithoutAdminInputSchema),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema) ]),
+}).strict();
+
+export const DayCreateManyAdminInputEnvelopeSchema: z.ZodType<Prisma.DayCreateManyAdminInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => DayCreateManyAdminInputSchema),z.lazy(() => DayCreateManyAdminInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const ReservationUpsertWithWhereUniqueWithoutAdminInputSchema: z.ZodType<Prisma.ReservationUpsertWithWhereUniqueWithoutAdminInput> = z.object({
   where: z.lazy(() => ReservationWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => ReservationUpdateWithoutAdminInputSchema),z.lazy(() => ReservationUncheckedUpdateWithoutAdminInputSchema) ]),
@@ -3424,6 +3784,34 @@ export const ClosedDaysScalarWhereInputSchema: z.ZodType<Prisma.ClosedDaysScalar
   dateClosed: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
+export const DayUpsertWithWhereUniqueWithoutAdminInputSchema: z.ZodType<Prisma.DayUpsertWithWhereUniqueWithoutAdminInput> = z.object({
+  where: z.lazy(() => DayWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => DayUpdateWithoutAdminInputSchema),z.lazy(() => DayUncheckedUpdateWithoutAdminInputSchema) ]),
+  create: z.union([ z.lazy(() => DayCreateWithoutAdminInputSchema),z.lazy(() => DayUncheckedCreateWithoutAdminInputSchema) ]),
+}).strict();
+
+export const DayUpdateWithWhereUniqueWithoutAdminInputSchema: z.ZodType<Prisma.DayUpdateWithWhereUniqueWithoutAdminInput> = z.object({
+  where: z.lazy(() => DayWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => DayUpdateWithoutAdminInputSchema),z.lazy(() => DayUncheckedUpdateWithoutAdminInputSchema) ]),
+}).strict();
+
+export const DayUpdateManyWithWhereWithoutAdminInputSchema: z.ZodType<Prisma.DayUpdateManyWithWhereWithoutAdminInput> = z.object({
+  where: z.lazy(() => DayScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => DayUpdateManyMutationInputSchema),z.lazy(() => DayUncheckedUpdateManyWithoutAdminInputSchema) ]),
+}).strict();
+
+export const DayScalarWhereInputSchema: z.ZodType<Prisma.DayScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => DayScalarWhereInputSchema),z.lazy(() => DayScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DayScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DayScalarWhereInputSchema),z.lazy(() => DayScalarWhereInputSchema).array() ]).optional(),
+  weekDay: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  adminId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  open: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  openingHour: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  closingHour: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  interval: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+}).strict();
+
 export const AdminCreateWithoutAdminConfigInputSchema: z.ZodType<Prisma.AdminCreateWithoutAdminConfigInput> = z.object({
   id: z.string().cuid().optional(),
   name: z.string(),
@@ -3432,7 +3820,8 @@ export const AdminCreateWithoutAdminConfigInputSchema: z.ZodType<Prisma.AdminCre
   password: z.string(),
   Reservation: z.lazy(() => ReservationCreateNestedManyWithoutAdminInputSchema).optional(),
   Service: z.lazy(() => ServiceCreateNestedManyWithoutAdminInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedCreateWithoutAdminConfigInputSchema: z.ZodType<Prisma.AdminUncheckedCreateWithoutAdminConfigInput> = z.object({
@@ -3443,7 +3832,8 @@ export const AdminUncheckedCreateWithoutAdminConfigInputSchema: z.ZodType<Prisma
   password: z.string(),
   Reservation: z.lazy(() => ReservationUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
   Service: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminCreateOrConnectWithoutAdminConfigInputSchema: z.ZodType<Prisma.AdminCreateOrConnectWithoutAdminConfigInput> = z.object({
@@ -3470,7 +3860,8 @@ export const AdminUpdateWithoutAdminConfigInputSchema: z.ZodType<Prisma.AdminUpd
   password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   Reservation: z.lazy(() => ReservationUpdateManyWithoutAdminNestedInputSchema).optional(),
   Service: z.lazy(() => ServiceUpdateManyWithoutAdminNestedInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedUpdateWithoutAdminConfigInputSchema: z.ZodType<Prisma.AdminUncheckedUpdateWithoutAdminConfigInput> = z.object({
@@ -3481,7 +3872,8 @@ export const AdminUncheckedUpdateWithoutAdminConfigInputSchema: z.ZodType<Prisma
   password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   Reservation: z.lazy(() => ReservationUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
   Service: z.lazy(() => ServiceUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AdminCreateWithoutClosedDaysInputSchema: z.ZodType<Prisma.AdminCreateWithoutClosedDaysInput> = z.object({
@@ -3492,7 +3884,8 @@ export const AdminCreateWithoutClosedDaysInputSchema: z.ZodType<Prisma.AdminCrea
   password: z.string(),
   Reservation: z.lazy(() => ReservationCreateNestedManyWithoutAdminInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigCreateNestedOneWithoutAdminInputSchema).optional(),
-  Service: z.lazy(() => ServiceCreateNestedManyWithoutAdminInputSchema).optional()
+  Service: z.lazy(() => ServiceCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedCreateWithoutClosedDaysInputSchema: z.ZodType<Prisma.AdminUncheckedCreateWithoutClosedDaysInput> = z.object({
@@ -3503,7 +3896,8 @@ export const AdminUncheckedCreateWithoutClosedDaysInputSchema: z.ZodType<Prisma.
   password: z.string(),
   Reservation: z.lazy(() => ReservationUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUncheckedCreateNestedOneWithoutAdminInputSchema).optional(),
-  Service: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
+  Service: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminCreateOrConnectWithoutClosedDaysInputSchema: z.ZodType<Prisma.AdminCreateOrConnectWithoutClosedDaysInput> = z.object({
@@ -3530,7 +3924,8 @@ export const AdminUpdateWithoutClosedDaysInputSchema: z.ZodType<Prisma.AdminUpda
   password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   Reservation: z.lazy(() => ReservationUpdateManyWithoutAdminNestedInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUpdateOneWithoutAdminNestedInputSchema).optional(),
-  Service: z.lazy(() => ServiceUpdateManyWithoutAdminNestedInputSchema).optional()
+  Service: z.lazy(() => ServiceUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedUpdateWithoutClosedDaysInputSchema: z.ZodType<Prisma.AdminUncheckedUpdateWithoutClosedDaysInput> = z.object({
@@ -3541,7 +3936,8 @@ export const AdminUncheckedUpdateWithoutClosedDaysInputSchema: z.ZodType<Prisma.
   password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   Reservation: z.lazy(() => ReservationUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUncheckedUpdateOneWithoutAdminNestedInputSchema).optional(),
-  Service: z.lazy(() => ServiceUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
+  Service: z.lazy(() => ServiceUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AdminCreateWithoutServiceInputSchema: z.ZodType<Prisma.AdminCreateWithoutServiceInput> = z.object({
@@ -3552,7 +3948,8 @@ export const AdminCreateWithoutServiceInputSchema: z.ZodType<Prisma.AdminCreateW
   password: z.string(),
   Reservation: z.lazy(() => ReservationCreateNestedManyWithoutAdminInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigCreateNestedOneWithoutAdminInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedCreateWithoutServiceInputSchema: z.ZodType<Prisma.AdminUncheckedCreateWithoutServiceInput> = z.object({
@@ -3563,7 +3960,8 @@ export const AdminUncheckedCreateWithoutServiceInputSchema: z.ZodType<Prisma.Adm
   password: z.string(),
   Reservation: z.lazy(() => ReservationUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUncheckedCreateNestedOneWithoutAdminInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminCreateOrConnectWithoutServiceInputSchema: z.ZodType<Prisma.AdminCreateOrConnectWithoutServiceInput> = z.object({
@@ -3622,7 +4020,8 @@ export const AdminUpdateWithoutServiceInputSchema: z.ZodType<Prisma.AdminUpdateW
   password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   Reservation: z.lazy(() => ReservationUpdateManyWithoutAdminNestedInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUpdateOneWithoutAdminNestedInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedUpdateWithoutServiceInputSchema: z.ZodType<Prisma.AdminUncheckedUpdateWithoutServiceInput> = z.object({
@@ -3633,7 +4032,8 @@ export const AdminUncheckedUpdateWithoutServiceInputSchema: z.ZodType<Prisma.Adm
   password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   Reservation: z.lazy(() => ReservationUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
   AdminConfig: z.lazy(() => AdminConfigUncheckedUpdateOneWithoutAdminNestedInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const ReservationUpsertWithWhereUniqueWithoutServiceInputSchema: z.ZodType<Prisma.ReservationUpsertWithWhereUniqueWithoutServiceInput> = z.object({
@@ -3660,7 +4060,8 @@ export const AdminCreateWithoutReservationInputSchema: z.ZodType<Prisma.AdminCre
   password: z.string(),
   AdminConfig: z.lazy(() => AdminConfigCreateNestedOneWithoutAdminInputSchema).optional(),
   Service: z.lazy(() => ServiceCreateNestedManyWithoutAdminInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedCreateWithoutReservationInputSchema: z.ZodType<Prisma.AdminUncheckedCreateWithoutReservationInput> = z.object({
@@ -3671,7 +4072,8 @@ export const AdminUncheckedCreateWithoutReservationInputSchema: z.ZodType<Prisma
   password: z.string(),
   AdminConfig: z.lazy(() => AdminConfigUncheckedCreateNestedOneWithoutAdminInputSchema).optional(),
   Service: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
 }).strict();
 
 export const AdminCreateOrConnectWithoutReservationInputSchema: z.ZodType<Prisma.AdminCreateOrConnectWithoutReservationInput> = z.object({
@@ -3719,7 +4121,8 @@ export const AdminUpdateWithoutReservationInputSchema: z.ZodType<Prisma.AdminUpd
   password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   AdminConfig: z.lazy(() => AdminConfigUpdateOneWithoutAdminNestedInputSchema).optional(),
   Service: z.lazy(() => ServiceUpdateManyWithoutAdminNestedInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AdminUncheckedUpdateWithoutReservationInputSchema: z.ZodType<Prisma.AdminUncheckedUpdateWithoutReservationInput> = z.object({
@@ -3730,7 +4133,8 @@ export const AdminUncheckedUpdateWithoutReservationInputSchema: z.ZodType<Prisma
   password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   AdminConfig: z.lazy(() => AdminConfigUncheckedUpdateOneWithoutAdminNestedInputSchema).optional(),
   Service: z.lazy(() => ServiceUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
-  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
+  Day: z.lazy(() => DayUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const ServiceUpsertWithoutReservationsInputSchema: z.ZodType<Prisma.ServiceUpsertWithoutReservationsInput> = z.object({
@@ -3758,6 +4162,70 @@ export const ServiceUncheckedUpdateWithoutReservationsInputSchema: z.ZodType<Pri
   imageUrl: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   imageKey: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const AdminCreateWithoutDayInputSchema: z.ZodType<Prisma.AdminCreateWithoutDayInput> = z.object({
+  id: z.string().cuid().optional(),
+  name: z.string(),
+  route: z.string(),
+  email: z.string(),
+  password: z.string(),
+  Reservation: z.lazy(() => ReservationCreateNestedManyWithoutAdminInputSchema).optional(),
+  AdminConfig: z.lazy(() => AdminConfigCreateNestedOneWithoutAdminInputSchema).optional(),
+  Service: z.lazy(() => ServiceCreateNestedManyWithoutAdminInputSchema).optional(),
+  ClosedDays: z.lazy(() => ClosedDaysCreateNestedManyWithoutAdminInputSchema).optional()
+}).strict();
+
+export const AdminUncheckedCreateWithoutDayInputSchema: z.ZodType<Prisma.AdminUncheckedCreateWithoutDayInput> = z.object({
+  id: z.string().cuid().optional(),
+  name: z.string(),
+  route: z.string(),
+  email: z.string(),
+  password: z.string(),
+  Reservation: z.lazy(() => ReservationUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
+  AdminConfig: z.lazy(() => AdminConfigUncheckedCreateNestedOneWithoutAdminInputSchema).optional(),
+  Service: z.lazy(() => ServiceUncheckedCreateNestedManyWithoutAdminInputSchema).optional(),
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedCreateNestedManyWithoutAdminInputSchema).optional()
+}).strict();
+
+export const AdminCreateOrConnectWithoutDayInputSchema: z.ZodType<Prisma.AdminCreateOrConnectWithoutDayInput> = z.object({
+  where: z.lazy(() => AdminWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => AdminCreateWithoutDayInputSchema),z.lazy(() => AdminUncheckedCreateWithoutDayInputSchema) ]),
+}).strict();
+
+export const AdminUpsertWithoutDayInputSchema: z.ZodType<Prisma.AdminUpsertWithoutDayInput> = z.object({
+  update: z.union([ z.lazy(() => AdminUpdateWithoutDayInputSchema),z.lazy(() => AdminUncheckedUpdateWithoutDayInputSchema) ]),
+  create: z.union([ z.lazy(() => AdminCreateWithoutDayInputSchema),z.lazy(() => AdminUncheckedCreateWithoutDayInputSchema) ]),
+  where: z.lazy(() => AdminWhereInputSchema).optional()
+}).strict();
+
+export const AdminUpdateToOneWithWhereWithoutDayInputSchema: z.ZodType<Prisma.AdminUpdateToOneWithWhereWithoutDayInput> = z.object({
+  where: z.lazy(() => AdminWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => AdminUpdateWithoutDayInputSchema),z.lazy(() => AdminUncheckedUpdateWithoutDayInputSchema) ]),
+}).strict();
+
+export const AdminUpdateWithoutDayInputSchema: z.ZodType<Prisma.AdminUpdateWithoutDayInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  route: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Reservation: z.lazy(() => ReservationUpdateManyWithoutAdminNestedInputSchema).optional(),
+  AdminConfig: z.lazy(() => AdminConfigUpdateOneWithoutAdminNestedInputSchema).optional(),
+  Service: z.lazy(() => ServiceUpdateManyWithoutAdminNestedInputSchema).optional(),
+  ClosedDays: z.lazy(() => ClosedDaysUpdateManyWithoutAdminNestedInputSchema).optional()
+}).strict();
+
+export const AdminUncheckedUpdateWithoutDayInputSchema: z.ZodType<Prisma.AdminUncheckedUpdateWithoutDayInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  route: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  password: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  Reservation: z.lazy(() => ReservationUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
+  AdminConfig: z.lazy(() => AdminConfigUncheckedUpdateOneWithoutAdminNestedInputSchema).optional(),
+  Service: z.lazy(() => ServiceUncheckedUpdateManyWithoutAdminNestedInputSchema).optional(),
+  ClosedDays: z.lazy(() => ClosedDaysUncheckedUpdateManyWithoutAdminNestedInputSchema).optional()
 }).strict();
 
 export const AccountCreateManyUserInputSchema: z.ZodType<Prisma.AccountCreateManyUserInput> = z.object({
@@ -3863,6 +4331,14 @@ export const ClosedDaysCreateManyAdminInputSchema: z.ZodType<Prisma.ClosedDaysCr
   dateClosed: z.coerce.date()
 }).strict();
 
+export const DayCreateManyAdminInputSchema: z.ZodType<Prisma.DayCreateManyAdminInput> = z.object({
+  weekDay: z.number().int(),
+  open: z.boolean().optional(),
+  openingHour: z.coerce.date(),
+  closingHour: z.coerce.date(),
+  interval: z.coerce.date()
+}).strict();
+
 export const ReservationUpdateWithoutAdminInputSchema: z.ZodType<Prisma.ReservationUpdateWithoutAdminInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   paymentIdMP: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
@@ -3932,6 +4408,30 @@ export const ClosedDaysUncheckedUpdateWithoutAdminInputSchema: z.ZodType<Prisma.
 export const ClosedDaysUncheckedUpdateManyWithoutAdminInputSchema: z.ZodType<Prisma.ClosedDaysUncheckedUpdateManyWithoutAdminInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dateClosed: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DayUpdateWithoutAdminInputSchema: z.ZodType<Prisma.DayUpdateWithoutAdminInput> = z.object({
+  weekDay: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  open: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  openingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  closingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DayUncheckedUpdateWithoutAdminInputSchema: z.ZodType<Prisma.DayUncheckedUpdateWithoutAdminInput> = z.object({
+  weekDay: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  open: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  openingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  closingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DayUncheckedUpdateManyWithoutAdminInputSchema: z.ZodType<Prisma.DayUncheckedUpdateManyWithoutAdminInput> = z.object({
+  weekDay: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  open: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  openingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  closingHour: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ReservationCreateManyServiceInputSchema: z.ZodType<Prisma.ReservationCreateManyServiceInput> = z.object({
@@ -4592,6 +5092,68 @@ export const ReservationFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.Reservatio
   where: ReservationWhereUniqueInputSchema,
 }).strict()
 
+export const DayFindFirstArgsSchema: z.ZodType<Prisma.DayFindFirstArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  where: DayWhereInputSchema.optional(),
+  orderBy: z.union([ DayOrderByWithRelationInputSchema.array(),DayOrderByWithRelationInputSchema ]).optional(),
+  cursor: DayWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DayScalarFieldEnumSchema,DayScalarFieldEnumSchema.array() ]).optional(),
+}).strict()
+
+export const DayFindFirstOrThrowArgsSchema: z.ZodType<Prisma.DayFindFirstOrThrowArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  where: DayWhereInputSchema.optional(),
+  orderBy: z.union([ DayOrderByWithRelationInputSchema.array(),DayOrderByWithRelationInputSchema ]).optional(),
+  cursor: DayWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DayScalarFieldEnumSchema,DayScalarFieldEnumSchema.array() ]).optional(),
+}).strict()
+
+export const DayFindManyArgsSchema: z.ZodType<Prisma.DayFindManyArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  where: DayWhereInputSchema.optional(),
+  orderBy: z.union([ DayOrderByWithRelationInputSchema.array(),DayOrderByWithRelationInputSchema ]).optional(),
+  cursor: DayWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DayScalarFieldEnumSchema,DayScalarFieldEnumSchema.array() ]).optional(),
+}).strict()
+
+export const DayAggregateArgsSchema: z.ZodType<Prisma.DayAggregateArgs> = z.object({
+  where: DayWhereInputSchema.optional(),
+  orderBy: z.union([ DayOrderByWithRelationInputSchema.array(),DayOrderByWithRelationInputSchema ]).optional(),
+  cursor: DayWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict()
+
+export const DayGroupByArgsSchema: z.ZodType<Prisma.DayGroupByArgs> = z.object({
+  where: DayWhereInputSchema.optional(),
+  orderBy: z.union([ DayOrderByWithAggregationInputSchema.array(),DayOrderByWithAggregationInputSchema ]).optional(),
+  by: DayScalarFieldEnumSchema.array(),
+  having: DayScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict()
+
+export const DayFindUniqueArgsSchema: z.ZodType<Prisma.DayFindUniqueArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  where: DayWhereUniqueInputSchema,
+}).strict()
+
+export const DayFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.DayFindUniqueOrThrowArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  where: DayWhereUniqueInputSchema,
+}).strict()
+
 export const ExampleCreateArgsSchema: z.ZodType<Prisma.ExampleCreateArgs> = z.object({
   select: ExampleSelectSchema.optional(),
   data: z.union([ ExampleCreateInputSchema,ExampleUncheckedCreateInputSchema ]),
@@ -4992,4 +5554,45 @@ export const ReservationUpdateManyArgsSchema: z.ZodType<Prisma.ReservationUpdate
 
 export const ReservationDeleteManyArgsSchema: z.ZodType<Prisma.ReservationDeleteManyArgs> = z.object({
   where: ReservationWhereInputSchema.optional(),
+}).strict()
+
+export const DayCreateArgsSchema: z.ZodType<Prisma.DayCreateArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  data: z.union([ DayCreateInputSchema,DayUncheckedCreateInputSchema ]),
+}).strict()
+
+export const DayUpsertArgsSchema: z.ZodType<Prisma.DayUpsertArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  where: DayWhereUniqueInputSchema,
+  create: z.union([ DayCreateInputSchema,DayUncheckedCreateInputSchema ]),
+  update: z.union([ DayUpdateInputSchema,DayUncheckedUpdateInputSchema ]),
+}).strict()
+
+export const DayCreateManyArgsSchema: z.ZodType<Prisma.DayCreateManyArgs> = z.object({
+  data: z.union([ DayCreateManyInputSchema,DayCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict()
+
+export const DayDeleteArgsSchema: z.ZodType<Prisma.DayDeleteArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  where: DayWhereUniqueInputSchema,
+}).strict()
+
+export const DayUpdateArgsSchema: z.ZodType<Prisma.DayUpdateArgs> = z.object({
+  select: DaySelectSchema.optional(),
+  include: DayIncludeSchema.optional(),
+  data: z.union([ DayUpdateInputSchema,DayUncheckedUpdateInputSchema ]),
+  where: DayWhereUniqueInputSchema,
+}).strict()
+
+export const DayUpdateManyArgsSchema: z.ZodType<Prisma.DayUpdateManyArgs> = z.object({
+  data: z.union([ DayUpdateManyMutationInputSchema,DayUncheckedUpdateManyInputSchema ]),
+  where: DayWhereInputSchema.optional(),
+}).strict()
+
+export const DayDeleteManyArgsSchema: z.ZodType<Prisma.DayDeleteManyArgs> = z.object({
+  where: DayWhereInputSchema.optional(),
 }).strict()

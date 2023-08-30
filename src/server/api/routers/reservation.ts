@@ -70,8 +70,6 @@ export const reservationRouter = createTRPCRouter({
 
           return "Horário reservado com sucesso!";
         }
-
-        console.log(reservation);
       } else {
         const reservation = await ctx.prisma.reservation.findFirst({
           where: {
@@ -141,15 +139,12 @@ export const reservationRouter = createTRPCRouter({
       type ReservationPayload = Prisma.ReservationGetPayload<{
         select: typeof reservationSelect;
       }>;
+
       if (input.date) {
         input.date.setHours(0, 0, 0, 0);
         const data = await ctx.prisma.reservation.findMany({
           where: {
-            AND: [
-              { justDate: input.date },
-              { adminId: input.adminId },
-              { serviceId: null },
-            ],
+            AND: [{ justDate: input.date }, { adminId: input.adminId }],
           },
           select: reservationSelect,
           orderBy: {
@@ -177,7 +172,6 @@ export const reservationRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input: { date, serviceId } }) => {
-      console.log(serviceId);
       if (serviceId) {
         if (date) {
           date.setHours(0, 0, 0, 0);

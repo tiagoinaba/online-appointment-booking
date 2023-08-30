@@ -2,7 +2,6 @@ import BookingForm from "@/components/BookingForm";
 import DateTimePicker from "@/components/DateTimePicker";
 import MPWallet from "@/components/MPWallet";
 import ProgressBar from "@/components/ProgressBar";
-import ServicesCarousel from "@/components/ServicesCarousel";
 import ServicesCarouselClient from "@/components/ServicesCarouselClient";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
@@ -95,7 +94,13 @@ export default function Home({
         className={`flex min-h-screen flex-col items-center gap-10 overflow-x-hidden p-10`}
       >
         <ProgressBar
-          steps={admin?.AdminConfig?.multipleServices ? 4 : 3}
+          steps={
+            admin?.AdminConfig?.multipleServices
+              ? 3
+              : admin?.AdminConfig?.requirePayment
+              ? 4
+              : 3
+          }
           step={step}
           setStep={setStep}
         />
@@ -126,6 +131,7 @@ export default function Home({
               </h2>
 
               <DateTimePicker
+                days={admin.Day}
                 date={date}
                 setAnimate={setAnimate}
                 setDate={setDate}
@@ -211,6 +217,7 @@ export default function Home({
             </h2>
 
             <DateTimePicker
+              days={admin.Day}
               date={date}
               setAnimate={setAnimate}
               setDate={setDate}
@@ -282,6 +289,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
           route: true,
           AdminConfig: true,
           Service: true,
+          Day: true,
         },
       });
       if (admin) {
