@@ -57,4 +57,15 @@ export const dayRouter = createTRPCRouter({
         }
       }
     ),
+  deleteDay: adminProcedure
+    .input(z.object({ adminId: z.string(), weekDay: z.number() }))
+    .mutation(async ({ ctx, input: { adminId, weekDay } }) => {
+      const deletedDay = await ctx.prisma.day.deleteMany({
+        where: {
+          AND: [{ adminId }, { weekDay }],
+        },
+      });
+
+      return deletedDay;
+    }),
 });

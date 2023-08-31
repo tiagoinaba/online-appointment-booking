@@ -1,21 +1,24 @@
-import { TimePicker } from "@mui/x-date-pickers";
-import { add } from "date-fns";
-import React, { useState } from "react";
-import Button from "./Button";
-import { DoorClosed } from "lucide-react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { api } from "@/utils/api";
+import { ErrorMessage } from "@hookform/error-message";
 import {
-  Input,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   InputLabel,
   MenuItem,
   Modal,
-  Select,
   Switch,
   TextField,
+  Typography,
 } from "@mui/material";
-import { ErrorMessage } from "@hookform/error-message";
-import { api } from "@/utils/api";
+import { TimePicker } from "@mui/x-date-pickers";
+import { add, format } from "date-fns";
+import React, { useState } from "react";
+import { IconDropdown } from "react-day-picker";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
+import Button from "./Button";
+import { EditForm } from "./EditForm";
 
 type weekNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | string;
 type weekDayName =
@@ -37,7 +40,7 @@ const weekDayRecord: Record<weekNumber, weekDayName> = {
   6: "Sábado",
 };
 
-type FormType = {
+export type FormType = {
   open: boolean;
   weekDay: number;
   openingHour: Date;
@@ -58,6 +61,13 @@ export const WeekDays = ({ adminId }: { adminId: string }) => {
       toast.error(err.message);
     },
   });
+
+  const [expanded, setExpanded] = React.useState<number | false>(false);
+
+  const handleChange =
+    (panel: number) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
 
   const {
     control,
@@ -101,9 +111,44 @@ export const WeekDays = ({ adminId }: { adminId: string }) => {
           label="Intervalo"
         />
       </div>
-      <Button onClick={() => setOpen(true)}>Adicionar dia</Button>
+      <Button onClick={() => setOpen(true)} className="">
+        Adicionar dia
+      </Button>
 
-      {days && days.map((item) => <div>{weekDayRecord[item.weekDay]}</div>)}
+      {days &&
+        days.map((item) => {
+          return (
+            <Accordion
+              expanded={expanded === item.weekDay}
+              onChange={handleChange(item.weekDay)}
+              key={item.weekDay}
+            >
+              <AccordionSummary
+                expandIcon={<IconDropdown />}
+                aria-controls="panel1bh-content"
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span className="font-bold tracking-tight">
+                  {weekDayRecord[item.weekDay]}
+                </span>
+                <span className="ml-auto mr-4 text-muted-foreground">
+                  {item.open
+                    ? `${format(item.openingHour, "kk:mm")} -> ${format(
+                        item.closingHour,
+                        "kk:mm"
+                      )}`
+                    : "Fechado"}
+                </span>
+              </AccordionSummary>
+              <AccordionDetails>
+                <EditForm data={item} adminId={adminId} />
+              </AccordionDetails>
+            </Accordion>
+          );
+        })}
 
       <Modal
         open={open}

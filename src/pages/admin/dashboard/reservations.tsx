@@ -44,7 +44,7 @@ export default function reservations({
   return (
     <>
       <Head>
-        <title>Reservas - Admin</title>
+        <title>Admin - Reservas</title>
       </Head>
       <main className="flex h-screen flex-col items-center justify-center pt-32">
         <AdminBackButton />

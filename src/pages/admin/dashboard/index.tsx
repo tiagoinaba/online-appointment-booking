@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getCookie } from "cookies-next";
 import NotFound from "@/components/NotFound";
+import Head from "next/head";
 
 const adminFormSchema = z.object({
   email: z.string().nonempty("O email é obrigatório.").email("Email inválido"),
@@ -28,6 +29,9 @@ export default function index({
     <NotFound />
   ) : (
     <main className="flex h-screen items-center justify-center gap-16 bg-zinc-100">
+      <Head>
+        <title>Admin - Dashboard</title>
+      </Head>
       <Button
         sx={{ position: "absolute", top: "1rem", left: "1rem" }}
         onClick={() => {
@@ -38,7 +42,7 @@ export default function index({
       </Button>
       <Link href="/admin/dashboard/reservations">Reservas</Link>
       <Link href="/admin/dashboard/services">Serviços</Link>
-      <Link href="/admin/dashboard/closedDays">Datas</Link>
+      <Link href="/admin/dashboard/calendario">Datas e horários</Link>
       <Link href="/admin/dashboard/options">Opções</Link>
     </main>
   );

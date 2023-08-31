@@ -1,32 +1,41 @@
+import { cn } from "@/lib/utils";
+import { ButtonBaseProps } from "@mui/material";
 import React, { PropsWithChildren } from "react";
 
 type ButtonProps = {
   onClick?: () => void;
-  variant?: "default" | "ghost";
+  variant?: "default" | "ghost" | "destructive";
   children?: React.ReactNode;
-};
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button: React.FC<ButtonProps> = (
   props: PropsWithChildren<ButtonProps>
 ) => {
-  const { children, onClick, variant } = props;
+  const { className, children, onClick, variant, ...rest } = props;
+
+  const classDefault =
+    "flex flex-nowrap items-center justify-center gap-1 rounded px-2 py-1 transition duration-200 cursor-pointer disabled:cursor-auto";
 
   const cNGenerator = (variant: ButtonProps["variant"]) => {
     if (variant) {
       const styles: Record<typeof variant, string> = {
         default:
-          "mx-auto flex flex-nowrap items-center justify-center gap-1 rounded bg-zinc-700 px-2 py-1 text-slate-50 transition duration-200 hover:bg-zinc-900",
-        ghost:
-          "mx-auto flex flex-nowrap items-center justify-center gap-1 rounded px-2 py-1 transition duration-200 hover:bg-slate-300",
+          "bg-zinc-700 text-slate-50 hover:bg-zinc-900 disabled:bg-zinc-400",
+        ghost: "hover:bg-slate-300 cursor-pointer",
+        destructive: "bg-red-600 text-slate-50 hover:bg-red-500",
       };
       return styles[variant];
     } else {
-      return "mx-auto flex flex-nowrap items-center justify-center gap-1 rounded bg-zinc-700 px-2 py-1 text-slate-50 transition duration-200 hover:bg-zinc-900";
+      return "bg-zinc-700 text-slate-50 hover:bg-zinc-900 disabled:bg-zinc-400";
     }
   };
 
   return (
-    <button onClick={onClick} className={cNGenerator(props.variant)}>
+    <button
+      onClick={onClick}
+      className={cn(cNGenerator(props.variant), className, classDefault)}
+      {...rest}
+    >
       {children}
     </button>
   );
