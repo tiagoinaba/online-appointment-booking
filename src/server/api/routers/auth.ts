@@ -150,4 +150,44 @@ export const authRouter = createTRPCRouter({
         },
       });
     }),
+  getHours: publicProcedure
+    .input(z.object({ adminId: z.string() }))
+    .query(async ({ ctx, input: { adminId } }) => {
+      return await ctx.prisma.adminConfig.findFirst({
+        where: {
+          adminId,
+        },
+        select: {
+          openingHours: true,
+          closingHours: true,
+          interval: true,
+        },
+      });
+    }),
+  setHours: adminProcedure
+    .input(
+      z.object({
+        adminId: z.string(),
+        openingHours: z.date(),
+        closingHours: z.date(),
+        interval: z.date(),
+      })
+    )
+    .mutation(
+      async ({
+        ctx,
+        input: { adminId, closingHours, interval, openingHours },
+      }) => {
+        const adminConfig = await ctx.prisma.adminConfig.update({
+          where: {
+            adminId,
+          },
+          data: {
+            openingHours,
+            closingHours,
+            interval,
+          },
+        });
+      }
+    ),
 });

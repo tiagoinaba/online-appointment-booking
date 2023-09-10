@@ -41,7 +41,11 @@ export default function Home({
   const [paymentStart, setPaymentStart] = useState<boolean>(false);
   const router = useRouter();
   const [step, setStep] = useState<number>(1);
-  const [formData, setFormData] = useState<Inputs>({ name: "", email: "" });
+  const [formData, setFormData] = useState<Inputs>({
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
 
   useEffect(() => {
     if (service) {
@@ -55,7 +59,6 @@ export default function Home({
         toast.success("Horário reservado com sucesso!");
         utils.reservation.getAll.invalidate();
         utils.reservation.getByDateAdmin.invalidate();
-        localStorage.setItem("adminInfo", JSON.stringify(admin));
         router.push("/success");
       },
       onError: (err) => {
@@ -76,7 +79,7 @@ export default function Home({
       setFormData(data);
       setStep((prev) => prev + 1);
       await import("@mercadopago/sdk-react").then((res) => {
-        res.initMercadoPago("TEST-6e075dd3-fe77-4349-abae-37dd548c290f");
+        res.initMercadoPago("APP_USR-46c56d9d-bbf4-4279-b234-aa246ee95f6f");
         setPaymentStart(true);
         localStorage.setItem("reservationInfo", JSON.stringify(data));
       });
@@ -95,10 +98,11 @@ export default function Home({
       >
         <ProgressBar
           steps={
-            admin?.AdminConfig?.multipleServices
-              ? 3
-              : admin?.AdminConfig?.requirePayment
+            admin?.AdminConfig?.multipleServices &&
+            admin.AdminConfig.requirePayment
               ? 4
+              : admin?.AdminConfig?.requirePayment
+              ? 3
               : 3
           }
           step={step}
@@ -184,6 +188,8 @@ export default function Home({
             <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
               {paymentStart && (
                 <MPWallet
+                  firstName={formData.firstName}
+                  lastName={formData.lastName}
                   admin={admin}
                   adminConfig={admin!.AdminConfig!}
                   date={date.dateTime!}
@@ -262,6 +268,8 @@ export default function Home({
           <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
             {paymentStart && (
               <MPWallet
+                firstName={formData.firstName}
+                lastName={formData.lastName}
                 admin={admin}
                 adminConfig={admin!.AdminConfig!}
                 date={date.dateTime!}

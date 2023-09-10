@@ -1,15 +1,13 @@
 import AdminBackButton from "@/components/AdminBackButton";
+import Button from "@/components/Button";
 import NotFound from "@/components/NotFound";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
-import { Switch } from "@mui/joy";
-import { Button, Input, TextField } from "@mui/material";
-import { TimePicker } from "@mui/x-date-pickers";
-import { useMask } from "@react-input/mask";
-import { router } from "@trpc/server";
+import { Input, TextField, Switch } from "@mui/material";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
@@ -19,9 +17,6 @@ export const ZodForm = z.object({
   requirePayment: z.boolean(),
   paymentValue: z.number(),
   description: z.string(),
-  openingHours: z.date(),
-  closingHours: z.date(),
-  interval: z.date(),
   multipleServices: z.boolean(),
 });
 
@@ -31,11 +26,12 @@ export default function options({
   admin,
   notFound,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const router = useRouter();
+  const [isTouched, setIsTouched] = useState(false);
 
   const { mutate: updatePreferences, isLoading } =
     api.auth.updatePreferences.useMutation({
       onSuccess: () => {
+        setIsTouched(false);
         toast.success("Configurações atualizadas com sucesso!");
       },
 
@@ -49,15 +45,12 @@ export default function options({
     handleSubmit,
     control,
     watch,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm<FormType>({
     defaultValues: {
       requirePayment: admin?.AdminConfig?.requirePayment ?? true,
       paymentValue: admin?.AdminConfig?.paymentValue,
       description: admin?.AdminConfig?.description,
-      openingHours: admin?.AdminConfig?.openingHours,
-      closingHours: admin?.AdminConfig?.closingHours,
-      interval: admin?.AdminConfig?.interval,
       multipleServices: admin?.AdminConfig?.multipleServices,
     },
   });
@@ -68,9 +61,6 @@ export default function options({
     updatePreferences({
       config: {
         ...config,
-        openingHours: new Date(config.openingHours),
-        closingHours: new Date(config.closingHours),
-        interval: new Date(config.interval),
       },
       adminId: admin?.id!,
     });
@@ -102,23 +92,10 @@ export default function options({
                   render={({ field }) => (
                     <Switch
                       id="my-switch"
-                      onChange={field.onChange}
-                      checked={field.value}
-                    />
-                  )}
-                />
-              </div>
-              <div className="flex items-center justify-between gap-8">
-                <Label htmlFor="multipleServices">
-                  Gostaria de oferecer múltiplos serviços?
-                </Label>
-                <Controller
-                  name="multipleServices"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch
-                      id="multipleServices"
-                      onChange={field.onChange}
+                      onChange={(e) => {
+                        setIsTouched(true);
+                        field.onChange(e);
+                      }}
                       checked={field.value}
                     />
                   )}
@@ -137,53 +114,38 @@ export default function options({
                   })}
                 />
               </div>
+              <div className="flex items-center justify-between gap-8">
+                <Label htmlFor="multipleServices">
+                  Gostaria de oferecer múltiplos serviços?
+                </Label>
+                <Controller
+                  name="multipleServices"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      id="multipleServices"
+                      onChange={(e) => {
+                        setIsTouched(true);
+                        field.onChange(e);
+                      }}
+                      checked={field.value}
+                    />
+                  )}
+                />
+              </div>
               <div className="flex flex-col justify-center gap-4">
                 <Label htmlFor="paymentValue">Descrição</Label>
                 <TextField multiline {...register("description")} />
               </div>
-              <div className="flex flex-col justify-center gap-4">
-                <Label htmlFor="horarios">Horários</Label>
-                <Controller
-                  name="openingHours"
-                  control={control}
-                  render={({ field }) => (
-                    <TimePicker
-                      label="Horário de abertura"
-                      value={new Date(field.value)}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Controller
-                  name="closingHours"
-                  control={control}
-                  render={({ field }) => (
-                    <TimePicker
-                      label="Horário de fechamento"
-                      value={new Date(field.value)}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Controller
-                  name="interval"
-                  control={control}
-                  render={({ field }) => (
-                    <TimePicker
-                      label="Intervalo"
-                      value={new Date(field.value)}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <span className="-mt-2 text-center text-xs text-slate-700 opacity-80">
-                  "Intervalo" se refere à duração de cada evento.
-                </span>
-              </div>
               <Button
                 type="submit"
-                className="self-center"
-                disabled={isLoading}
+                className="self-stretch"
+                disabled={
+                  isLoading ||
+                  (!touchedFields.description &&
+                    !touchedFields.paymentValue &&
+                    !isTouched)
+                }
               >
                 {!isLoading ? "Salvar" : "Salvando..."}
               </Button>

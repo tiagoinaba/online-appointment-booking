@@ -12,6 +12,8 @@ export const mercadopagoRouter = createTRPCRouter({
         adminId: z.string(),
         paymentValue: z.number(),
         serviceId: z.nullable(z.string()),
+        firstName: z.string(),
+        lastName: z.string(),
       })
     )
     .mutation(async ({ input }) => {
@@ -32,14 +34,21 @@ export const mercadopagoRouter = createTRPCRouter({
                 unit_price: input.paymentValue,
               },
             ],
-            auto_return: "approved",
-            back_urls: {
-              success: "https://76b1-179-100-7-205.ngrok-free.app/callback",
-              pending: "https://76b1-179-100-7-205.ngrok-free.app/callback",
-              failure: "https://76b1-179-100-7-205.ngrok-free.app/callback",
+            payer: {
+              name: input.firstName,
+              surname: input.lastName,
             },
             notification_url:
-              "https://76b1-179-100-7-205.ngrok-free.app/api/mercadopago",
+              "https://7847-2804-14c-d080-a66d-38e0-1e44-4f84-763a.ngrok-free.app/api/mercadopago",
+            auto_return: "approved",
+            back_urls: {
+              success:
+                "https://7847-2804-14c-d080-a66d-38e0-1e44-4f84-763a.ngrok-free.app/callback",
+              pending:
+                "https://7847-2804-14c-d080-a66d-38e0-1e44-4f84-763a.ngrok-free.app/callback",
+              failure:
+                "https://7847-2804-14c-d080-a66d-38e0-1e44-4f84-763a.ngrok-free.app/callback",
+            },
           },
           {
             headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },

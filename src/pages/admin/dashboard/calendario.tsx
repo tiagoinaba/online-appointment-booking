@@ -53,7 +53,7 @@ export default function closedDays({
           Horários
         </h2>
         <div className="mt-5">
-          <WeekDays adminId={admin.id} />
+          <WeekDays adminId={admin.id} adminConfig={admin.AdminConfig!} />
         </div>
         <h2 className="mx-40 mt-10 w-auto self-start border-b text-4xl font-bold">
           Calendário
@@ -133,6 +133,7 @@ export const getServerSideProps = async ({
       where: { name: adminName },
       include: {
         Service: true,
+        AdminConfig: true,
       },
     });
 

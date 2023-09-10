@@ -10,7 +10,8 @@ export type DateType = {
 };
 
 export type Inputs = {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
 };
 

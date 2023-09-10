@@ -9,13 +9,18 @@ export default function MPWallet({
   admin,
   adminConfig,
   serviceId,
+  firstName,
+  lastName,
 }: {
   paymentStart: boolean;
   date: Date;
   admin: any;
   adminConfig: AdminConfig;
   serviceId?: string;
+  firstName: string;
+  lastName: string;
 }) {
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const { mutate: createPayment, data } =
     api.mercadopago.createPreference.useMutation();
 
@@ -29,8 +34,13 @@ export default function MPWallet({
       adminId: admin.id,
       paymentValue: adminConfig.paymentValue,
       serviceId: serviceId ? serviceId : null,
+      firstName,
+      lastName,
     });
+    setIsMounted(true);
   }, []);
+
+  if (!isMounted) return null;
 
   return (
     <div>

@@ -16,6 +16,7 @@ export const EditForm = ({
   adminId: string;
 }) => {
   const [disabled, setDisabled] = useState<boolean>(true);
+  const [modal, setModal] = useState<boolean>(false);
   const utils = api.useContext();
 
   const editForm = useForm<FormType>({
@@ -150,14 +151,47 @@ export const EditForm = ({
         <Button className="mx-0" type="submit" disabled={disabled}>
           Salvar
         </Button>
-        <Button
-          type="button"
-          className="mx-0"
-          variant="destructive"
-          onClick={() => deleteDay({ adminId, weekDay: data.weekDay })}
-        >
-          Deletar
-        </Button>
+        <div className="relative">
+          <Button
+            type="button"
+            className=" mx-0"
+            variant="destructive"
+            onClick={() => setModal(true)}
+          >
+            Deletar
+          </Button>
+          {modal && (
+            <div className="absolute bottom-0 left-0 z-10 flex w-52 translate-y-full flex-col items-center justify-center gap-2 rounded border bg-slate-50 px-2 py-4">
+              <p className="text-center text-lg text-black">Tem certeza?</p>
+              <p className="text-center text-xs text-black">
+                Se você tiver reservas já feitas deverá cancelá-las por conta
+                própria.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  className="mx-0"
+                  disabled={isDeleting}
+                  variant="destructive"
+                  onClick={() => deleteDay({ adminId, weekDay: data.weekDay })}
+                >
+                  Deletar
+                </Button>
+                <Button
+                  onClick={() => {
+                    setModal(false);
+                  }}
+                  type="button"
+                  disabled={isDeleting}
+                  variant="ghost"
+                  className="text-black"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
         <Button
           type="button"
           onClick={() => {

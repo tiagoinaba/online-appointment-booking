@@ -19,6 +19,8 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import Button from "./Button";
 import { EditForm } from "./EditForm";
+import { HourForm } from "./HourForm";
+import { Admin, AdminConfig } from "@prisma/client";
 
 type weekNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | string;
 type weekDayName =
@@ -48,11 +50,19 @@ export type FormType = {
   interval: Date;
 };
 
-export const WeekDays = ({ adminId }: { adminId: string }) => {
+export const WeekDays = ({
+  adminId,
+  adminConfig,
+}: {
+  adminId: string;
+  adminConfig: AdminConfig;
+}) => {
+  const utils = api.useContext();
   const [open, setOpen] = useState<boolean>(false);
   const { data: days } = api.day.getDay.useQuery({ adminId });
   const { mutate: createDay, isLoading } = api.day.createDay.useMutation({
     onSuccess: () => {
+      utils.day.invalidate();
       toast.success("Criado com sucesso!");
       reset();
       setOpen(false);
@@ -94,26 +104,8 @@ export const WeekDays = ({ adminId }: { adminId: string }) => {
 
   return (
     <div className="mx-40 flex flex-col gap-4">
-      <div className="flex gap-4">
-        <TimePicker
-          ampm={false}
-          value={add(new Date(0, 0, 0, 0), { hours: 9 })}
-          label="Abertura"
-        />
-        <TimePicker
-          ampm={false}
-          value={add(new Date(0, 0, 0, 0), { hours: 13 })}
-          label="Fechamento"
-        />
-        <TimePicker
-          ampm={false}
-          value={add(new Date(0, 0, 0, 0), { minutes: 30 })}
-          label="Intervalo"
-        />
-      </div>
-      <Button onClick={() => setOpen(true)} className="">
-        Adicionar dia
-      </Button>
+      <HourForm adminConfig={adminConfig} />
+      <Button onClick={() => setOpen(true)}>Adicionar dia</Button>
 
       {days &&
         days.map((item) => {
@@ -290,7 +282,7 @@ export const WeekDays = ({ adminId }: { adminId: string }) => {
                   )}
                 />
               </div>
-              <Button>Salvar</Button>
+              <Button disabled={isLoading}>Salvar</Button>
             </form>
           </div>
         </div>

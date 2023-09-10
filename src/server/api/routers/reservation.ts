@@ -37,7 +37,8 @@ export const reservationRouter = createTRPCRouter({
     .input(
       z.object({
         date: z.date(),
-        name: z.string(),
+        firstName: z.string(),
+        lastName: z.string(),
         paymentId: z.nullable(z.string()),
         adminId: z.string(),
         serviceId: z.nullable(z.string()),
@@ -59,7 +60,7 @@ export const reservationRouter = createTRPCRouter({
           await ctx.prisma.reservation.create({
             data: {
               paymentIdMP: input.paymentId,
-              name: input.name,
+              name: input.firstName.concat(` ${input.lastName}`),
               email: input.email,
               adminId: input.adminId,
               serviceId: input.serviceId,
@@ -85,7 +86,7 @@ export const reservationRouter = createTRPCRouter({
           await ctx.prisma.reservation.create({
             data: {
               paymentIdMP: input.paymentId,
-              name: input.name,
+              name: input.firstName.concat(` ${input.lastName}`),
               email: input.email,
               adminId: input.adminId,
               serviceId: null,
