@@ -7,6 +7,7 @@ import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { ReservationWithService } from "@/utils/types";
 import { Button } from "@mui/material";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -38,6 +39,8 @@ export default function reservations({
           paymentStatus: res.paymentStatus,
         }))
       );
+    } else {
+      setFormattedRes([]);
     }
   }, [reservations]);
 
