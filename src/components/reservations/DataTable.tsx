@@ -15,6 +15,8 @@ import { Service } from "prisma/generated/zod";
 import { useState } from "react";
 import Select, { StylesConfig } from "react-select";
 import Button from "../Button";
+import { paymentStatus } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -28,6 +30,7 @@ export type ReservationTable = {
   service: string | null;
   date: Date;
   paymentIdMP: string | null;
+  paymentStatus: string | null;
 };
 
 export const columns: ColumnDef<ReservationTable>[] = [
@@ -92,32 +95,57 @@ export const columns: ColumnDef<ReservationTable>[] = [
     header: "Serviço",
   },
   {
+    accessorKey: "paymentStatus",
+    header: "Pagamento",
+    cell: ({ row }) => paymentStatus[row.original.paymentStatus ?? "null"],
+  },
+  {
     id: "actions",
     cell: ({ row }) => {
       const utils = api.useContext();
-      const { mutate: deleteReservation, isSuccess } =
+      const { mutate: deleteReservation, isLoading } =
         api.reservation.deleteReservation.useMutation({
           onSuccess: () => {
+            toast.success("Reserva excluída com sucesso!");
+            utils.reservation.invalidate();
+            console.log("ok");
+          },
+          onError: (err) => {
+            toast.error(err.message);
             utils.reservation.invalidate();
           },
         });
-      const { mutate: createReimbursement } =
-        api.mercadopago.createReimbursement.useMutation({
-          onSuccess: (data) => {
-            console.log(data);
-          },
-        });
+
+      const [modal, setModal] = useState<boolean>(false);
 
       return (
-        <Button
-          onClick={async () => {
-            deleteReservation({ id: row.original.id });
-            if (row.original.paymentIdMP)
-              createReimbursement({ id: row.original.paymentIdMP });
-          }}
-        >
-          Excluir
-        </Button>
+        <div className="">
+          {modal ? (
+            <div className="flex flex-col items-center justify-center gap-2">
+              Tem certeza que deseja excluir esta reserva?
+              <div className="mx-auto flex gap-4">
+                <Button
+                  variant="destructive"
+                  disabled={isLoading}
+                  onClick={async () => {
+                    deleteReservation({ id: row.original.id });
+                  }}
+                >
+                  Confirmar
+                </Button>
+                <Button
+                  disabled={isLoading}
+                  variant="ghost"
+                  onClick={() => setModal(false)}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button onClick={() => setModal(true)}>Excluir</Button>
+          )}
+        </div>
       );
     },
   },
@@ -176,7 +204,7 @@ export default function DataTable({
     },
   });
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4">
       <div className="flex justify-between">
         <input
           placeholder="Filtrar emails..."
@@ -243,7 +271,9 @@ export default function DataTable({
             ))}
           </tbody>
         </table>
-        {data.length === 0 && <div className="w-full py-4">Sem resultados</div>}
+        {data.length === 0 && (
+          <div className="mx-auto w-full py-4 text-center">Sem resultados</div>
+        )}
       </div>
     </div>
   );

@@ -195,6 +195,7 @@ export default function Home({
                   date={date.dateTime!}
                   paymentStart={paymentStart}
                   serviceId={service?.id}
+                  email={formData.email}
                 />
               )}
             </div>
@@ -274,6 +275,7 @@ export default function Home({
                 adminConfig={admin!.AdminConfig!}
                 date={date.dateTime!}
                 paymentStart={paymentStart}
+                email={formData.email}
                 serviceId={service?.id}
               />
             )}

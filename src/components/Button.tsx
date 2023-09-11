@@ -21,8 +21,9 @@ const Button: React.FC<ButtonProps> = (
       const styles: Record<typeof variant, string> = {
         default:
           "bg-zinc-700 text-slate-50 hover:bg-zinc-900 disabled:bg-zinc-400",
-        ghost: "hover:bg-slate-300 cursor-pointer",
-        destructive: "bg-red-600 text-slate-50 hover:bg-red-500",
+        ghost: "hover:bg-slate-300 cursor-pointer disabled:bg-slate-200",
+        destructive:
+          "bg-red-600 text-slate-50 hover:bg-red-500 disabled:bg-red-400",
       };
       return styles[variant];
     } else {

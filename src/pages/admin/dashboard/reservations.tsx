@@ -11,10 +11,10 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
 
 export default function reservations({
   adminId,
-  notFound,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data: reservations } = api.reservation.getByDateAdmin.useQuery({
     date: null,
@@ -23,7 +23,6 @@ export default function reservations({
   const { data: services } = api.service.getServicesByAdmin.useQuery({
     adminId: adminId ?? "error",
   });
-  const router = useRouter();
   const [formattedRes, setFormattedRes] = useState<ReservationTable[]>([]);
 
   useEffect(() => {
@@ -36,6 +35,7 @@ export default function reservations({
           date: res.dateTime,
           service: res.service?.name ? res.service?.name : null,
           paymentIdMP: res.paymentIdMP,
+          paymentStatus: res.paymentStatus,
         }))
       );
     }
@@ -61,6 +61,7 @@ export default function reservations({
           <NotFound />
         )}
       </main>
+      <Toaster position="bottom-right" />
     </>
   );
 }

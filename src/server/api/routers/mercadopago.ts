@@ -14,6 +14,7 @@ export const mercadopagoRouter = createTRPCRouter({
         serviceId: z.nullable(z.string()),
         firstName: z.string(),
         lastName: z.string(),
+        email: z.string(),
       })
     )
     .mutation(async ({ input }) => {
@@ -29,6 +30,8 @@ export const mercadopagoRouter = createTRPCRouter({
                   date: input.date.toISOString(),
                   adminId: input.adminId,
                   serviceId: input.serviceId,
+                  name: input.firstName.concat(" ", input.lastName),
+                  email: input.email,
                 },
                 quantity: 1,
                 unit_price: input.paymentValue,

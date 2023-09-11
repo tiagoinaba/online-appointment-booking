@@ -7,6 +7,8 @@ import { sub } from "date-fns";
 import { GetServerSidePropsContext } from "next";
 import { prisma } from "@/server/db";
 import { Prisma } from "@prisma/client";
+import axios from "axios";
+import { env } from "@/env.mjs";
 
 export const reservationRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -109,12 +111,41 @@ export const reservationRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { id } = input;
-      await ctx.prisma.reservation.delete({
-        where: {
-          id: id,
-        },
-      });
+      try {
+        const { id } = input;
+        const res = await ctx.prisma.reservation.findFirst({
+          where: { id },
+        });
+
+        if (res?.paymentIdMP && res.paymentStatus === "approved") {
+          const { data } = await axios.post(
+            `https://api.mercadopago.com/v1/payments/${res.paymentIdMP}/refunds`,
+            {},
+            {
+              headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },
+            }
+          );
+          console.log(data);
+        } else if (res?.paymentIdMP) {
+          const { data } = await axios.put(
+            `https://api.mercadopago.com/v1/payments/${res.paymentIdMP}`,
+            { status: "cancelled" },
+            {
+              headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },
+            }
+          );
+        }
+
+        await ctx.prisma.reservation.delete({
+          where: {
+            id: id,
+          },
+        });
+
+        return res;
+      } catch (err) {
+        console.log(err);
+      }
     }),
   getByDateAdmin: publicProcedure
     .input(z.object({ date: z.nullable(z.date()), adminId: z.string() }))
@@ -134,6 +165,7 @@ export const reservationRouter = createTRPCRouter({
           },
         },
         paymentIdMP: true,
+        paymentStatus: true,
         serviceId: true,
       } satisfies Prisma.ReservationSelect;
 

@@ -11,6 +11,7 @@ export default function MPWallet({
   serviceId,
   firstName,
   lastName,
+  email,
 }: {
   paymentStart: boolean;
   date: Date;
@@ -19,6 +20,7 @@ export default function MPWallet({
   serviceId?: string;
   firstName: string;
   lastName: string;
+  email: string;
 }) {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const { mutate: createPayment, data } =
@@ -36,6 +38,7 @@ export default function MPWallet({
       serviceId: serviceId ? serviceId : null,
       firstName,
       lastName,
+      email,
     });
     setIsMounted(true);
   }, []);
