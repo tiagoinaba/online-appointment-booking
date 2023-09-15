@@ -34,7 +34,7 @@ export default function ServiceCard({ service }: { service: Service }) {
       onSuccess: () => {
         setOpen(false);
         toast.success("Serviço excluído com sucesso!");
-        utils.service.invalidate();
+        utils.invalidate();
       },
       onError: (err) => {
         toast.error(err.message);

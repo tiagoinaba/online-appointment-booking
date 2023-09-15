@@ -201,7 +201,7 @@ export default function Home({
             </div>
           )
         ) : !service ? (
-          <div>
+          <div className="flex w-full max-w-[800px] flex-col gap-8 rounded-xl border p-12 transition duration-300 hover:bg-slate-50">
             <ServicesCarouselClient
               services={admin.Service}
               setService={setService}

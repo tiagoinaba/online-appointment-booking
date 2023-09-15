@@ -224,6 +224,7 @@ export default function DataTable({
         />
         {services?.length && services.length > 0 && (
           <Select
+            instanceId={"teste"}
             placeholder={"Escolha um serviço..."}
             options={services?.map((service) => ({
               label: service.name,

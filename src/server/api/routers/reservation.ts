@@ -12,13 +12,6 @@ import { env } from "@/env.mjs";
 
 export const reservationRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    await ctx.prisma.reservation.deleteMany({
-      where: {
-        dateTime: {
-          lt: sub(now, { months: 1 }),
-        },
-      },
-    });
     const reservations = await ctx.prisma.reservation.findMany();
     return reservations;
   }),

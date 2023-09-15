@@ -1,25 +1,8 @@
 import placeholder from "@/assets/placeholder-image.png";
-import { ServiceFormType } from "@/pages/admin/dashboard/services";
-import { api } from "@/utils/api";
-import { useUploadThing } from "@/utils/uploadthing";
-import Delete from "@mui/icons-material/Delete";
-import Edit from "@mui/icons-material/Edit";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-} from "@mui/material";
 import { Service } from "@prisma/client";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
-import { SubmitHandler } from "react-hook-form";
-import { toast } from "react-hot-toast";
+import { Dispatch, SetStateAction } from "react";
 import { z } from "zod";
-import CreateServiceForm from "./ServiceForm";
 
 export const ServiceEditForm = z.object({
   name: z.string(),

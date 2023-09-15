@@ -3,18 +3,19 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import ServiceCard from "./ServiceCard";
+import { Service } from "@prisma/client";
 
-export default function ServicesCarousel({ adminId }: { adminId: string }) {
-  const { data: services } = api.service.getServicesByAdmin.useQuery({
-    adminId: adminId,
-  });
-
+export default function ServicesCarousel({
+  services,
+}: {
+  services: Service[];
+}) {
   const settings = {
     dots: false,
-    infinite: services ? services.length > 1 : false,
+    infinite: services.length > 4,
     speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 2,
+    slidesToShow: services.length > 4 ? 4 : services.length,
+    slidesToScroll: 4,
   };
 
   return (

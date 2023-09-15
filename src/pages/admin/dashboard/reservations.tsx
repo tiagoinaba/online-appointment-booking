@@ -1,4 +1,5 @@
 import AdminBackButton from "@/components/AdminBackButton";
+import { Heading } from "@/components/Heading";
 import NotFound from "@/components/NotFound";
 import DataTable, {
   ReservationTable,
@@ -7,22 +8,20 @@ import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { ReservationWithService } from "@/utils/types";
 import { Button } from "@mui/material";
+import { Prisma, Reservation, Service } from "@prisma/client";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 
-export default function reservations({
-  adminId,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data: reservations } = api.reservation.getByDateAdmin.useQuery({
-    date: null,
-    adminId: adminId ? adminId : "error",
-  });
-  const { data: services } = api.service.getServicesByAdmin.useQuery({
-    adminId: adminId ?? "error",
-  });
+export default function Reservations({
+  reservations,
+  services,
+}: {
+  reservations: Prisma.ReservationGetPayload<{ include: { service: true } }>[];
+  services: Service[];
+}) {
   const [formattedRes, setFormattedRes] = useState<ReservationTable[]>([]);
 
   useEffect(() => {
@@ -43,23 +42,15 @@ export default function reservations({
 
   return (
     <>
-      <Head>
-        <title>Admin - Reservas</title>
-      </Head>
       <main className="flex h-screen flex-col items-center justify-center pt-32">
-        <AdminBackButton />
-        {adminId ? (
-          <div>
-            <h1 className="text-center text-2xl font-bold">Reservas</h1>
-            {formattedRes && (
-              <div className="container mx-auto py-10">
-                <DataTable services={services} data={formattedRes} />
-              </div>
-            )}
-          </div>
-        ) : (
-          <NotFound />
-        )}
+        <div className="flex flex-col">
+          <Heading className="ml-8">Reservas</Heading>
+          {formattedRes && (
+            <div className="container mx-auto py-10">
+              <DataTable services={services} data={formattedRes} />
+            </div>
+          )}
+        </div>
       </main>
       <Toaster position="bottom-right" />
     </>

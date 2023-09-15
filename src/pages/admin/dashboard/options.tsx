@@ -12,6 +12,8 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
 import { Label } from "~/components/ui/label";
+import { FullAdmin } from ".";
+import { Heading } from "@/components/Heading";
 
 export const ZodForm = z.object({
   requirePayment: z.boolean(),
@@ -22,15 +24,15 @@ export const ZodForm = z.object({
 
 type FormType = z.infer<typeof ZodForm>;
 
-export default function options({
-  admin,
-  notFound,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Options({ admin }: { admin: FullAdmin }) {
   const [isTouched, setIsTouched] = useState(false);
+
+  const utils = api.useContext();
 
   const { mutate: updatePreferences, isLoading } =
     api.auth.updatePreferences.useMutation({
       onSuccess: () => {
+        utils.invalidate();
         setIsTouched(false);
         toast.success("Configurações atualizadas com sucesso!");
       },
@@ -68,133 +70,85 @@ export default function options({
 
   return (
     <>
-      <Head>
-        <title>Admin - Opções</title>
-      </Head>
       <main className="flex h-screen flex-col items-center justify-center">
-        <AdminBackButton />
-        {notFound ? (
-          <NotFound />
-        ) : (
-          <div className="flex flex-col gap-6">
-            <span className="text-2xl font-bold">Configurações</span>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-4"
-            >
-              <div className="flex items-center justify-between">
-                <Label htmlFor="requirePayment">
-                  Requerer pagamento na reserva?
-                </Label>
-                <Controller
-                  name="requirePayment"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch
-                      id="my-switch"
-                      onChange={(e) => {
-                        setIsTouched(true);
-                        field.onChange(e);
-                      }}
-                      checked={field.value}
-                    />
-                  )}
-                />
-              </div>
-              <div className="flex items-center gap-4">
-                <Label htmlFor="paymentValue">Preço</Label>
+        <div className="flex flex-col gap-6">
+          <Heading>Opções</Heading>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
+          >
+            <div className="flex items-center justify-between">
+              <Label htmlFor="requirePayment">
+                Requerer pagamento na reserva?
+              </Label>
+              <Controller
+                name="requirePayment"
+                control={control}
+                render={({ field }) => (
+                  <Switch
+                    id="my-switch"
+                    onChange={(e) => {
+                      setIsTouched(true);
+                      field.onChange(e);
+                    }}
+                    checked={field.value}
+                  />
+                )}
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <Label htmlFor="paymentValue">Preço</Label>
 
-                <span>R$</span>
-                <Input
-                  type="number"
-                  inputProps={{ step: ".01" }}
-                  disabled={!watch("requirePayment")}
-                  {...register("paymentValue", {
-                    valueAsNumber: true,
-                  })}
-                />
-              </div>
-              <div className="flex items-center justify-between gap-8">
-                <Label htmlFor="multipleServices">
-                  Gostaria de oferecer múltiplos serviços?
-                </Label>
-                <Controller
-                  name="multipleServices"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch
-                      id="multipleServices"
-                      onChange={(e) => {
-                        setIsTouched(true);
-                        field.onChange(e);
-                      }}
-                      checked={field.value}
-                    />
-                  )}
-                />
-              </div>
-              <div className="flex flex-col justify-center gap-4">
-                <Label htmlFor="paymentValue">Descrição</Label>
-                <TextField multiline {...register("description")} />
-              </div>
-              <Button
-                type="submit"
-                className="self-stretch"
-                disabled={
-                  isLoading ||
-                  (!touchedFields.description &&
-                    !touchedFields.paymentValue &&
-                    !isTouched)
-                }
-              >
-                {!isLoading ? "Salvar" : "Salvando..."}
-              </Button>
-            </form>
-          </div>
-        )}
+              <span>R$</span>
+              <Input
+                type="number"
+                inputProps={{ step: ".01" }}
+                disabled={!watch("requirePayment")}
+                {...register("paymentValue", {
+                  valueAsNumber: true,
+                })}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-8">
+              <Label htmlFor="multipleServices">
+                Gostaria de oferecer múltiplos serviços?
+              </Label>
+              <Controller
+                name="multipleServices"
+                control={control}
+                render={({ field }) => (
+                  <Switch
+                    id="multipleServices"
+                    onChange={(e) => {
+                      setIsTouched(true);
+                      field.onChange(e);
+                    }}
+                    checked={field.value}
+                  />
+                )}
+              />
+            </div>
+            <div className="flex flex-col justify-center gap-4">
+              <Label htmlFor="paymentValue">Descrição</Label>
+              <TextField multiline {...register("description")} />
+            </div>
+            <Button
+              type="submit"
+              className="self-stretch"
+              disabled={
+                isLoading ||
+                (!touchedFields.description &&
+                  !touchedFields.paymentValue &&
+                  !isTouched)
+              }
+            >
+              {!isLoading ? "Salvar" : "Salvando..."}
+            </Button>
+          </form>
+        </div>
 
         <Toaster />
       </main>
     </>
   );
 }
-
-export const getServerSideProps = async ({
-  req,
-  res,
-}: GetServerSidePropsContext) => {
-  try {
-    const adminName = req.cookies["admin-name"];
-
-    if (adminName) {
-      let admin = await prisma.admin.findUnique({
-        where: {
-          name: adminName,
-        },
-        select: {
-          id: true,
-          name: true,
-          AdminConfig: true,
-        },
-      });
-
-      if (admin) {
-        admin = JSON.parse(JSON.stringify(admin));
-
-        return {
-          props: {
-            admin: admin,
-          },
-        };
-      }
-    }
-
-    throw new Error("Not found");
-  } catch (err) {
-    return {
-      props: {
-        notFound: true,
-      },
-    };
-  }
-};

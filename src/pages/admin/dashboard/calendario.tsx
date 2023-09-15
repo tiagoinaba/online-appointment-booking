@@ -11,10 +11,9 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
+import { FullAdmin } from ".";
 
-export default function closedDays({
-  admin,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Calendario({ admin }: { admin: FullAdmin }) {
   const [day, setDay] = useState<Date | null>(now);
 
   const utils = api.useContext();
@@ -22,9 +21,8 @@ export default function closedDays({
   const [highlightedDays, setHighlightedDays] = useState<Date[]>([]);
   const [animate, setAnimate] = useState<boolean>(false);
 
-  const { data: closedDays } = api.closedDay.getClosedDays.useQuery({
-    adminId: admin?.id ?? null,
-  });
+  const closedDays = admin.ClosedDays;
+
   const { mutate: toggleClosedDay } = api.closedDay.toggleClosedDay.useMutation(
     {
       onSuccess: () => {
@@ -32,6 +30,7 @@ export default function closedDays({
       },
     }
   );
+
   const { data: reservations } = api.reservation.getByDateAdmin.useQuery({
     date: day,
     adminId: admin?.id ?? "",
@@ -45,10 +44,6 @@ export default function closedDays({
   return (
     admin && (
       <main className="flex flex-col items-center gap-4 py-20">
-        <Head>
-          <title>Admin - Calendário</title>
-        </Head>
-        <AdminBackButton />
         <h2 className="mx-40 w-auto self-start border-b text-4xl font-bold">
           Horários
         </h2>
@@ -110,6 +105,7 @@ export default function closedDays({
                         date: res.dateTime,
                         service: res.service?.name ? res.service?.name : null,
                         paymentIdMP: res.paymentIdMP,
+                        paymentStatus: res.paymentStatus,
                       }))}
                     />
                   )}
@@ -122,29 +118,3 @@ export default function closedDays({
     )
   );
 }
-
-export const getServerSideProps = async ({
-  req,
-  res,
-}: GetServerSidePropsContext) => {
-  try {
-    const adminName = req.cookies["admin-name"];
-    let admin = await prisma.admin.findFirst({
-      where: { name: adminName },
-      include: {
-        Service: true,
-        AdminConfig: true,
-      },
-    });
-
-    admin = JSON.parse(JSON.stringify(admin));
-
-    return {
-      props: {
-        admin,
-      },
-    };
-  } catch (err) {
-    console.log(err);
-  }
-};
