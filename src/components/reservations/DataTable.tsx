@@ -241,7 +241,7 @@ export default function DataTable({
       </div>
       <div className="overflow-hidden rounded border">
         <table className="">
-          <thead className="transition-all duration-200 hover:bg-slate-200">
+          <thead className="transition-all duration-200 hover:bg-zinc-200">
             {table.getHeaderGroups().map((hGroup) => (
               <tr key={hGroup.id} className="">
                 {hGroup.headers.map((header) => (
@@ -261,7 +261,7 @@ export default function DataTable({
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                className="border-b transition-all duration-200 last:border-0 hover:bg-slate-200"
+                className="border-b transition-all duration-200 last:border-0 hover:bg-zinc-200"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="truncate p-4">

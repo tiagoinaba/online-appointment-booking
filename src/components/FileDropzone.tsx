@@ -4,9 +4,14 @@ import { FileWithPath, useDropzone } from "react-dropzone";
 type FileDropzoneProps = {
   file: File[];
   setFile: React.Dispatch<React.SetStateAction<File[]>>;
+  disabled: boolean;
 };
 
-export default function FileDropzone({ file, setFile }: FileDropzoneProps) {
+export default function FileDropzone({
+  file,
+  setFile,
+  disabled,
+}: FileDropzoneProps) {
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
     setFile(acceptedFiles);
   }, []);
@@ -15,12 +20,13 @@ export default function FileDropzone({ file, setFile }: FileDropzoneProps) {
     accept: { "image/jpeg": [".jpeg", ".jpg"], "image/png": [".png"] },
     multiple: false,
     maxFiles: 1,
+    disabled,
   });
 
   return (
     <div
       {...getRootProps()}
-      className="max-w-md border-2 border-dashed border-slate-400 p-4 py-8"
+      className="min-w-[300px] max-w-md border-2 border-dashed border-zinc-400 p-4 py-8"
     >
       <input {...getInputProps()} />
       {file.length > 0 ? (

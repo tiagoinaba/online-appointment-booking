@@ -161,7 +161,7 @@ export const EditForm = ({
             Deletar
           </Button>
           {modal && (
-            <div className="absolute bottom-0 left-0 z-10 flex w-52 translate-y-full flex-col items-center justify-center gap-2 rounded border bg-slate-50 px-2 py-4">
+            <div className="absolute bottom-0 left-0 z-10 flex w-52 translate-y-full flex-col items-center justify-center gap-2 rounded border bg-zinc-50 px-2 py-4">
               <p className="text-center text-lg text-black">Tem certeza?</p>
               <p className="text-center text-xs text-black">
                 Se você tiver reservas já feitas deverá cancelá-las por conta

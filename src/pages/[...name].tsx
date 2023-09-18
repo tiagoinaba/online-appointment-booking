@@ -1,4 +1,5 @@
 import BookingForm from "@/components/BookingForm";
+import Button from "@/components/Button";
 import DateTimePicker from "@/components/DateTimePicker";
 import MPWallet from "@/components/MPWallet";
 import ProgressBar from "@/components/ProgressBar";
@@ -10,7 +11,6 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { Button } from "@mui/material";
 import { Service } from "@prisma/client";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -45,7 +45,17 @@ export default function Home({
     firstName: "",
     lastName: "",
     email: "",
+    phoneNumber: "",
   });
+
+  useEffect(() => {
+    if (step === 1) {
+      setDate({
+        justDate: null,
+        dateTime: null,
+      });
+    }
+  }, [step]);
 
   useEffect(() => {
     if (service) {
@@ -81,7 +91,6 @@ export default function Home({
       await import("@mercadopago/sdk-react").then((res) => {
         res.initMercadoPago("APP_USR-46c56d9d-bbf4-4279-b234-aa246ee95f6f");
         setPaymentStart(true);
-        localStorage.setItem("reservationInfo", JSON.stringify(data));
       });
     }
   };
@@ -117,7 +126,7 @@ export default function Home({
                 !admin.AdminConfig?.requirePayment
                   ? "-translate-x-1/2 rounded-l-3xl"
                   : "rounded-3xl"
-              } bg-slate-200 p-8`}
+              } bg-zinc-200 p-8`}
             >
               <h2
                 onAnimationEnd={() => setAnimate(false)}
@@ -167,11 +176,6 @@ export default function Home({
               />
               <Button
                 className="mt-8"
-                variant="contained"
-                sx={{
-                  color: "rgb(21, 101, 192)",
-                  "&:hover": { color: "white" },
-                }}
                 disabled={step >= 2 || !date.dateTime}
                 onClick={() => {
                   setStep(2);
@@ -181,11 +185,11 @@ export default function Home({
               </Button>
             </div>
           ) : step === 2 ? (
-            <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
+            <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-zinc-300 p-6 px-20">
               <BookingForm onSubmit={onSubmit} disabled={paymentStart} />
             </div>
           ) : (
-            <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
+            <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-zinc-300 p-6 px-20">
               {paymentStart && (
                 <MPWallet
                   firstName={formData.firstName}
@@ -200,21 +204,23 @@ export default function Home({
               )}
             </div>
           )
-        ) : !service ? (
-          <div className="flex w-full max-w-[800px] flex-col gap-8 rounded-xl border p-12 transition duration-300 hover:bg-slate-50">
+        ) : step === 1 ? (
+          <div className="my-20 flex w-full max-w-[800px] flex-col gap-8 rounded-xl border p-12 transition duration-300 hover:bg-zinc-50">
             <ServicesCarouselClient
               services={admin.Service}
               setService={setService}
             />
           </div>
-        ) : step === 2 ? (
+        ) : step === 2 && service ? (
           <div
-            className={`relative flex flex-col items-center justify-center rounded-3xl
-            bg-slate-200 p-8`}
+            className={`relative flex flex-col items-center justify-center
+            rounded-3xl p-8 transition duration-300 lg:border lg:hover:bg-zinc-50`}
           >
             <h2
               onAnimationEnd={() => setAnimate(false)}
-              className={`text-4xl font-bold ${animate && "animate-fadeIn"}`}
+              className={`text-2xl font-bold md:text-4xl ${
+                animate && "animate-fadeIn"
+              }`}
             >
               {date.dateTime
                 ? format(date.dateTime, "dd 'de' MMMM, kk:mm", { locale: ptBR })
@@ -251,22 +257,21 @@ export default function Home({
             />
             <Button
               onClick={() => setStep((prev) => prev + 1)}
-              sx={{ marginTop: "2rem" }}
-              variant="contained"
+              className="mt-8"
               disabled={!date.dateTime}
             >
               Próximo
             </Button>
           </div>
         ) : step === 3 ? (
-          <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
+          <div className="flex h-full w-full items-center justify-center rounded-3xl border px-6 py-6 transition duration-300 hover:bg-zinc-50 lg:w-3/4 lg:px-40">
             <BookingForm
               onSubmit={onSubmit}
               disabled={date.dateTime ? false : true}
             />
           </div>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-slate-300 p-6 px-20">
+          <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-zinc-300 p-6 px-20">
             {paymentStart && (
               <MPWallet
                 firstName={formData.firstName}

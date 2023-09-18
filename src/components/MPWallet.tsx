@@ -24,7 +24,11 @@ export default function MPWallet({
 }) {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const { mutate: createPayment, data } =
-    api.mercadopago.createPreference.useMutation();
+    api.mercadopago.createPreference.useMutation({
+      onSuccess: () => {
+        setIsMounted(true);
+      },
+    });
 
   const Wallet = dynamic(() => import("@mercadopago/sdk-react/bricks/wallet"), {
     ssr: false,
@@ -40,14 +44,17 @@ export default function MPWallet({
       lastName,
       email,
     });
-    setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   if (!isMounted) return null;
 
   return (
     <div>
-      {paymentStart && (
+      {paymentStart && data && (
         <div id="wallet_container">
           <span>Realize o pagamento para completar a reserva.</span>
           <Wallet initialization={{ preferenceId: data }} />

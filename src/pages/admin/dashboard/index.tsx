@@ -1,23 +1,17 @@
 import { SideNav } from "@/components/admin/SideNav";
 import { useActiveTabStore } from "@/hooks/useActiveTab";
 import { prisma } from "@/server/db";
+import { api } from "@/utils/api";
+import { now } from "@/utils/constants";
 import { Prisma } from "@prisma/client";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { z } from "zod";
+import Calendario from "./calendario";
 import Financeiro from "./financeiro";
 import Options from "./options";
-import { now } from "@/utils/constants";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { api } from "@/utils/api";
-import Calendario from "./calendario";
-import Services from "./services";
 import Reservations from "./reservations";
+import Services from "./services";
 
 const adminFormSchema = z.object({
   email: z.string().nonempty("O email é obrigatório.").email("Email inválido"),
@@ -35,7 +29,16 @@ export default function index({
     id: admin?.id ?? "not found",
   });
 
-  if (!admin || !fullAdmin || !data || !resCount) {
+  if (!admin) {
+    console.log("admin not found");
+    return null;
+  }
+  if (!fullAdmin) {
+    console.log(fullAdmin);
+    return null;
+  }
+  if (!data) {
+    console.log("data not found");
     return null;
   }
 
@@ -58,7 +61,7 @@ export default function index({
           active === "Reservas" && (
             <Reservations
               reservations={fullAdmin.Reservation}
-              services={admin.Service}
+              services={fullAdmin.Service}
             />
           )
         )}

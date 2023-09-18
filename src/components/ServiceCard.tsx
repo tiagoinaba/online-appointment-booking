@@ -3,7 +3,6 @@ import { api } from "@/utils/api";
 import Delete from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -21,6 +20,7 @@ import { SubmitHandler } from "react-hook-form";
 import { ServiceFormType } from "@/pages/admin/dashboard/services";
 import { useUploadThing } from "@/utils/uploadthing";
 import { z } from "zod";
+import Button from "./Button";
 
 export const ServiceEditForm = z.object({
   name: z.string(),
@@ -92,7 +92,7 @@ export default function ServiceCard({ service }: { service: Service }) {
 
   return (
     <div>
-      <div className="group relative mx-2 flex flex-col overflow-hidden rounded-2xl bg-transparent text-slate-100 shadow-md">
+      <div className="group relative mx-2 flex flex-col overflow-hidden rounded-2xl bg-transparent text-zinc-100 shadow-md">
         <div className="absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center gap-2 bg-zinc-300 bg-opacity-40 opacity-0 backdrop-blur-xl transition-opacity duration-200 group-hover:bg-zinc-400 group-hover:opacity-100">
           <IconButton onClick={() => setOpen(true)}>
             <Delete color="error" />
@@ -105,14 +105,8 @@ export default function ServiceCard({ service }: { service: Service }) {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClick}
-                className="bg-[#1976d2]"
-                variant="contained"
-              >
-                Sim
-              </Button>
-              <Button variant="outlined" onClick={() => setOpen(false)}>
+              <Button onClick={handleClick}>Sim</Button>
+              <Button variant="ghost" onClick={() => setOpen(false)}>
                 Não
               </Button>
             </DialogActions>
@@ -136,7 +130,7 @@ export default function ServiceCard({ service }: { service: Service }) {
             />
           </Dialog>
         </div>
-        <div className="relative h-32  bg-slate-300">
+        <div className="relative h-32  bg-zinc-300">
           {service.imageUrl ? (
             <Image
               src={service.imageUrl}
@@ -155,7 +149,7 @@ export default function ServiceCard({ service }: { service: Service }) {
             />
           )}
         </div>
-        <div className="bg-slate-500 p-4 text-slate-100">
+        <div className="bg-zinc-700 p-4 text-zinc-100">
           <p className="truncate text-center">{service.name}</p>
         </div>
       </div>

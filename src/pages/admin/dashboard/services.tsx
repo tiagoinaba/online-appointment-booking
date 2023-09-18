@@ -81,7 +81,7 @@ export default function Services({ admin }: { admin: FullAdmin }) {
       <main className="flex h-screen flex-col items-center justify-center gap-8">
         <Heading>Serviços</Heading>
         {multipleServices ? (
-          <div className="flex w-full max-w-[800px] flex-col gap-8 rounded-xl border p-12 transition duration-300 hover:bg-slate-50">
+          <div className="flex w-full max-w-[800px] flex-col gap-8 rounded-xl border p-12 transition duration-300 hover:bg-zinc-50">
             <ServicesCarousel services={admin.Service} />
             <Button
               className="self-center"
@@ -105,7 +105,7 @@ export default function Services({ admin }: { admin: FullAdmin }) {
               setModal={setModal}
             />
             <div
-              className="absolute left-0 top-0 z-10 flex h-screen w-screen bg-slate-600 opacity-80"
+              className="absolute left-0 top-0 z-10 flex h-screen w-screen bg-zinc-600 opacity-80"
               onClick={() => setModal(false)}
             ></div>
           </div>

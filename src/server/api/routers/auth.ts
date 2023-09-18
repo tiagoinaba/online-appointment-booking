@@ -193,7 +193,7 @@ export const authRouter = createTRPCRouter({
   getFullAdmin: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input: { id } }) => {
-      return await ctx.prisma.admin.findFirst({
+      const admin = await ctx.prisma.admin.findFirst({
         where: { id },
         include: {
           AdminConfig: true,
@@ -203,5 +203,6 @@ export const authRouter = createTRPCRouter({
           Service: { include: { reservations: true } },
         },
       });
+      return admin;
     }),
 });

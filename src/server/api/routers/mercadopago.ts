@@ -57,6 +57,7 @@ export const mercadopagoRouter = createTRPCRouter({
             headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },
           }
         );
+        console.log(data.id);
         return data.id;
       } catch (err) {
         console.error(err);

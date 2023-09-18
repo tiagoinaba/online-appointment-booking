@@ -11,10 +11,10 @@ export default function ServicesCarousel({
   services: Service[];
 }) {
   const settings = {
-    dots: false,
+    dots: services.length > 4,
     infinite: services.length > 4,
     speed: 500,
-    slidesToShow: services.length > 4 ? 4 : services.length,
+    slidesToShow: 4,
     slidesToScroll: 4,
   };
 

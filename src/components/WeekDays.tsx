@@ -149,7 +149,7 @@ export const WeekDays = ({
           reset();
         }}
       >
-        <div className="absolute left-1/2 top-1/2 w-1/3 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-50 p-8">
+        <div className="absolute left-1/2 top-1/2 w-1/3 -translate-x-1/2 -translate-y-1/2 rounded bg-zinc-50 p-8">
           <div className="flex flex-col gap-8">
             <h2 className="text-xl font-bold">Novo horário</h2>
             <form
