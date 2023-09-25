@@ -20,14 +20,15 @@ const Button: React.FC<ButtonProps> = (
     if (variant) {
       const styles: Record<typeof variant, string> = {
         default:
-          "bg-zinc-700 text-slate-50 hover:bg-zinc-900 disabled:bg-zinc-400",
-        ghost: "hover:bg-slate-300 cursor-pointer disabled:bg-slate-200",
+          "bg-zinc-700 text-zinc-50 hover:bg-zinc-900 disabled:bg-zinc-400",
+        ghost:
+          "hover:bg-zinc-300 cursor-pointer disabled:bg-zinc-200 disabled:text-zinc-400",
         destructive:
-          "bg-red-600 text-slate-50 hover:bg-red-500 disabled:bg-red-400",
+          "bg-red-600 text-zinc-50 hover:bg-red-500 disabled:bg-red-400",
       };
       return styles[variant];
     } else {
-      return "bg-zinc-700 text-slate-50 hover:bg-zinc-900 disabled:bg-zinc-400";
+      return "bg-zinc-700 text-zinc-50 hover:bg-zinc-900 disabled:bg-zinc-400";
     }
   };
 

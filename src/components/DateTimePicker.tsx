@@ -1,11 +1,11 @@
 import { api } from "@/utils/api";
 import { now } from "@/utils/constants";
 import { DateType } from "@/utils/types";
-import { Button } from "@mui/material";
 import { DateCalendar } from "@mui/x-date-pickers";
 import { Day } from "@prisma/client";
 import { add, format, isBefore, isEqual } from "date-fns";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import Button from "./Button";
 
 interface DateTimePickerProps {
   date: {
@@ -151,6 +151,10 @@ export default function DateTimePicker({
             {getTimes().map((time) => (
               <Button
                 key={time.toISOString()}
+                variant="ghost"
+                className={`${
+                  isEqual(date.dateTime!, time) && "border-2 border-zinc-500"
+                }`}
                 disabled={
                   (serviceRes?.find((res) => isEqual(res.dateTime, time))
                     ? true

@@ -2,29 +2,62 @@ import AdminBackButton from "@/components/AdminBackButton";
 import Button from "@/components/Button";
 import { WeekDays } from "@/components/WeekDays";
 import DataTable from "@/components/reservations/DataTable";
+import Select, { StylesConfig } from "react-select";
+
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { now } from "@/utils/constants";
-import { format, isEqual } from "date-fns";
+import { add, format, isBefore, isEqual } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
+import { FullAdmin } from ".";
+import { Service } from "@prisma/client";
 
-export default function closedDays({
-  admin,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [day, setDay] = useState<Date | null>(now);
+const selectStyles = {
+  container: (base) => ({
+    ...base,
+  }),
+  control: (base) => ({
+    // ...base,
+    display: "flex",
+    border: "1px solid rgba(0, 0, 0, .1)",
+    padding: ".25rem",
+    borderRadius: ".25rem",
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: "white",
+    padding: ".25rem",
+    border: "1px solid rgba(0, 0, 0, .1)",
+    borderRadius: ".25rem",
+  }),
+  input: (base) => ({ ...base }),
+  placeholder: (base) => ({ ...base, opacity: "50%" }),
+  option: (base) => ({
+    ...base,
+    ":hover": { backgroundColor: "#e4e4e7" },
+    borderRadius: ".25rem",
+    padding: ".25rem .5rem",
+  }),
+} satisfies StylesConfig;
+
+export default function Calendario({ admin }: { admin: FullAdmin }) {
+  const [day, setDay] = useState<Date | null>(() => {
+    const nowCopy = new Date(now);
+    nowCopy.setHours(0, 0, 0, 0);
+    return nowCopy;
+  });
+  const [service, setService] = useState<Service>();
+  const [selectedHour, setSelectedHour] = useState<Date | null>(null);
 
   const utils = api.useContext();
 
   const [highlightedDays, setHighlightedDays] = useState<Date[]>([]);
   const [animate, setAnimate] = useState<boolean>(false);
 
-  const { data: closedDays } = api.closedDay.getClosedDays.useQuery({
-    adminId: admin?.id ?? null,
-  });
   const { mutate: toggleClosedDay } = api.closedDay.toggleClosedDay.useMutation(
     {
       onSuccess: () => {
@@ -32,10 +65,65 @@ export default function closedDays({
       },
     }
   );
+
   const { data: reservations } = api.reservation.getByDateAdmin.useQuery({
     date: day,
     adminId: admin?.id ?? "",
   });
+
+  const { data: closedDays } = api.closedDay.getClosedDays.useQuery(
+    { adminId: admin.id },
+    {
+      initialData: admin.ClosedDays,
+    }
+  );
+
+  const getTimes = () => {
+    const foundDay = admin.Day.find((kDay) => day!.getDay() === kDay.weekDay);
+
+    if (foundDay) {
+      const begin = add(day!, {
+        hours: new Date(foundDay.openingHour).getHours(),
+        minutes: new Date(foundDay.openingHour).getMinutes(),
+      });
+      const end = add(day!, {
+        hours: new Date(foundDay.closingHour).getHours(),
+        minutes: new Date(foundDay.closingHour).getMinutes(),
+      });
+      const increments = {
+        hours: new Date(foundDay.interval).getHours(),
+        minutes: new Date(foundDay.interval).getMinutes(),
+      };
+
+      const times = [];
+
+      for (let i = begin; i < end; i = add(i, increments)) {
+        times.push(i);
+      }
+
+      return times;
+    }
+    const begin = add(day!, {
+      hours: admin.AdminConfig?.openingHours.getHours(),
+      minutes: admin.AdminConfig?.openingHours.getMinutes(),
+    });
+    const end = add(day!, {
+      hours: admin.AdminConfig?.closingHours.getHours(),
+      minutes: admin.AdminConfig?.closingHours.getMinutes(),
+    });
+    const increments = {
+      hours: admin.AdminConfig?.interval.getHours(),
+      minutes: admin.AdminConfig?.interval.getMinutes(),
+    };
+
+    const times = [];
+
+    for (let i = begin; i < end; i = add(i, increments)) {
+      times.push(i);
+    }
+
+    return times;
+  };
 
   useEffect(() => {
     if (closedDays && closedDays.length > 0)
@@ -45,10 +133,6 @@ export default function closedDays({
   return (
     admin && (
       <main className="flex flex-col items-center gap-4 py-20">
-        <Head>
-          <title>Admin - Calendário</title>
-        </Head>
-        <AdminBackButton />
         <h2 className="mx-40 w-auto self-start border-b text-4xl font-bold">
           Horários
         </h2>
@@ -71,21 +155,68 @@ export default function closedDays({
         <div className="flex">
           {highlightedDays && (
             <div className="flex flex-col items-center gap-6">
-              <Calendar
-                minDate={now}
-                defaultValue={day}
-                onClickDay={(date) => {
-                  setAnimate(true);
-                  date.setHours(0, 0, 0, 0);
-                  setDay(date);
-                }}
-                locale="pt-BR"
-                tileClassName={({ date }) => {
-                  return highlightedDays.find((day) => isEqual(date, day))
-                    ? "closedDay"
-                    : "";
-                }}
-              />
+              <div>
+                <div className="flex flex-col gap-8">
+                  <Calendar
+                    minDate={now}
+                    defaultValue={day}
+                    onClickDay={(date) => {
+                      setAnimate(true);
+                      date.setHours(0, 0, 0, 0);
+                      setDay(date);
+                    }}
+                    locale="pt-BR"
+                    tileClassName={({ date }) => {
+                      return highlightedDays.find((day) => isEqual(date, day))
+                        ? "closedDay"
+                        : "";
+                    }}
+                  />
+                  {admin.AdminConfig?.multipleServices && (
+                    <Select
+                      instanceId={"teste"}
+                      placeholder={"Escolha um serviço..."}
+                      options={admin.Service?.map((service) => ({
+                        label: service.name,
+                        value: service,
+                      }))}
+                      onChange={(event) => setService(event?.value)}
+                      styles={selectStyles}
+                      isClearable
+                      unstyled
+                    />
+                  )}
+                  <div className="grid grid-cols-4 gap-8">
+                    {day && service
+                      ? getTimes().map((time) => (
+                          <Button
+                            key={time.toISOString()}
+                            variant="ghost"
+                            className={`${
+                              isEqual(selectedHour!, time) &&
+                              "border-2 border-zinc-500"
+                            }`}
+                            disabled={
+                              (reservations?.find((res) => {
+                                return admin.AdminConfig?.multipleServices
+                                  ? isEqual(res.dateTime, time) &&
+                                      res.service?.name === service.name
+                                  : isEqual(res.dateTime, time);
+                              })
+                                ? true
+                                : false) || isBefore(time, now)
+                            }
+                            onClick={() => {
+                              setSelectedHour(time);
+                            }}
+                          >
+                            {format(time, "kk:mm")}
+                          </Button>
+                        ))
+                      : null}
+                  </div>
+                </div>
+              </div>
               {day && (
                 <Button
                   onClick={() =>
@@ -110,6 +241,7 @@ export default function closedDays({
                         date: res.dateTime,
                         service: res.service?.name ? res.service?.name : null,
                         paymentIdMP: res.paymentIdMP,
+                        paymentStatus: res.paymentStatus,
                       }))}
                     />
                   )}
@@ -122,29 +254,3 @@ export default function closedDays({
     )
   );
 }
-
-export const getServerSideProps = async ({
-  req,
-  res,
-}: GetServerSidePropsContext) => {
-  try {
-    const adminName = req.cookies["admin-name"];
-    let admin = await prisma.admin.findFirst({
-      where: { name: adminName },
-      include: {
-        Service: true,
-        AdminConfig: true,
-      },
-    });
-
-    admin = JSON.parse(JSON.stringify(admin));
-
-    return {
-      props: {
-        admin,
-      },
-    };
-  } catch (err) {
-    console.log(err);
-  }
-};

@@ -1,25 +1,8 @@
 import placeholder from "@/assets/placeholder-image.png";
-import { ServiceFormType } from "@/pages/admin/dashboard/services";
-import { api } from "@/utils/api";
-import { useUploadThing } from "@/utils/uploadthing";
-import Delete from "@mui/icons-material/Delete";
-import Edit from "@mui/icons-material/Edit";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-} from "@mui/material";
 import { Service } from "@prisma/client";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
-import { SubmitHandler } from "react-hook-form";
-import { toast } from "react-hot-toast";
+import { Dispatch, SetStateAction } from "react";
 import { z } from "zod";
-import CreateServiceForm from "./ServiceForm";
 
 export const ServiceEditForm = z.object({
   name: z.string(),
@@ -35,10 +18,10 @@ export default function ServiceCard({
   return (
     <div>
       <div
-        className="group relative mx-2 flex cursor-pointer flex-col overflow-hidden rounded-2xl bg-transparent text-slate-100 shadow-md"
+        className="group relative mx-2 flex aspect-[3/4] cursor-pointer flex-col overflow-hidden rounded-2xl bg-transparent text-zinc-100 shadow-md"
         onClick={() => setService(service)}
       >
-        <div className="relative h-32  bg-slate-300">
+        <div className="relative flex-1 bg-zinc-300">
           {service.imageUrl ? (
             <Image
               src={service.imageUrl}
@@ -58,7 +41,7 @@ export default function ServiceCard({
             />
           )}
         </div>
-        <div className="z-10 bg-slate-500 p-4 text-slate-100">
+        <div className="z-10 bg-zinc-500 p-4 text-zinc-100">
           <p className="truncate text-center">{service.name}</p>
         </div>
       </div>

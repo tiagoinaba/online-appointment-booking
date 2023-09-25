@@ -6,6 +6,15 @@
   --gap: 2px;
 }
 
+.slick-prev:before,
+.slick-next:before {
+  color: #a0a096 !important;
+}
+
+.Mui-selected {
+  background-color: black !important;
+}
+
 .react-calendar {
   width: calc(350px + var(--gap));
   max-width: 100%;

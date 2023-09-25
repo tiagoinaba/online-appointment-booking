@@ -5,7 +5,7 @@ import ServicesCarousel from "@/components/ServicesCarousel";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { useUploadThing } from "@/utils/uploadthing";
-import { Button, Input, Link } from "@mui/material";
+import { Input, Link } from "@mui/material";
 import "@uploadthing/react/styles.css";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
@@ -15,6 +15,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
 import { Label } from "~/components/ui/label";
+import { FullAdmin } from ".";
+import { Heading } from "@/components/Heading";
+import Button from "@/components/Button";
 
 export const ServiceForm = z.object({
   name: z.string().nonempty(),
@@ -22,10 +25,7 @@ export const ServiceForm = z.object({
 
 export type ServiceFormType = z.infer<typeof ServiceForm>;
 
-export default function Services({
-  admin,
-  notFound,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Services({ admin }: { admin: FullAdmin }) {
   const multipleServices = admin?.AdminConfig?.multipleServices;
 
   const [modal, setModal] = useState<boolean>(false);
@@ -56,7 +56,7 @@ export default function Services({
   const { mutate: createService } = api.service.createService.useMutation({
     onSuccess: () => {
       toast.success("Serviço criado com sucesso!");
-      utils.service.invalidate();
+      utils.invalidate();
       setModal(false);
     },
 
@@ -78,14 +78,11 @@ export default function Services({
 
   return (
     <>
-      <Head>
-        <title>Admin - Serviços</title>
-      </Head>
-      <main className="relative flex h-screen flex-col items-center justify-center">
+      <main className="flex h-screen flex-col items-center justify-center gap-8">
+        <Heading>Serviços</Heading>
         {multipleServices ? (
-          <div className="flex min-w-[360px] max-w-sm flex-col gap-8 rounded-xl bg-slate-200 p-12 shadow-md">
-            <span className="text-lg font-semibold">Serviços</span>
-            <ServicesCarousel adminId={admin.id} />
+          <div className="flex w-full max-w-[800px] flex-col gap-8 rounded-xl border p-12 transition duration-300 hover:bg-zinc-50">
+            <ServicesCarousel services={admin.Service} />
             <Button
               className="self-center"
               onClick={() => setModal((prev) => !prev)}
@@ -108,51 +105,13 @@ export default function Services({
               setModal={setModal}
             />
             <div
-              className="absolute left-0 top-0 z-10 flex h-screen w-screen bg-slate-600 opacity-80"
+              className="absolute left-0 top-0 z-10 flex h-screen w-screen bg-zinc-600 opacity-80"
               onClick={() => setModal(false)}
             ></div>
           </div>
         )}
-        <AdminBackButton />
         <Toaster position="bottom-center" />
       </main>
     </>
   );
 }
-
-export const getServerSideProps = async ({
-  req,
-  res,
-}: GetServerSidePropsContext) => {
-  const adminName = getCookie("admin-name", { req, res });
-
-  if (adminName && typeof adminName === "string") {
-    let admin = await prisma.admin.findUnique({
-      where: {
-        name: adminName,
-      },
-      select: {
-        id: true,
-        name: true,
-        AdminConfig: true,
-        Service: true,
-      },
-    });
-
-    if (admin) {
-      admin = JSON.parse(JSON.stringify(admin));
-
-      return {
-        props: {
-          admin: admin,
-        },
-      };
-    }
-  }
-
-  return {
-    props: {
-      notFound: true,
-    },
-  };
-};

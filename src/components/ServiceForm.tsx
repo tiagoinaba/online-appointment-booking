@@ -1,13 +1,14 @@
 import { ServiceFormType } from "@/pages/admin/dashboard/services";
 import { api } from "@/utils/api";
 import { useUploadThing } from "@/utils/uploadthing";
-import { Button, Input } from "@mui/material";
 import { Label } from "@radix-ui/react-label";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Renderable, Toast, ValueFunction, toast } from "react-hot-toast";
 import FileDropzone from "./FileDropzone";
 import { Service } from "@prisma/client";
+import Button from "./Button";
+import { Input } from "~/components/ui/input";
 
 export default function CreateServiceForm({
   onSubmit,
@@ -55,7 +56,7 @@ export default function CreateServiceForm({
   }, [isSubmitSuccessful]);
 
   return (
-    <div className="z-20 flex flex-col gap-8 rounded-xl bg-slate-300 p-10">
+    <div className="z-20 flex flex-col gap-8 rounded-xl bg-zinc-50 p-10">
       <span className="font-bold">
         {title ? title + " serviço" : "Criar serviço"}
       </span>
@@ -66,11 +67,14 @@ export default function CreateServiceForm({
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">Imagem (opcional)</Label>
-          <FileDropzone file={file} setFile={setFile} />
-          {title === "Editar" && service?.imageKey && (
+          <FileDropzone file={file} setFile={setFile} disabled={isSubmitting} />
+          {((title === "Editar" && service?.imageKey) || file.length > 0) && (
             <Button
-              variant="text"
-              onClick={() => removeImage({ id: service.id })}
+              variant="destructive"
+              onClick={() => {
+                if (service) removeImage({ id: service.id });
+                else setFile([]);
+              }}
             >
               Remover imagem
             </Button>

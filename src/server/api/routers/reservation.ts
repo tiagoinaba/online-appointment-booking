@@ -12,13 +12,6 @@ import { env } from "@/env.mjs";
 
 export const reservationRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    await ctx.prisma.reservation.deleteMany({
-      where: {
-        dateTime: {
-          lt: sub(now, { months: 1 }),
-        },
-      },
-    });
     const reservations = await ctx.prisma.reservation.findMany();
     return reservations;
   }),
@@ -45,6 +38,7 @@ export const reservationRouter = createTRPCRouter({
         adminId: z.string(),
         serviceId: z.nullable(z.string()),
         email: z.string().email(),
+        phoneNumber: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -68,6 +62,7 @@ export const reservationRouter = createTRPCRouter({
               serviceId: input.serviceId,
               justDate,
               dateTime: input.date,
+              phoneNumber: input.phoneNumber,
             },
           });
 
@@ -94,6 +89,7 @@ export const reservationRouter = createTRPCRouter({
               serviceId: null,
               justDate,
               dateTime: input.date,
+              phoneNumber: input.phoneNumber,
             },
           });
 
@@ -168,10 +164,6 @@ export const reservationRouter = createTRPCRouter({
         paymentStatus: true,
         serviceId: true,
       } satisfies Prisma.ReservationSelect;
-
-      type ReservationPayload = Prisma.ReservationGetPayload<{
-        select: typeof reservationSelect;
-      }>;
 
       if (input.date) {
         input.date.setHours(0, 0, 0, 0);
