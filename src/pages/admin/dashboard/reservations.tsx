@@ -1,28 +1,26 @@
-import AdminBackButton from "@/components/AdminBackButton";
+import Button from "@/components/Button";
 import { Heading } from "@/components/Heading";
-import NotFound from "@/components/NotFound";
 import DataTable, {
   ReservationTable,
 } from "@/components/reservations/DataTable";
-import { prisma } from "@/server/db";
-import { api } from "@/utils/api";
-import { ReservationWithService } from "@/utils/types";
-import { Button } from "@mui/material";
 import { Prisma, Reservation, Service } from "@prisma/client";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import Head from "next/head";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Toaster } from "react-hot-toast";
 
 export default function Reservations({
   reservations,
   services,
+  adminId,
 }: {
   reservations: Prisma.ReservationGetPayload<{ include: { service: true } }>[];
   services: Service[];
+  adminId: string;
 }) {
   const [formattedRes, setFormattedRes] = useState<ReservationTable[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const { handleSubmit, control } = useForm<Partial<Reservation>>();
 
   useEffect(() => {
     if (reservations && reservations.length > 0) {
@@ -44,9 +42,12 @@ export default function Reservations({
     <>
       <main className="flex h-screen flex-col items-center justify-center pt-32">
         <div className="flex flex-col">
-          <Heading className="ml-8">Reservas</Heading>
+          <div className="flex justify-between">
+            <Heading className="mx-0">Reservas</Heading>
+            <Button variant="default">Criar reserva</Button>
+          </div>
           {formattedRes && (
-            <div className="container mx-auto py-10">
+            <div className="mx-auto py-10">
               <DataTable services={services} data={formattedRes} />
             </div>
           )}
@@ -56,33 +57,3 @@ export default function Reservations({
     </>
   );
 }
-
-export const getServerSideProps = async ({
-  req,
-  res,
-}: GetServerSidePropsContext) => {
-  try {
-    const adminName = req.cookies["admin-name"];
-
-    if (adminName) {
-      const admin = await prisma.admin.findUnique({
-        where: {
-          name: adminName,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      return { props: { adminId: admin?.id ? admin.id : null } };
-    }
-
-    throw new Error("Not found");
-  } catch (err) {
-    return {
-      props: {
-        notFound: true,
-      },
-    };
-  }
-};

@@ -60,6 +60,7 @@ export default function index({
         ) : (
           active === "Reservas" && (
             <Reservations
+              adminId={admin.id}
               reservations={fullAdmin.Reservation}
               services={fullAdmin.Service}
             />

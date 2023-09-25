@@ -22,6 +22,16 @@ export default function ServicesCarousel({
     arrows: services.length > 4,
     responsive: [
       {
+        breakpoint: 560,
+        settings: {
+          dots: services.length > 1,
+          infinite: services.length > 1,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: services.length > 1,
+        },
+      },
+      {
         breakpoint: 700,
         settings: {
           dots: services.length > 2,

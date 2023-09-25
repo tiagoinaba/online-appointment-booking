@@ -1,8 +1,9 @@
 import { Inputs } from "@/utils/types";
 import { InputLabel } from "@mui/material";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm, Controller } from "react-hook-form";
 import { Input } from "~/components/ui/input";
 import Button from "./Button";
+import { useEffect } from "react";
 
 export type BookingFormProps = {
   onSubmit: SubmitHandler<Inputs>;
@@ -74,13 +75,29 @@ export default function BookingForm({
         </div>
         <div className="flex-1">
           <p className="font-bold">Telefone</p>
-          <Input
-            placeholder="16987654321"
-            className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-            type="number"
-            inputMode="numeric"
-            disabled={disabled}
-            {...register("phoneNumber", { required: true })}
+          <Controller
+            control={control}
+            name="phoneNumber"
+            defaultValue=""
+            render={({ field }) => {
+              return (
+                <Input
+                  placeholder="16987654321"
+                  className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  type="tel"
+                  inputMode="numeric"
+                  disabled={disabled}
+                  value={field.value}
+                  onChange={(e) => {
+                    const regex = new RegExp(/^[0-9()\-+]*$/gm);
+
+                    if (regex.test(e.target.value)) {
+                      field.onChange(e);
+                    }
+                  }}
+                />
+              );
+            }}
           />
           {errors.phoneNumber && (
             <span className="mt-1 text-sm text-red-500">

@@ -18,10 +18,10 @@ export default function ServiceCard({
   return (
     <div>
       <div
-        className="group relative mx-2 flex cursor-pointer flex-col overflow-hidden rounded-2xl bg-transparent text-zinc-100 shadow-md"
+        className="group relative mx-2 flex aspect-[3/4] cursor-pointer flex-col overflow-hidden rounded-2xl bg-transparent text-zinc-100 shadow-md"
         onClick={() => setService(service)}
       >
-        <div className="relative h-32  bg-zinc-300">
+        <div className="relative flex-1 bg-zinc-300">
           {service.imageUrl ? (
             <Image
               src={service.imageUrl}

@@ -34,6 +34,9 @@ model AdminConfig {
   openingHours     DateTime
   closingHours     DateTime
   interval         DateTime
+  logoKey          String   @default("")
+  logoUrl          String   @default("")
+  phoneNumber      String   @default("")
   multipleServices Boolean  @default(false)
   admin            Admin    @relation(fields: [adminId], references: [id])
 

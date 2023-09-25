@@ -14,7 +14,7 @@ export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCo
 
 export const AdminScalarFieldEnumSchema = z.enum(['id','name','route','email','password']);
 
-export const AdminConfigScalarFieldEnumSchema = z.enum(['id','adminId','requirePayment','paymentValue','description','openingHours','closingHours','interval','multipleServices']);
+export const AdminConfigScalarFieldEnumSchema = z.enum(['id','adminId','requirePayment','paymentValue','description','openingHours','closingHours','interval','logoKey','logoUrl','phoneNumber','multipleServices']);
 
 export const ClosedDaysScalarFieldEnumSchema = z.enum(['id','adminId','dateClosed']);
 
@@ -60,6 +60,9 @@ export const AdminConfigSchema = z.object({
   openingHours: z.coerce.date(),
   closingHours: z.coerce.date(),
   interval: z.coerce.date(),
+  logoKey: z.string(),
+  logoUrl: z.string(),
+  phoneNumber: z.string(),
   multipleServices: z.boolean(),
 })
 
@@ -205,6 +208,9 @@ export const AdminConfigSelectSchema: z.ZodType<Prisma.AdminConfigSelect> = z.ob
   openingHours: z.boolean().optional(),
   closingHours: z.boolean().optional(),
   interval: z.boolean().optional(),
+  logoKey: z.boolean().optional(),
+  logoUrl: z.boolean().optional(),
+  phoneNumber: z.boolean().optional(),
   multipleServices: z.boolean().optional(),
   admin: z.union([z.boolean(),z.lazy(() => AdminArgsSchema)]).optional(),
 }).strict()
@@ -433,6 +439,9 @@ export const AdminConfigWhereInputSchema: z.ZodType<Prisma.AdminConfigWhereInput
   openingHours: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   closingHours: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   interval: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  logoKey: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  logoUrl: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  phoneNumber: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   multipleServices: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   admin: z.union([ z.lazy(() => AdminRelationFilterSchema),z.lazy(() => AdminWhereInputSchema) ]).optional(),
 }).strict();
@@ -446,6 +455,9 @@ export const AdminConfigOrderByWithRelationInputSchema: z.ZodType<Prisma.AdminCo
   openingHours: z.lazy(() => SortOrderSchema).optional(),
   closingHours: z.lazy(() => SortOrderSchema).optional(),
   interval: z.lazy(() => SortOrderSchema).optional(),
+  logoKey: z.lazy(() => SortOrderSchema).optional(),
+  logoUrl: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional(),
   multipleServices: z.lazy(() => SortOrderSchema).optional(),
   admin: z.lazy(() => AdminOrderByWithRelationInputSchema).optional()
 }).strict();
@@ -474,6 +486,9 @@ export const AdminConfigWhereUniqueInputSchema: z.ZodType<Prisma.AdminConfigWher
   openingHours: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   closingHours: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   interval: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  logoKey: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  logoUrl: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  phoneNumber: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   multipleServices: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   admin: z.union([ z.lazy(() => AdminRelationFilterSchema),z.lazy(() => AdminWhereInputSchema) ]).optional(),
 }).strict());
@@ -487,6 +502,9 @@ export const AdminConfigOrderByWithAggregationInputSchema: z.ZodType<Prisma.Admi
   openingHours: z.lazy(() => SortOrderSchema).optional(),
   closingHours: z.lazy(() => SortOrderSchema).optional(),
   interval: z.lazy(() => SortOrderSchema).optional(),
+  logoKey: z.lazy(() => SortOrderSchema).optional(),
+  logoUrl: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional(),
   multipleServices: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => AdminConfigCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => AdminConfigAvgOrderByAggregateInputSchema).optional(),
@@ -507,6 +525,9 @@ export const AdminConfigScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.A
   openingHours: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   closingHours: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   interval: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  logoKey: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  logoUrl: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  phoneNumber: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   multipleServices: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
 }).strict();
 
@@ -951,6 +972,9 @@ export const AdminConfigCreateInputSchema: z.ZodType<Prisma.AdminConfigCreateInp
   openingHours: z.coerce.date(),
   closingHours: z.coerce.date(),
   interval: z.coerce.date(),
+  logoKey: z.string().optional(),
+  logoUrl: z.string().optional(),
+  phoneNumber: z.string().optional(),
   multipleServices: z.boolean().optional(),
   admin: z.lazy(() => AdminCreateNestedOneWithoutAdminConfigInputSchema)
 }).strict();
@@ -964,6 +988,9 @@ export const AdminConfigUncheckedCreateInputSchema: z.ZodType<Prisma.AdminConfig
   openingHours: z.coerce.date(),
   closingHours: z.coerce.date(),
   interval: z.coerce.date(),
+  logoKey: z.string().optional(),
+  logoUrl: z.string().optional(),
+  phoneNumber: z.string().optional(),
   multipleServices: z.boolean().optional()
 }).strict();
 
@@ -975,6 +1002,9 @@ export const AdminConfigUpdateInputSchema: z.ZodType<Prisma.AdminConfigUpdateInp
   openingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   closingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  logoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   multipleServices: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   admin: z.lazy(() => AdminUpdateOneRequiredWithoutAdminConfigNestedInputSchema).optional()
 }).strict();
@@ -988,6 +1018,9 @@ export const AdminConfigUncheckedUpdateInputSchema: z.ZodType<Prisma.AdminConfig
   openingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   closingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  logoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   multipleServices: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -1000,6 +1033,9 @@ export const AdminConfigCreateManyInputSchema: z.ZodType<Prisma.AdminConfigCreat
   openingHours: z.coerce.date(),
   closingHours: z.coerce.date(),
   interval: z.coerce.date(),
+  logoKey: z.string().optional(),
+  logoUrl: z.string().optional(),
+  phoneNumber: z.string().optional(),
   multipleServices: z.boolean().optional()
 }).strict();
 
@@ -1011,6 +1047,9 @@ export const AdminConfigUpdateManyMutationInputSchema: z.ZodType<Prisma.AdminCon
   openingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   closingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  logoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   multipleServices: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -1023,6 +1062,9 @@ export const AdminConfigUncheckedUpdateManyInputSchema: z.ZodType<Prisma.AdminCo
   openingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   closingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  logoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   multipleServices: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -1467,6 +1509,9 @@ export const AdminConfigCountOrderByAggregateInputSchema: z.ZodType<Prisma.Admin
   openingHours: z.lazy(() => SortOrderSchema).optional(),
   closingHours: z.lazy(() => SortOrderSchema).optional(),
   interval: z.lazy(() => SortOrderSchema).optional(),
+  logoKey: z.lazy(() => SortOrderSchema).optional(),
+  logoUrl: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional(),
   multipleServices: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -1483,6 +1528,9 @@ export const AdminConfigMaxOrderByAggregateInputSchema: z.ZodType<Prisma.AdminCo
   openingHours: z.lazy(() => SortOrderSchema).optional(),
   closingHours: z.lazy(() => SortOrderSchema).optional(),
   interval: z.lazy(() => SortOrderSchema).optional(),
+  logoKey: z.lazy(() => SortOrderSchema).optional(),
+  logoUrl: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional(),
   multipleServices: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -1495,6 +1543,9 @@ export const AdminConfigMinOrderByAggregateInputSchema: z.ZodType<Prisma.AdminCo
   openingHours: z.lazy(() => SortOrderSchema).optional(),
   closingHours: z.lazy(() => SortOrderSchema).optional(),
   interval: z.lazy(() => SortOrderSchema).optional(),
+  logoKey: z.lazy(() => SortOrderSchema).optional(),
+  logoUrl: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional(),
   multipleServices: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2334,6 +2385,9 @@ export const AdminConfigCreateWithoutAdminInputSchema: z.ZodType<Prisma.AdminCon
   openingHours: z.coerce.date(),
   closingHours: z.coerce.date(),
   interval: z.coerce.date(),
+  logoKey: z.string().optional(),
+  logoUrl: z.string().optional(),
+  phoneNumber: z.string().optional(),
   multipleServices: z.boolean().optional()
 }).strict();
 
@@ -2345,6 +2399,9 @@ export const AdminConfigUncheckedCreateWithoutAdminInputSchema: z.ZodType<Prisma
   openingHours: z.coerce.date(),
   closingHours: z.coerce.date(),
   interval: z.coerce.date(),
+  logoKey: z.string().optional(),
+  logoUrl: z.string().optional(),
+  phoneNumber: z.string().optional(),
   multipleServices: z.boolean().optional()
 }).strict();
 
@@ -2477,6 +2534,9 @@ export const AdminConfigUpdateWithoutAdminInputSchema: z.ZodType<Prisma.AdminCon
   openingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   closingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  logoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   multipleServices: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -2488,6 +2548,9 @@ export const AdminConfigUncheckedUpdateWithoutAdminInputSchema: z.ZodType<Prisma
   openingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   closingHours: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   interval: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  logoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  logoUrl: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   multipleServices: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 

@@ -1,7 +1,6 @@
 import { ServiceFormType } from "@/pages/admin/dashboard/services";
 import { api } from "@/utils/api";
 import { useUploadThing } from "@/utils/uploadthing";
-import { Input } from "@mui/material";
 import { Label } from "@radix-ui/react-label";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -9,6 +8,7 @@ import { Renderable, Toast, ValueFunction, toast } from "react-hot-toast";
 import FileDropzone from "./FileDropzone";
 import { Service } from "@prisma/client";
 import Button from "./Button";
+import { Input } from "~/components/ui/input";
 
 export default function CreateServiceForm({
   onSubmit,

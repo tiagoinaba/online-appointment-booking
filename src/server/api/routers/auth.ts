@@ -9,6 +9,7 @@ import cookie from "cookie";
 import bcrypt from "bcrypt";
 import { ZodForm } from "@/pages/admin/dashboard/options";
 import { deleteCookie } from "cookies-next";
+import { utapi } from "uploadthing/server";
 
 export const authRouter = createTRPCRouter({
   login: publicProcedure
@@ -118,18 +119,32 @@ export const authRouter = createTRPCRouter({
     .input(
       z.object({
         adminId: z.string(),
+        logo: z.object({
+          fileUrl: z.string().nullable(),
+          fileKey: z.string().nullable(),
+        }),
         config: ZodForm,
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.adminConfig.update({
+      console.log(input.logo.fileKey ? true : false);
+      const adminConfig = await ctx.prisma.adminConfig.findFirst({
+        where: { adminId: input.adminId },
+      });
+      if (input.logo.fileKey && adminConfig?.logoKey) {
+        await utapi.deleteFiles(adminConfig.logoKey);
+      }
+      const conf = await ctx.prisma.adminConfig.update({
         where: {
           adminId: input.adminId,
         },
         data: {
           ...input.config,
+          logoKey: input.logo.fileKey ?? undefined,
+          logoUrl: input.logo.fileUrl ?? undefined,
         },
       });
+      console.log(conf);
     }),
   logout: adminProcedure.mutation(({ ctx: { req, res } }) => {
     if (req && res) {

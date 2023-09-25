@@ -1,28 +1,31 @@
+import Button from "@/components/Button";
 import { AdminInfo } from "@/utils/types";
-import { Button } from "@mui/material";
+import { format } from "date-fns";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 export default function success() {
   const [adminInfo, setAdminInfo] = useState<AdminInfo | null>(null);
 
-  useEffect(() => {
-    const adminInfo = localStorage.getItem("adminInfo");
+  const router = useRouter();
 
-    if (adminInfo) {
-      setAdminInfo(JSON.parse(adminInfo));
-    }
-  });
+  const query = router.query as { name: string; date: string };
 
   return (
     <main className="relative flex h-screen items-center justify-center text-center">
       <Button
-        href={`/${adminInfo?.route}`}
-        sx={{ position: "absolute", top: "1rem", left: "1rem" }}
+        className="absolute left-4 top-4 font-bold"
+        variant="ghost"
+        onClick={() => router.push(`/${query.name}`)}
       >
         Voltar para o início
       </Button>
-      <div>
+      <div className="flex flex-col gap-4">
         <h1 className="text-3xl">Sucesso!</h1>
+        <p>Seu horário foi agendado com sucesso.</p>
+        <p className="font-bold">
+          {format(new Date(query.date), "dd/MM - HH:mm")}
+        </p>
       </div>
     </main>
   );
