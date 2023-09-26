@@ -42,6 +42,17 @@
   outline: none;
 }
 
+.card {
+  background: linear-gradient(135deg, #ec4899, #ef4444, #eab308 25%, white 70%);
+  background-size: 500%;
+  background-position: 100% 100%;
+  transition: all 0.4s;
+}
+
+.card:hover {
+  background-position: 0 0;
+}
+
 .react-calendar button:enabled:hover {
   cursor: pointer;
 }

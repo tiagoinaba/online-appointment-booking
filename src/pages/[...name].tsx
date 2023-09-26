@@ -297,7 +297,7 @@ export default function Home({
               )}
             </div>
           )}
-          <div className="flex w-full max-w-[800px] flex-col items-center gap-4 rounded border p-10 transition duration-300 hover:bg-zinc-100">
+          <div className="flex w-full max-w-[800px] flex-col items-center gap-4 rounded-xl border p-10 transition duration-300 hover:bg-zinc-100">
             <div className="flex items-center gap-4">
               {admin?.AdminConfig?.logoUrl && (
                 <div className="relative h-16 w-16 overflow-hidden rounded-full">
@@ -305,6 +305,7 @@ export default function Home({
                     src={admin?.AdminConfig?.logoUrl}
                     alt="logo"
                     fill
+                    quality={80}
                     style={{ objectFit: "cover" }}
                   />
                 </div>

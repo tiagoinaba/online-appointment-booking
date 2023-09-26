@@ -71,6 +71,7 @@ export default function CreateServiceForm({
           {((title === "Editar" && service?.imageKey) || file.length > 0) && (
             <Button
               variant="destructive"
+              type="button"
               onClick={() => {
                 if (service) removeImage({ id: service.id });
                 else setFile([]);

@@ -136,12 +136,14 @@ export default function ServiceCard({ service }: { service: Service }) {
               src={service.imageUrl}
               alt="Foto do serviço"
               sizes="300px"
+              quality={80}
               fill
               style={{ objectFit: "cover" }}
             />
           ) : (
             <Image
               src={placeholder}
+              quality={80}
               alt="Image placeholder"
               sizes="300px"
               fill

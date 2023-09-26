@@ -8,7 +8,7 @@ type FileDropzoneProps = {
     | React.Dispatch<React.SetStateAction<File[]>>
     | ((acceptedFiles: FileWithPath[]) => void);
   disabled: boolean;
-  setPath: React.Dispatch<React.SetStateAction<string[]>>;
+  setPath?: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export default function FileDropzone({
@@ -21,7 +21,8 @@ export default function FileDropzone({
     (acceptedFiles: FileWithPath[], fileRejections: FileRejection[]) => {
       fileRejections.map((file) => toast.error("A imagem é grande demais!"));
       setFile(acceptedFiles);
-      setPath(acceptedFiles.map((file) => URL.createObjectURL(file)));
+      if (setPath)
+        setPath(acceptedFiles.map((file) => URL.createObjectURL(file)));
     },
     []
   );

@@ -191,6 +191,7 @@ export default function Options({ admin }: { admin: FullAdmin }) {
                   <div className="relative h-40">
                     <Image
                       src={admin.AdminConfig?.logoUrl}
+                      quality={80}
                       alt="logo"
                       fill
                       style={{ objectFit: "contain" }}
@@ -239,6 +240,7 @@ export default function Options({ admin }: { admin: FullAdmin }) {
                   <Image
                     src={file}
                     fill
+                    quality={80}
                     style={{ objectFit: "contain" }}
                     alt="Logo"
                   />

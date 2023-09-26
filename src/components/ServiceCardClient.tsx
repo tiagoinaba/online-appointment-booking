@@ -25,6 +25,7 @@ export default function ServiceCard({
           {service.imageUrl ? (
             <Image
               src={service.imageUrl}
+              quality={80}
               className="transition-all duration-500 group-hover:scale-110"
               alt="Foto do serviço"
               sizes="300px"
@@ -35,6 +36,7 @@ export default function ServiceCard({
             <Image
               src={placeholder}
               alt="Image placeholder"
+              quality={80}
               sizes="300px"
               fill
               style={{ objectFit: "cover" }}

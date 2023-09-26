@@ -1,23 +1,16 @@
-import AdminBackButton from "@/components/AdminBackButton";
-import FileDropzone from "@/components/FileDropzone";
+import Button from "@/components/Button";
+import { Heading } from "@/components/Heading";
 import CreateServiceForm from "@/components/ServiceForm";
 import ServicesCarousel from "@/components/ServicesCarousel";
-import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { useUploadThing } from "@/utils/uploadthing";
-import { Input, Link } from "@mui/material";
+import { Link } from "@mui/material";
 import "@uploadthing/react/styles.css";
-import { getCookie } from "cookies-next";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import Head from "next/head";
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
-import { Label } from "~/components/ui/label";
 import { FullAdmin } from ".";
-import { Heading } from "@/components/Heading";
-import Button from "@/components/Button";
 
 export const ServiceForm = z.object({
   name: z.string().nonempty(),
@@ -26,6 +19,13 @@ export const ServiceForm = z.object({
 export type ServiceFormType = z.infer<typeof ServiceForm>;
 
 export default function Services({ admin }: { admin: FullAdmin }) {
+  const { data: services } = api.service.getServicesByAdmin.useQuery(
+    { adminId: admin.id },
+    {
+      initialData: admin.Service,
+    }
+  );
+
   const multipleServices = admin?.AdminConfig?.multipleServices;
 
   const [modal, setModal] = useState<boolean>(false);
@@ -47,8 +47,8 @@ export default function Services({ admin }: { admin: FullAdmin }) {
       createService({
         data,
         adminId: admin?.id!,
-        imageUrl: null,
         imageKey: null,
+        imageUrl: null,
       });
     }
   };
@@ -82,7 +82,7 @@ export default function Services({ admin }: { admin: FullAdmin }) {
         <Heading>Serviços</Heading>
         {multipleServices ? (
           <div className="flex w-full max-w-[800px] flex-col gap-8 rounded-xl border p-12 transition duration-300 hover:bg-zinc-50">
-            <ServicesCarousel services={admin.Service} />
+            <ServicesCarousel services={services} />
             <Button
               className="self-center"
               onClick={() => setModal((prev) => !prev)}
