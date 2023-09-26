@@ -19,7 +19,7 @@ const createAdminFormSchema = z.object({
 
 type CreateAdminFormData = z.infer<typeof createAdminFormSchema>;
 
-export default function signin() {
+export default function SignIn() {
   const {
     register,
     handleSubmit,

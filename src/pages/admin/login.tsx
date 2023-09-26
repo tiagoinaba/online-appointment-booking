@@ -6,6 +6,7 @@ import Head from "next/head";
 import { api } from "@/utils/api";
 import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export const adminFormSchema = z.object({
   email: z
@@ -18,7 +19,7 @@ export const adminFormSchema = z.object({
 
 export type AdminFormData = z.infer<typeof adminFormSchema>;
 
-export default function index() {
+export default function Login() {
   const {
     register,
     handleSubmit,
@@ -77,12 +78,12 @@ export default function index() {
             Login
           </button>
         </form>
-        <a
+        <Link
           href="/admin/signin"
           className="rounded-lg bg-teal-800 px-4 py-1 font-bold text-zinc-50"
         >
           Criar conta
-        </a>
+        </Link>
         <Toaster position="bottom-center" />
       </main>
     </>
