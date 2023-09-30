@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 
 declare global {
-  var id: string;
+  let id: string;
 }
 
 export type DateType = {

@@ -74,7 +74,7 @@ export const serviceRouter = createTRPCRouter({
         },
       });
       if (service.imageKey) {
-        utapi.deleteFiles(service.imageKey);
+        await utapi.deleteFiles(service.imageKey);
       }
     }),
   updateService: adminProcedure
@@ -103,7 +103,7 @@ export const serviceRouter = createTRPCRouter({
         },
       });
       if (oldService?.imageKey && imageKey && imageUrl) {
-        utapi.deleteFiles(oldService.imageKey);
+        await utapi.deleteFiles(oldService.imageKey);
       }
     }),
   removeImage: adminProcedure
@@ -114,7 +114,8 @@ export const serviceRouter = createTRPCRouter({
           id,
         },
       });
-      utapi.deleteFiles(oldService?.imageKey!);
+      if (oldService && oldService.imageKey)
+        await utapi.deleteFiles(oldService.imageKey);
       await ctx.prisma.service.update({
         where: {
           id,

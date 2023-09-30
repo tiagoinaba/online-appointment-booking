@@ -2,7 +2,7 @@ import { createServer } from "http";
 import { parse } from "url";
 import next from "next";
 
-const app = next({ dev: true });
+const app = next({ dev: false });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {

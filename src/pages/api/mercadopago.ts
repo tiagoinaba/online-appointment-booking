@@ -1,22 +1,30 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
 import { env } from "@/env.mjs";
 import { prisma } from "@/server/db";
 import axios from "axios";
-import { NextApiRequest, NextApiResponse } from "next";
+import { type NextApiRequest, type NextApiResponse } from "next";
 
 type CustomRequest = NextApiRequest & {
-  id: string;
+  teste: string;
+  body: {
+    action: string;
+    data: {
+      id: string;
+    };
+  };
 };
 
 export default async function handler(
   req: CustomRequest,
   res: NextApiResponse
-) {
-  // if (req.body.action === "payment.created") console.log("payment created");
-  // if (req.body.action === "payment.updated") {
-  console.log(req.body);
+): Promise<void> {
   try {
     if (req.body.action) {
-      const paymentId = req.body.data.id;
+      const paymentId = req.body.data.id as string;
       const { data } = await axios.get(
         `https://api.mercadopago.com/v1/payments/${paymentId}`,
         { headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` } }
@@ -37,6 +45,7 @@ export default async function handler(
             justDate,
             name: item.name,
             email: item.email,
+            phoneNumber: item.phoneNumber,
             paymentIdMP: paymentId,
             paymentStatus: "pending",
           },
@@ -52,6 +61,7 @@ export default async function handler(
           },
           create: {
             dateTime,
+            phoneNumber: item.phoneNumber,
             adminId: item.adminId,
             serviceId: item.serviceId,
             justDate,
