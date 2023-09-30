@@ -4,11 +4,11 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { httpBatchLink, loggerLink } from "@trpc/client";
+import { type AppRouter } from "@/server/api/root";
+import { httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
-import { type AppRouter } from "@/server/api/root";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -20,13 +20,13 @@ const getBaseUrl = () => {
 export const api = createTRPCNext<AppRouter>({
   config(opts) {
     const { ctx } = opts;
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // during client requests
       return {
         transformer: superjson, // optional - adds superjson serialization
         links: [
           httpBatchLink({
-            url: '/api/trpc',
+            url: "/api/trpc",
           }),
         ],
       };
