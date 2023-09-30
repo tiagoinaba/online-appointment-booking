@@ -34,8 +34,8 @@ export default function SignIn() {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
-      router.push("/admin/dashboard");
+    onSuccess: async () => {
+      await router.push("/admin/dashboard");
     },
   });
 
@@ -88,8 +88,8 @@ export default function SignIn() {
         </form>
         <button
           className="rounded-lg bg-teal-800 px-4 py-1 font-bold text-zinc-50"
-          onClick={() => {
-            router.push("/admin/login");
+          onClick={async () => {
+            await router.push("/admin/login");
           }}
         >
           Ir para login

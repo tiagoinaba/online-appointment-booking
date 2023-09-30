@@ -34,8 +34,8 @@ export default function Login() {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
-      router.push("/admin/dashboard");
+    onSuccess: async () => {
+      await router.push("/admin/dashboard");
     },
   });
 
