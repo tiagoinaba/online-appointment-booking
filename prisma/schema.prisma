@@ -34,7 +34,7 @@ model AdminConfig {
   logoUrl          String   @default("")
   phoneNumber      String   @default("")
   multipleServices Boolean  @default(false)
-  admin            Admin    @relation(fields: [adminId], references: [id])
+  admin            Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([adminId])
 }
@@ -96,7 +96,7 @@ model Day {
   closingHour DateTime
   interval    DateTime
   open        Boolean  @default(false)
-  admin       Admin    @relation(fields: [adminId], references: [id])
+  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@unique([weekDay, adminId])
   @@index([adminId])
