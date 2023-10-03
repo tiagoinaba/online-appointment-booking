@@ -1,7 +1,7 @@
 import placeholder from "@/assets/placeholder-image.png";
-import { Service } from "@prisma/client";
+import { type Service } from "@prisma/client";
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import { z } from "zod";
 
 export const ServiceEditForm = z.object({

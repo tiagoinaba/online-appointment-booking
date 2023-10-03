@@ -1,4 +1,5 @@
 import { Book, Contact, Home, Menu } from "lucide-react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 
@@ -10,12 +11,12 @@ export default function ClientLayout({ children }: CLProps) {
   return (
     <div className="flex flex-col">
       <nav className="flex flex-col items-center justify-center gap-2 bg-zinc-800 px-4 py-2 text-white shadow sm:flex-row sm:px-8">
-        <a
+        <Link
           href="/"
           className="select-none text-2xl font-bold tracking-tighter text-zinc-400 sm:mr-auto"
         >
           TIME<span className="text-white">KEEPER</span>
-        </a>
+        </Link>
       </nav>
       {children}
       <footer className="flex flex-col items-center justify-center gap-2 bg-zinc-800 px-4 py-4 text-sm text-zinc-300 shadow sm:px-8">

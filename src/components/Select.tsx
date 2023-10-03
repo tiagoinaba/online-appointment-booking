@@ -1,6 +1,6 @@
-import { Service } from "@prisma/client";
+import { type Service } from "@prisma/client";
 import React from "react";
-import Select, { ActionMeta, SingleValue, StylesConfig } from "react-select";
+import Select, { type ActionMeta, type SingleValue, type StylesConfig } from "react-select";
 
 export const ServiceSelect = ({
   services,

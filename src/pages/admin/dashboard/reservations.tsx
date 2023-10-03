@@ -1,9 +1,9 @@
 import Button from "@/components/Button";
 import { Heading } from "@/components/Heading";
 import DataTable, {
-  ReservationTable,
+  type ReservationTable,
 } from "@/components/reservations/DataTable";
-import { Prisma, Reservation, Service } from "@prisma/client";
+import { type Prisma, type Reservation, type Service } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Toaster } from "react-hot-toast";

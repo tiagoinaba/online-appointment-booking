@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ButtonBaseProps } from "@mui/material";
-import React, { PropsWithChildren } from "react";
+import React, { type PropsWithChildren } from "react";
 
 type ButtonProps = {
   onClick?: () => void;

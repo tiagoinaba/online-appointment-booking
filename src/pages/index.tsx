@@ -45,8 +45,7 @@ export default function Home() {
                 Demonstração
               </h2>
               <h3 className="relative z-10">
-                Selecione um dia e horário e clique em "Reservar". Simples
-                assim!
+                Selecione um dia e horário e clique em Reservar. Simples assim!
               </h3>
               <DateTimePickerDemo />
             </section>

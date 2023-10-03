@@ -1,4 +1,4 @@
-import { Tabs } from "@/components/admin/SideNav";
+import { type Tabs } from "@/components/admin/SideNav";
 import { create } from "zustand";
 
 type useActiveTabStoreTypes = {

@@ -7,10 +7,10 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { Link } from "@mui/material";
 import "@uploadthing/react/styles.css";
 import { useState } from "react";
-import { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
-import { FullAdmin } from ".";
+import { type FullAdmin } from ".";
 
 export const ServiceForm = z.object({
   name: z.string().nonempty(),
@@ -38,7 +38,7 @@ export default function Services({ admin }: { admin: FullAdmin }) {
       if (fileInfo && fileInfo[0]) {
         createService({
           data,
-          adminId: admin?.id!,
+          adminId: admin?.id,
           imageUrl: fileInfo[0].fileUrl,
           imageKey: fileInfo[0].fileKey,
         });
@@ -46,7 +46,7 @@ export default function Services({ admin }: { admin: FullAdmin }) {
     } else {
       createService({
         data,
-        adminId: admin?.id!,
+        adminId: admin?.id,
         imageKey: null,
         imageUrl: null,
       });
@@ -54,9 +54,9 @@ export default function Services({ admin }: { admin: FullAdmin }) {
   };
 
   const { mutate: createService } = api.service.createService.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Serviço criado com sucesso!");
-      utils.invalidate();
+      await utils.invalidate();
       setModal(false);
     },
 
@@ -92,7 +92,7 @@ export default function Services({ admin }: { admin: FullAdmin }) {
           </div>
         ) : (
           <div>
-            Você deve ativar "múltiplos serviços" em{" "}
+            Você deve ativar múltiplos serviços em{" "}
             <Link href="/admin/dashboard/options">Opções</Link>
           </div>
         )}

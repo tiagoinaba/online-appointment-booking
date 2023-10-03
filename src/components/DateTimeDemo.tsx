@@ -1,10 +1,8 @@
-import { api } from "@/utils/api";
 import { now } from "@/utils/constants";
-import { DateType } from "@/utils/types";
+import { type DateType } from "@/utils/types";
 import { DateCalendar } from "@mui/x-date-pickers";
-import { Day } from "@prisma/client";
 import { add, format, isBefore, isEqual } from "date-fns";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import Button from "./Button";
 
 interface DateTimeDemoProps {
@@ -70,7 +68,8 @@ export default function DateTimeDemo({
             key={time.toISOString()}
             variant="ghost"
             className={`${
-              isEqual(date.dateTime!, time) && "border-2 border-zinc-500"
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              isEqual(date.dateTime!, time) ? "border-2 border-zinc-500" : ""
             }`}
             disabled={
               (reserved?.find((res) => isEqual(res, time)) ? true : false) ||

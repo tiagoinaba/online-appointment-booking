@@ -1,9 +1,7 @@
-import { Inputs } from "@/utils/types";
-import { InputLabel } from "@mui/material";
-import { SubmitHandler, useForm, Controller } from "react-hook-form";
+import { type Inputs } from "@/utils/types";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { Input } from "~/components/ui/input";
 import Button from "./Button";
-import { useEffect } from "react";
 
 export type BookingFormProps = {
   onSubmit: SubmitHandler<Inputs>;
@@ -19,9 +17,8 @@ export default function BookingForm({
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     control,
-    watch,
   } = useForm<Inputs>();
 
   return (

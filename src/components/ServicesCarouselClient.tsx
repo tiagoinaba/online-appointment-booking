@@ -1,9 +1,9 @@
-import { Service } from "@prisma/client";
-import Slider, { Settings } from "react-slick";
+import { type Service } from "@prisma/client";
+import Slider, { type Settings } from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import ServiceCardClient from "./ServiceCardClient";
-import { Dispatch, SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import { Heading } from "./Heading";
 
 export default function ServicesCarousel({
@@ -57,7 +57,7 @@ export default function ServicesCarousel({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-lg font-bold">Escolha um serviço:</p>
-      {services?.length! > 0 ? (
+      {services?.length > 0 ? (
         <Slider {...settings}>
           {services?.map((service) => (
             <ServiceCardClient

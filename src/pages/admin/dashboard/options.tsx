@@ -6,12 +6,12 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { Input, Switch, TextField } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FileWithPath } from "react-dropzone";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { type FileWithPath } from "react-dropzone";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
 import { Label } from "~/components/ui/label";
-import { FullAdmin } from ".";
+import { type FullAdmin } from ".";
 
 export const ZodForm = z.object({
   requirePayment: z.boolean(),
@@ -34,8 +34,8 @@ export default function Options({ admin }: { admin: FullAdmin }) {
 
   const { mutate: updatePreferences, isLoading } =
     api.auth.updatePreferences.useMutation({
-      onSuccess: () => {
-        utils.invalidate();
+      onSuccess: async () => {
+        await utils.invalidate();
         setIsTouched(false);
         setPath([]);
         setValue("logo", []);
@@ -72,14 +72,14 @@ export default function Options({ admin }: { admin: FullAdmin }) {
     if (data.logo.length > 0) {
       const logo = await startUpload(data.logo);
 
-      if (logo && logo?.length > 0) {
+      if (logo && logo.length > 0) {
         const config = { ...data };
         updatePreferences({
           config: {
             ...config,
           },
-          logo: logo[0]!,
-          adminId: admin?.id!,
+          logo: logo[0] ?? { fileKey: null, fileUrl: null },
+          adminId: admin?.id,
         });
       }
     } else {
@@ -88,7 +88,7 @@ export default function Options({ admin }: { admin: FullAdmin }) {
         config: {
           ...config,
         },
-        adminId: admin?.id!,
+        adminId: admin?.id,
         logo: { fileKey: null, fileUrl: null },
       });
     }

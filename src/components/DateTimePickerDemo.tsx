@@ -21,6 +21,7 @@ export default function DateTimePickerDemo() {
       <h2
         onAnimationEnd={() => setAnimate(false)}
         className={`text-2xl font-bold md:text-4xl ${
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           animate && "animate-fadeIn"
         }`}
       >

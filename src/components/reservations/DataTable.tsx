@@ -1,8 +1,8 @@
 import { api } from "@/utils/api";
 import {
-  ColumnDef,
-  ColumnFilter,
-  ColumnSort,
+  type ColumnDef,
+  type ColumnFilter,
+  type ColumnSort,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -11,9 +11,9 @@ import {
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDown } from "lucide-react";
-import { Service } from "prisma/generated/zod";
+import { type Service } from "prisma/generated/zod";
 import { useState } from "react";
-import Select, { StylesConfig } from "react-select";
+import Select, { type StylesConfig } from "react-select";
 import Button from "../Button";
 import { paymentStatus } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -101,18 +101,18 @@ export const columns: ColumnDef<ReservationTable>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const utils = api.useContext();
       const { mutate: deleteReservation, isLoading } =
         api.reservation.deleteReservation.useMutation({
-          onSuccess: () => {
+          onSuccess: async () => {
             toast.success("Reserva excluída com sucesso!");
-            utils.reservation.invalidate();
+            await utils.reservation.invalidate();
             console.log("ok");
           },
-          onError: (err) => {
+          onError: async (err) => {
             toast.error(err.message);
-            utils.reservation.invalidate();
+            await utils.reservation.invalidate();
           },
         });
 
@@ -127,7 +127,7 @@ export const columns: ColumnDef<ReservationTable>[] = [
                 <Button
                   variant="destructive"
                   disabled={isLoading}
-                  onClick={async () => {
+                  onClick={() => {
                     deleteReservation({ id: row.original.id });
                   }}
                 >

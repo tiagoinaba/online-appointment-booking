@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { FormType } from "./WeekDays";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { type FormType } from "./WeekDays";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "@/utils/api";
 import { Switch } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers";
@@ -29,10 +29,10 @@ export const EditForm = ({
     },
   });
   const { mutate: createDay, isLoading } = api.day.createDay.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       setDisabled(true);
       toast.success("Alterado com sucesso.");
-      utils.day.invalidate();
+      await utils.day.invalidate();
     },
     onError: (err) => {
       toast.error(err.message);
@@ -41,9 +41,9 @@ export const EditForm = ({
 
   const { mutate: deleteDay, isLoading: isDeleting } =
     api.day.deleteDay.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success("Deletado com sucesso.");
-        utils.day.invalidate();
+        await utils.day.invalidate();
       },
       onError: (err) => {
         toast.error(err.message);

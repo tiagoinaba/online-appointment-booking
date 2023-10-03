@@ -24,33 +24,35 @@ export const authRouter = createTRPCRouter({
 
       const dbAdmin = await ctx.prisma.admin.findFirst({ where: { email } });
 
-      const result = await bcrypt.compare(password, dbAdmin?.password!);
+      if (dbAdmin?.password) {
+        const result = await bcrypt.compare(password, dbAdmin?.password);
 
-      if (result) {
-        const { res } = ctx;
-        // user is logged in successfully
-        // return a JWT cookie to the user
-        const token = await new SignJWT({})
-          .setProtectedHeader({ alg: "HS256" })
-          .setJti(nanoid())
-          .setIssuedAt()
-          .setExpirationTime("8h")
-          .sign(new TextEncoder().encode(getJwtSecretKey()));
+        if (result) {
+          const { res } = ctx;
+          // user is logged in successfully
+          // return a JWT cookie to the user
+          const token = await new SignJWT({})
+            .setProtectedHeader({ alg: "HS256" })
+            .setJti(nanoid())
+            .setIssuedAt()
+            .setExpirationTime("8h")
+            .sign(new TextEncoder().encode(getJwtSecretKey()));
 
-        res?.setHeader("Set-Cookie", [
-          cookie.serialize("user-token", token, {
-            httpOnly: true,
-            path: "/",
-            secure: env.NODE_ENV === "production",
-          }),
-          cookie.serialize("admin-name", dbAdmin?.name!, {
-            httpOnly: true,
-            path: "/",
-            secure: env.NODE_ENV === "production",
-          }),
-        ]);
+          res?.setHeader("Set-Cookie", [
+            cookie.serialize("user-token", token, {
+              httpOnly: true,
+              path: "/",
+              secure: env.NODE_ENV === "production",
+            }),
+            cookie.serialize("admin-name", dbAdmin?.name, {
+              httpOnly: true,
+              path: "/",
+              secure: env.NODE_ENV === "production",
+            }),
+          ]);
 
-        return;
+          return;
+        }
       }
 
       throw new TRPCError({

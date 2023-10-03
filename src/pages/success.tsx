@@ -1,10 +1,10 @@
 import Button from "@/components/Button";
-import { AdminInfo } from "@/utils/types";
+import { type AdminInfo } from "@/utils/types";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-export default function success() {
+export default function Success() {
   const [adminInfo, setAdminInfo] = useState<AdminInfo | null>(null);
 
   const router = useRouter();

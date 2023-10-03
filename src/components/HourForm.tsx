@@ -1,11 +1,11 @@
 import { api } from "@/utils/api";
 import { ErrorMessage } from "@hookform/error-message";
 import { TimePicker } from "@mui/x-date-pickers";
-import { Admin, AdminConfig } from "@prisma/client";
+import { Admin, type AdminConfig } from "@prisma/client";
 import { add } from "date-fns";
 import { IntFieldUpdateOperationsInputSchema } from "prisma/generated/zod";
 import React, { useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import Button from "./Button";
 import { toast } from "react-hot-toast";

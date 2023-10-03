@@ -11,13 +11,13 @@ import {
   IconButton,
   Modal,
 } from "@mui/material";
-import { Service } from "@prisma/client";
+import { type Service } from "@prisma/client";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import CreateServiceForm from "./ServiceForm";
-import { SubmitHandler } from "react-hook-form";
-import { ServiceFormType } from "@/pages/admin/dashboard/services";
+import { type SubmitHandler } from "react-hook-form";
+import { type ServiceFormType } from "@/pages/admin/dashboard/services";
 import { useUploadThing } from "@/utils/uploadthing";
 import { z } from "zod";
 import Button from "./Button";
@@ -31,10 +31,10 @@ export default function ServiceCard({ service }: { service: Service }) {
 
   const { mutate: deleteService, isLoading } =
     api.service.deleteService.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         setOpen(false);
         toast.success("Serviço excluído com sucesso!");
-        utils.invalidate();
+        await utils.invalidate();
       },
       onError: (err) => {
         toast.error(err.message);
@@ -42,8 +42,8 @@ export default function ServiceCard({ service }: { service: Service }) {
     });
 
   const { mutate: updateService } = api.service.updateService.useMutation({
-    onSuccess: () => {
-      utils.service.invalidate();
+    onSuccess: async () => {
+      await utils.service.invalidate();
       setModal(false);
       toast.success("Atualizado com sucesso!");
     },

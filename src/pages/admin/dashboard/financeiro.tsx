@@ -4,11 +4,12 @@ import { Heading } from "@/components/Heading";
 import { ServiceSelect } from "@/components/Select";
 import { prisma } from "@/server/db";
 import { now } from "@/utils/constants";
-import { GetServerSidePropsContext } from "next";
+import { type GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { FullAdmin } from ".";
+import { type FullAdmin } from ".";
+import { Reservation } from "@prisma/client";
 
 export default function Financeiro({
   admin,
@@ -27,11 +28,15 @@ export default function Financeiro({
   const [financeData, setFinanceData] = useState<typeof chartData | null>(null);
 
   useEffect(() => {
-    const data = chartData.map((entry) => ({
-      ...entry,
-      value: entry.value * admin?.AdminConfig?.paymentValue!,
-    }));
-    setFinanceData(data);
+    const conf = admin.AdminConfig;
+
+    if (conf) {
+      const data = chartData.map((entry) => ({
+        ...entry,
+        value: entry.value * conf.paymentValue,
+      }));
+      setFinanceData(data);
+    }
   }, []);
 
   return (
@@ -120,6 +125,7 @@ export const getServerSideProps = async ({
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   resCount = JSON.parse(JSON.stringify(resCount));
 
   let admin = await prisma.admin.findFirst({
@@ -130,12 +136,14 @@ export const getServerSideProps = async ({
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   admin = JSON.parse(JSON.stringify(admin));
 
   let reservationsData = await prisma.reservation.findMany({
     where: { admin: { id: admin?.id } },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   reservationsData = await JSON.parse(JSON.stringify(reservationsData));
 
   const data: { month: string; value: any }[] = [
@@ -156,12 +164,14 @@ export const getServerSideProps = async ({
   if (reservationsData) {
     reservationsData.forEach((reservation) => {
       if (new Date(reservation.dateTime).getFullYear() === now.getFullYear())
+        // eslint-disable-next-line
         data[new Date(reservation.dateTime).getMonth()]?.value.push(
           reservation
         );
     });
   }
 
+  // eslint-disable-next-line
   data.forEach((entry) => (entry.value = entry.value.length));
 
   return {

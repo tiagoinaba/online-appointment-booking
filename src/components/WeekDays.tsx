@@ -15,12 +15,12 @@ import { TimePicker } from "@mui/x-date-pickers";
 import { add, format } from "date-fns";
 import React, { useState } from "react";
 import { IconDropdown } from "react-day-picker";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import Button from "./Button";
 import { EditForm } from "./EditForm";
 import { HourForm } from "./HourForm";
-import { Admin, AdminConfig } from "@prisma/client";
+import { Admin, type AdminConfig } from "@prisma/client";
 
 type weekNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | string;
 type weekDayName =
@@ -61,8 +61,8 @@ export const WeekDays = ({
   const [open, setOpen] = useState<boolean>(false);
   const { data: days } = api.day.getDay.useQuery({ adminId });
   const { mutate: createDay, isLoading } = api.day.createDay.useMutation({
-    onSuccess: () => {
-      utils.day.invalidate();
+    onSuccess: async () => {
+      await utils.day.invalidate();
       toast.success("Criado com sucesso!");
       reset();
       setOpen(false);
@@ -87,13 +87,13 @@ export const WeekDays = ({
   } = useForm<FormType>({
     defaultValues: {
       open: true,
-      // @ts-expect-error
+      // @ts-expect-error this is dumb
       weekDay: "",
-      // @ts-expect-error
+      // @ts-expect-error this is dumb
       openingHour: null,
-      // @ts-expect-error
+      // @ts-expect-error this is dumb
       closingHour: null,
-      // @ts-expect-error
+      // @ts-expect-error this is dumb
       interval: null,
     },
   });

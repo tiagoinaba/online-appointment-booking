@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 
 export default function ProgressBar({
   steps,
@@ -10,7 +10,7 @@ export default function ProgressBar({
   setStep: Dispatch<SetStateAction<number>>;
 }) {
   const getNumbers = (steps: number) => {
-    let numbers = [];
+    const numbers = [];
     for (let i = 1; i <= steps; i++) {
       numbers.push(i);
     }

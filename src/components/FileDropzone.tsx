@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { FileRejection, FileWithPath, useDropzone } from "react-dropzone";
+import { type FileRejection, type FileWithPath, useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
 
 type FileDropzoneProps = {

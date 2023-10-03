@@ -1,5 +1,5 @@
 import { api } from "@/utils/api";
-import { AdminInfo, Inputs } from "@/utils/types";
+import { type AdminInfo, type Inputs } from "@/utils/types";
 import { Button } from "@mui/material";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
@@ -13,6 +13,7 @@ export default function Callback() {
 
   const {
     mutate: getPayment,
+    // eslint-disable-next-line
     data: paymentData,
     isLoading: paymentLoading,
   } = api.mercadopago.getPayment.useMutation();
@@ -34,9 +35,11 @@ export default function Callback() {
     const data = localStorage.getItem("reservationInfo");
     const adminInfo = localStorage.getItem("adminInfo");
     if (data) {
+      // eslint-disable-next-line
       setReservationData(JSON.parse(data));
     }
     if (adminInfo) {
+      // eslint-disable-next-line
       setAdminInfo(JSON.parse(adminInfo));
     }
   }, []);
@@ -44,7 +47,8 @@ export default function Callback() {
   useEffect(() => {
     if (typeof paymentId === "string") {
       if (paymentData && reservationData) {
-        const { name, email } = reservationData;
+        const { firstName, lastName, email, phoneNumber } = reservationData;
+        /* eslint-disable */
         const description = JSON.parse(
           paymentData.additional_info.items[0].description
         );
@@ -54,12 +58,15 @@ export default function Callback() {
         const date = parseISO(dateString);
         createReservation({
           date,
-          name,
+          firstName,
+          lastName,
+          phoneNumber,
           email,
           paymentId: paymentId,
           adminId,
           serviceId,
         });
+        /* eslint-enable */
         setDateReserved(date);
         return;
       }
@@ -73,7 +80,7 @@ export default function Callback() {
     <main className="relative flex h-screen items-center justify-center text-center">
       {adminInfo && (
         <Button
-          href={`/${adminInfo.route!}`}
+          href={`/${adminInfo.route}`}
           sx={{ position: "absolute", top: "1rem", left: "1rem" }}
         >
           Voltar para o início
@@ -87,7 +94,7 @@ export default function Callback() {
           {dateReserved && reservationData && (
             <p className="mt-4 text-2xl font-bold">
               {format(dateReserved, "dd/MM/yyyy '->' HH:mm")} -{" "}
-              {reservationData.name}
+              {`${reservationData.firstName} ${reservationData.lastName}`}
             </p>
           )}
         </div>

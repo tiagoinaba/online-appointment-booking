@@ -1,10 +1,10 @@
 import { api } from "@/utils/api";
 import { now } from "@/utils/constants";
-import { DateType } from "@/utils/types";
+import { type DateType } from "@/utils/types";
 import { DateCalendar } from "@mui/x-date-pickers";
-import { Day } from "@prisma/client";
+import { type Day } from "@prisma/client";
 import { add, format, isBefore, isEqual } from "date-fns";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import Button from "./Button";
 
 interface DateTimePickerProps {
@@ -52,8 +52,8 @@ export default function DateTimePicker({
   });
 
   useEffect(() => {
-    if (adminId) refetchAdmin();
-    if (serviceId) refetchService();
+    if (adminId) void refetchAdmin();
+    if (serviceId) void refetchService();
   }, [date.justDate]);
 
   const getTimes = () => {
@@ -153,6 +153,7 @@ export default function DateTimePicker({
                 key={time.toISOString()}
                 variant="ghost"
                 className={`${
+                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                   isEqual(date.dateTime!, time) && "border-2 border-zinc-500"
                 }`}
                 disabled={

@@ -3,8 +3,11 @@ import { useActiveTabStore } from "@/hooks/useActiveTab";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
 import { now } from "@/utils/constants";
-import { Prisma } from "@prisma/client";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { type Prisma } from "@prisma/client";
+import {
+  type GetServerSidePropsContext,
+  type InferGetServerSidePropsType,
+} from "next";
 import Head from "next/head";
 import { z } from "zod";
 import Calendario from "./calendario";
@@ -13,12 +16,7 @@ import Options from "./options";
 import Reservations from "./reservations";
 import Services from "./services";
 
-const adminFormSchema = z.object({
-  email: z.string().nonempty("O email é obrigatório.").email("Email inválido"),
-  password: z.string(),
-});
-
-export default function index({
+export default function Index({
   admin,
   data,
   resCount,
@@ -91,7 +89,7 @@ export const getServerSideProps = async ({
         },
       });
 
-      let resCount = await prisma.reservation.count({
+      const resCount = await prisma.reservation.count({
         where: {
           admin: {
             name: adminCookie,
@@ -102,6 +100,7 @@ export const getServerSideProps = async ({
       if (admin) {
         let reservationsData = admin.Reservation;
 
+        // eslint-disable-next-line
         reservationsData = await JSON.parse(JSON.stringify(reservationsData));
 
         const data: { month: string; value: any }[] = [
@@ -124,14 +123,17 @@ export const getServerSideProps = async ({
             if (
               new Date(reservation.dateTime).getFullYear() === now.getFullYear()
             )
+              // eslint-disable-next-line
               data[new Date(reservation.dateTime).getMonth()]?.value.push(
                 reservation
               );
           });
         }
 
+        // eslint-disable-next-line
         data.forEach((entry) => (entry.value = entry.value.length));
 
+        // eslint-disable-next-line
         admin = JSON.parse(JSON.stringify(admin));
 
         return {

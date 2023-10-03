@@ -7,25 +7,25 @@ import ServicesCarouselClient from "@/components/ServicesCarouselClient";
 import ClientLayout from "@/components/layouts/ClientLayout";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
-import { DateType, Inputs } from "@/utils/types";
+import { type DateType, type Inputs } from "@/utils/types";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { Service } from "@prisma/client";
+import { type Service } from "@prisma/client";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Phone } from "lucide-react";
 import {
-  GetStaticPaths,
-  GetStaticPropsContext,
-  InferGetStaticPropsType,
+  type GetStaticPaths,
+  type GetStaticPropsContext,
+  type InferGetStaticPropsType,
 } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 
 export default function Home({
@@ -68,11 +68,14 @@ export default function Home({
 
   const { mutate: createReservation, isLoading: isCreating } =
     api.reservation.createReservation.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success("Horário reservado com sucesso!");
-        utils.reservation.getAll.invalidate();
-        utils.reservation.getByDateAdmin.invalidate();
-        router.push(`/success?name=${admin?.route}&date=${date.dateTime}`);
+        await utils.reservation.getAll.invalidate();
+        await utils.reservation.getByDateAdmin.invalidate();
+        if (admin?.route && date.dateTime)
+          await router.push(
+            `/success?name=${admin.route}&date=${date.dateTime.toISOString()}`
+          );
       },
       onError: (err) => {
         toast.error(err.message);
@@ -83,7 +86,7 @@ export default function Home({
     if (!admin?.AdminConfig?.requirePayment) {
       createReservation({
         adminId: admin!.id,
-        date: date!.dateTime!,
+        date: date.dateTime!,
         paymentId: null,
         serviceId: service?.id ? service.id : null,
         ...data,
@@ -132,7 +135,7 @@ export default function Home({
                 <h2
                   onAnimationEnd={() => setAnimate(false)}
                   className={`text-4xl font-bold ${
-                    animate && "animate-fadeIn"
+                    animate ? "animate-fadeIn" : ""
                   }`}
                 >
                   {date.dateTime
@@ -150,28 +153,30 @@ export default function Home({
                   date={date}
                   setAnimate={setAnimate}
                   setDate={setDate}
-                  adminId={admin?.id}
+                  adminId={admin?.id ?? ""}
                   opening={{
                     openingHours: {
                       hours: new Date(
-                        admin.AdminConfig?.openingHours!
-                      ).getHours()!,
+                        admin.AdminConfig?.openingHours ?? "erro"
+                      ).getHours(),
                       minutes: new Date(
-                        admin.AdminConfig?.openingHours!
+                        admin.AdminConfig?.openingHours ?? "erro"
                       ).getMinutes(),
                     },
                     closingHours: {
                       hours: new Date(
-                        admin.AdminConfig?.closingHours!
-                      ).getHours()!,
+                        admin.AdminConfig?.closingHours ?? "erro"
+                      ).getHours(),
                       minutes: new Date(
-                        admin.AdminConfig?.closingHours!
+                        admin.AdminConfig?.closingHours ?? "erro"
                       ).getMinutes(),
                     },
                     interval: {
-                      hours: new Date(admin.AdminConfig?.interval!).getHours(),
+                      hours: new Date(
+                        admin.AdminConfig?.interval ?? "erro"
+                      ).getHours(),
                       minutes: new Date(
-                        admin.AdminConfig?.interval!
+                        admin.AdminConfig?.interval ?? "erro"
                       ).getMinutes(),
                     },
                   }}
@@ -197,7 +202,7 @@ export default function Home({
                     firstName={formData.firstName}
                     lastName={formData.lastName}
                     admin={admin}
-                    adminConfig={admin!.AdminConfig!}
+                    adminConfig={admin.AdminConfig!}
                     date={date.dateTime!}
                     paymentStart={paymentStart}
                     serviceId={service?.id}
@@ -221,7 +226,7 @@ export default function Home({
               <h2
                 onAnimationEnd={() => setAnimate(false)}
                 className={`text-2xl font-bold md:text-4xl ${
-                  animate && "animate-fadeIn"
+                  animate ? "animate-fadeIn" : ""
                 }`}
               >
                 {date.dateTime
@@ -239,29 +244,31 @@ export default function Home({
                 date={date}
                 setAnimate={setAnimate}
                 setDate={setDate}
-                adminId={admin?.id}
+                adminId={admin?.id ?? ""}
                 serviceId={service.id}
                 opening={{
                   openingHours: {
                     hours: new Date(
-                      admin.AdminConfig?.openingHours!
-                    ).getHours()!,
+                      admin.AdminConfig?.openingHours ?? "erro"
+                    ).getHours(),
                     minutes: new Date(
-                      admin.AdminConfig?.openingHours!
+                      admin.AdminConfig?.openingHours ?? "erro"
                     ).getMinutes(),
                   },
                   closingHours: {
                     hours: new Date(
-                      admin.AdminConfig?.closingHours!
-                    ).getHours()!,
+                      admin.AdminConfig?.closingHours ?? "erro"
+                    ).getHours(),
                     minutes: new Date(
-                      admin.AdminConfig?.closingHours!
+                      admin.AdminConfig?.closingHours ?? "erro"
                     ).getMinutes(),
                   },
                   interval: {
-                    hours: new Date(admin.AdminConfig?.interval!).getHours(),
+                    hours: new Date(
+                      admin.AdminConfig?.interval ?? "erro"
+                    ).getHours(),
                     minutes: new Date(
-                      admin.AdminConfig?.interval!
+                      admin.AdminConfig?.interval ?? "erro"
                     ).getMinutes(),
                   },
                 }}
@@ -288,7 +295,7 @@ export default function Home({
                   firstName={formData.firstName}
                   lastName={formData.lastName}
                   admin={admin}
-                  adminConfig={admin!.AdminConfig!}
+                  adminConfig={admin.AdminConfig}
                   date={date.dateTime!}
                   paymentStart={paymentStart}
                   email={formData.email}
@@ -341,6 +348,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
         },
       });
       if (admin) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         admin = JSON.parse(JSON.stringify(admin));
         return { props: { admin } };
       }
@@ -351,6 +359,6 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   }
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths = () => {
   return { paths: [], fallback: "blocking" };
 };

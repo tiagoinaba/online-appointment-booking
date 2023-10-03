@@ -2,7 +2,7 @@ import AdminBackButton from "@/components/AdminBackButton";
 import Button from "@/components/Button";
 import { WeekDays } from "@/components/WeekDays";
 import DataTable from "@/components/reservations/DataTable";
-import Select, { StylesConfig } from "react-select";
+import Select, { type StylesConfig } from "react-select";
 
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
@@ -13,8 +13,8 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
-import { FullAdmin } from ".";
-import { Service } from "@prisma/client";
+import { type FullAdmin } from ".";
+import { type Service } from "@prisma/client";
 
 const selectStyles = {
   container: (base) => ({
@@ -60,8 +60,8 @@ export default function Calendario({ admin }: { admin: FullAdmin }) {
 
   const { mutate: toggleClosedDay } = api.closedDay.toggleClosedDay.useMutation(
     {
-      onSuccess: () => {
-        utils.closedDay.invalidate();
+      onSuccess: async () => {
+        await utils.closedDay.invalidate();
       },
     }
   );
@@ -144,7 +144,9 @@ export default function Calendario({ admin }: { admin: FullAdmin }) {
         </h2>
         <h2
           onAnimationEnd={() => setAnimate(false)}
-          className={`mb-4 text-4xl font-bold ${animate && "animate-fadeIn"}`}
+          className={`mb-4 text-4xl font-bold ${
+            animate ? "animate-fadeIn" : ""
+          }`}
         >
           {day
             ? format(day, "dd 'de' MMMM", {
@@ -193,8 +195,9 @@ export default function Calendario({ admin }: { admin: FullAdmin }) {
                             key={time.toISOString()}
                             variant="ghost"
                             className={`${
-                              isEqual(selectedHour!, time) &&
-                              "border-2 border-zinc-500"
+                              isEqual(selectedHour!, time)
+                                ? "border-2 border-zinc-500"
+                                : ""
                             }`}
                             disabled={
                               (reservations?.find((res) => {

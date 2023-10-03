@@ -36,8 +36,8 @@ export const SideNav = () => {
   const setActive = useActiveTabStore((state) => state.setActive);
   const router = useRouter();
   const { mutate: logout } = api.auth.logout.useMutation({
-    onSuccess: () => {
-      router.push("/admin");
+    onSuccess: async () => {
+      await router.push("/admin");
     },
   });
 

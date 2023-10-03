@@ -1,5 +1,5 @@
 import { api } from "@/utils/api";
-import { Admin, AdminConfig } from "@prisma/client";
+import { Admin, type AdminConfig } from "@prisma/client";
 import { CheckCircle2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";

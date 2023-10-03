@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import Button from "../Button";
 import { api } from "@/utils/api";
 import toast from "react-hot-toast";
-import { Row } from "@tanstack/react-table";
-import { ReservationTable } from "./DataTable";
+import { type Row } from "@tanstack/react-table";
+import { type ReservationTable } from "./DataTable";
 
 export const DeleteRes = ({ row }: { row: Row<ReservationTable> }) => {
   const utils = api.useContext();
   const { mutate: deleteReservation, isLoading } =
     api.reservation.deleteReservation.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success("Reserva excluída com sucesso!");
-        utils.reservation.invalidate();
+        await utils.reservation.invalidate();
       },
       onError: (err) => {
         toast.error(err.message);
@@ -29,9 +29,9 @@ export const DeleteRes = ({ row }: { row: Row<ReservationTable> }) => {
             <Button
               variant="destructive"
               disabled={isLoading}
-              onClick={() => {
+              onClick={async () => {
                 deleteReservation({ id: row.original.id });
-                utils.reservation.invalidate();
+                await utils.reservation.invalidate();
                 console.log("hello");
               }}
             >

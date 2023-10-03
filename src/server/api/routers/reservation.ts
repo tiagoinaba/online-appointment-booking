@@ -6,7 +6,7 @@ import { now } from "@/utils/constants";
 import { sub } from "date-fns";
 import { GetServerSidePropsContext } from "next";
 import { prisma } from "@/server/db";
-import { Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import axios from "axios";
 import { env } from "@/env.mjs";
 
@@ -114,6 +114,7 @@ export const reservationRouter = createTRPCRouter({
         });
 
         if (res?.paymentIdMP && res.paymentStatus === "approved") {
+          // eslint-disable-next-line
           const { data } = await axios.post(
             `https://api.mercadopago.com/v1/payments/${res.paymentIdMP}/refunds`,
             {},
@@ -123,6 +124,7 @@ export const reservationRouter = createTRPCRouter({
           );
           console.log(data);
         } else if (res?.paymentIdMP) {
+          // eslint-disable-next-line
           const { data } = await axios.put(
             `https://api.mercadopago.com/v1/payments/${res.paymentIdMP}`,
             { status: "cancelled" },
