@@ -53,12 +53,11 @@ export const authRouter = createTRPCRouter({
 
           return;
         }
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid email or password.",
+        });
       }
-
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "Invalid email or password.",
-      });
     }),
 
   createAdmin: publicProcedure
