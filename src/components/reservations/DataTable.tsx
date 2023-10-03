@@ -1,22 +1,22 @@
+import { paymentStatus } from "@/lib/utils";
 import { api } from "@/utils/api";
 import {
-  type ColumnDef,
-  type ColumnFilter,
-  type ColumnSort,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  type ColumnDef,
+  type ColumnFilter,
+  type ColumnSort,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDown } from "lucide-react";
-import { type Service } from "prisma/generated/zod";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import Select, { type StylesConfig } from "react-select";
 import Button from "../Button";
-import { paymentStatus } from "@/lib/utils";
-import toast from "react-hot-toast";
+import { type Service } from "@prisma/client";
 
 interface DataTableProps<TData> {
   data: TData[];
