@@ -147,31 +147,46 @@ export default function DateTimePicker({
       ) : (
         date.justDate &&
         serviceId && (
-          <div className="grid grid-cols-4 gap-8">
-            {getTimes().map((time) => (
-              <Button
-                key={time.toISOString()}
-                variant="ghost"
-                className={`${
-                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                  isEqual(date.dateTime!, time) && "border-2 border-zinc-500"
-                }`}
-                disabled={
-                  (serviceRes?.find((res) => isEqual(res.dateTime, time))
-                    ? true
-                    : false) || isBefore(time, now)
-                }
-                onClick={() => {
-                  setAnimate(true);
-                  setDate((prev) => ({
-                    ...prev,
-                    dateTime: time,
-                  }));
-                }}
-              >
-                {format(time, "kk:mm")}
-              </Button>
-            ))}
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+            {isBefore(
+              now,
+              new Date(
+                date.justDate.getFullYear(),
+                date.justDate.getMonth(),
+                date.justDate.getDate(),
+                opening.closingHours.hours,
+                opening.closingHours.minutes
+              )
+            ) ? (
+              getTimes().map((time) => (
+                <Button
+                  key={time.toISOString()}
+                  variant="ghost"
+                  className={`${
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    isEqual(date.dateTime!, time) && "border-2 border-zinc-500"
+                  }`}
+                  disabled={
+                    (serviceRes?.find((res) => isEqual(res.dateTime, time))
+                      ? true
+                      : false) || isBefore(time, now)
+                  }
+                  onClick={() => {
+                    setAnimate(true);
+                    setDate((prev) => ({
+                      ...prev,
+                      dateTime: time,
+                    }));
+                  }}
+                >
+                  {format(time, "kk:mm")}
+                </Button>
+              ))
+            ) : (
+              <p className="col-span-2 md:col-span-4 md:text-lg">
+                Não há mais horários disponíveis
+              </p>
+            )}
           </div>
         )
       )}

@@ -63,29 +63,45 @@ export default function DateTimeDemo({
       )}
 
       <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-        {getTimes().map((time) => (
-          <Button
-            key={time.toISOString()}
-            variant="ghost"
-            className={`${
-              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              isEqual(date.dateTime!, time) ? "border-2 border-zinc-500" : ""
-            }`}
-            disabled={
-              (reserved?.find((res) => isEqual(res, time)) ? true : false) ||
-              isBefore(time, now)
-            }
-            onClick={() => {
-              setAnimate(true);
-              setDate((prev) => ({
-                ...prev,
-                dateTime: time,
-              }));
-            }}
-          >
-            {format(time, "kk:mm")}
-          </Button>
-        ))}
+        {date.justDate &&
+        isBefore(
+          now,
+          new Date(
+            date.justDate.getFullYear(),
+            date.justDate.getMonth(),
+            date.justDate.getDate(),
+            opening.closingHours.hours,
+            opening.closingHours.minutes
+          )
+        ) ? (
+          getTimes().map((time) => (
+            <Button
+              key={time.toISOString()}
+              variant="ghost"
+              className={`${
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                isEqual(date.dateTime!, time) ? "border-2 border-zinc-500" : ""
+              }`}
+              disabled={
+                (reserved?.find((res) => isEqual(res, time)) ? true : false) ||
+                isBefore(time, now)
+              }
+              onClick={() => {
+                setAnimate(true);
+                setDate((prev) => ({
+                  ...prev,
+                  dateTime: time,
+                }));
+              }}
+            >
+              {format(time, "kk:mm")}
+            </Button>
+          ))
+        ) : (
+          <p className="col-span-2 md:col-span-4">
+            Não há mais horários disponíveis
+          </p>
+        )}
       </div>
     </>
   );

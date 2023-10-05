@@ -4,13 +4,13 @@ import CreateServiceForm from "@/components/ServiceForm";
 import ServicesCarousel from "@/components/ServicesCarousel";
 import { api } from "@/utils/api";
 import { useUploadThing } from "@/utils/uploadthing";
-import { Link } from "@mui/material";
 import "@uploadthing/react/styles.css";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
 import { type FullAdmin } from ".";
+import { useActiveTabStore } from "@/hooks/useActiveTab";
 
 export const ServiceForm = z.object({
   name: z.string().nonempty(),
@@ -25,6 +25,8 @@ export default function Services({ admin }: { admin: FullAdmin }) {
       initialData: admin.Service,
     }
   );
+
+  const setActive = useActiveTabStore((state) => state.setActive);
 
   const multipleServices = admin?.AdminConfig?.multipleServices;
 
@@ -93,7 +95,9 @@ export default function Services({ admin }: { admin: FullAdmin }) {
         ) : (
           <div>
             Você deve ativar múltiplos serviços em{" "}
-            <Link href="/admin/dashboard/options">Opções</Link>
+            <button className="" onClick={() => setActive("Opções")}>
+              Opções
+            </button>
           </div>
         )}
         {modal && (
