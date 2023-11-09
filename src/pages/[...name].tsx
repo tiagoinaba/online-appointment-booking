@@ -1,18 +1,19 @@
 import BookingForm from "@/components/BookingForm";
 import Button from "@/components/Button";
 import DateTimePicker from "@/components/DateTimePicker";
-import MPWallet from "@/components/MPWallet";
 import ProgressBar from "@/components/ProgressBar";
 import ServicesCarouselClient from "@/components/ServicesCarouselClient";
 import ClientLayout from "@/components/layouts/ClientLayout";
 import { prisma } from "@/server/db";
 import { api } from "@/utils/api";
+import { STRIPE_PK } from "@/utils/constants";
 import { type DateType, type Inputs } from "@/utils/types";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { type Service } from "@prisma/client";
+import { loadStripe } from "@stripe/stripe-js";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Phone } from "lucide-react";
@@ -23,14 +24,16 @@ import {
 } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 
+const stripePromise = loadStripe(STRIPE_PK);
+
 export default function Home({
   admin,
-  notFound,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const utils = api.useContext();
 
@@ -50,6 +53,13 @@ export default function Home({
     email: "",
     phoneNumber: "",
   });
+
+  const { mutate: createCheckout, data: stripeSession } =
+    api.stripe.createCheckout.useMutation({
+      onSuccess: () => {
+        setPaymentStart(true);
+      },
+    });
 
   useEffect(() => {
     if (step === 1) {
@@ -82,7 +92,7 @@ export default function Home({
       },
     });
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (!admin?.AdminConfig?.requirePayment) {
       createReservation({
         adminId: admin!.id,
@@ -94,9 +104,17 @@ export default function Home({
     } else {
       setFormData(data);
       setStep((prev) => prev + 1);
-      await import("@mercadopago/sdk-react").then((res) => {
-        res.initMercadoPago("APP_USR-46c56d9d-bbf4-4279-b234-aa246ee95f6f");
-        setPaymentStart(true);
+      createCheckout({
+        adminId: admin.id,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        date: date.dateTime!,
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+        paymentValue: admin.AdminConfig?.paymentValue!,
+        serviceId: service?.id ?? null,
+        phoneNumber: data.phoneNumber,
       });
     }
   };
@@ -197,18 +215,11 @@ export default function Home({
               </div>
             ) : (
               <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-zinc-300 p-6 px-20">
-                {paymentStart && (
-                  <MPWallet
-                    firstName={formData.firstName}
-                    lastName={formData.lastName}
-                    admin={admin}
-                    adminConfig={admin.AdminConfig!}
-                    date={date.dateTime!}
-                    paymentStart={paymentStart}
-                    serviceId={service?.id}
-                    email={formData.email}
-                  />
-                )}
+                {paymentStart &&
+                  stripeSession !== undefined &&
+                  stripeSession.url !== null && (
+                    <Link href={stripeSession.url}>Finalizar compra</Link>
+                  )}
               </div>
             )
           ) : step === 1 ? (
@@ -290,18 +301,11 @@ export default function Home({
             </div>
           ) : (
             <div className="flex h-full flex-col items-center justify-center rounded-3xl border p-6 px-20 transition duration-300 hover:bg-zinc-100">
-              {paymentStart && (
-                <MPWallet
-                  firstName={formData.firstName}
-                  lastName={formData.lastName}
-                  admin={admin}
-                  adminConfig={admin.AdminConfig}
-                  date={date.dateTime!}
-                  paymentStart={paymentStart}
-                  email={formData.email}
-                  serviceId={service?.id}
-                />
-              )}
+              {paymentStart &&
+                stripeSession !== undefined &&
+                stripeSession.url !== null && (
+                  <Link href={stripeSession.url}>Finalizar compra</Link>
+                )}
             </div>
           )}
           <div className="flex w-full max-w-[800px] flex-col items-center gap-4 rounded-xl border p-10 transition duration-300 hover:bg-zinc-100">

@@ -83,7 +83,8 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <CheckCircle className="text-green-600 transition duration-300 group-hover:text-green-300" />
                     <span className="transition duration-300 group-hover:text-white">
-                      Receba diretamente pelo MercadoPago;
+                      Receba diretamente pelo{" "}
+                      <Link href="stripe.com">Stripe</Link>;
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

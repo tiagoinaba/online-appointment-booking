@@ -1,5 +1,7 @@
 export const now = new Date();
 export const today = new Date(new Date().setHours(0, 0, 0, 0));
+export const STRIPE_PK =
+  "pk_test_51Nob9nDQIsvvLU4FaBCfTBmBNPuD5w2oxOwI7VOvxsrgINvlYvwaGUqontBWLlbqtMdDAKToJiVbj4GZUTQvwls400tsaqO9EE";
 
 /*
     👉 Generate 2 MP users (one for seller and one for buyer)

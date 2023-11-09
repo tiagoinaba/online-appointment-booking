@@ -28,6 +28,8 @@ export const env = createEnv({
     JWT_SECRET_KEY: z.string(),
     UPLOADTHING_SECRET: z.string(),
     UPLOADTHING_APP_ID: z.string(),
+    STRIPE_SK: z.string(),
+    STRIPE_PK: z.string(),
   },
 
   /**
@@ -55,6 +57,8 @@ export const env = createEnv({
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
+    STRIPE_PK: process.env.STRIPE_PK,
+    STRIPE_SK: process.env.STRIPE_SK,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
